@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Source media: 174MB of originals. The optimised AVIFs the site actually
+# uses live in public/images and are committed. These stay local.
+/assets

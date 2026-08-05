@@ -1,26 +1,465 @@
 @import "tailwindcss";
+@import "./obscura.css";
+@import "./wnode.css";
 
+/* ----- Fluid em scale ----- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --size-unit: 16;
+  --size-container-ideal: 1500;
+  --size-container-min: 768px;
+  --size-container-max: 1920px;
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+
+  --color-white: white;
+  --color-black: black;
+  --color-light-gray: #949494;
+  --color-gray: #434343;
+  --gap-base: clamp(12px, 1.25em, 20px);
+  --gap-base-m: 0.75em;
+  --text-sm: clamp(9px, 1em, 18px);
+  --text-sm-m: 0.875em;
+  --btn-padding-v: clamp(10px, 1em, 16px);
+  --btn-padding-h: clamp(12px, 1.25em, 20px);
+  --btn-padding-v-m: clamp(8px, 0.75em, 14px);
+  --btn-padding-h-m: clamp(9px, 1em, 18px);
+  --text-md: clamp(25px, 2.25em, 42px);
+  --text-md-m: 1.5em;
+  --gap-360: 22.5em;
+  --gap-144: 9em;
+  --text-lg: clamp(44px, 4.5em, 88px);
+  --text-lg-m: clamp(30px, 2em, 36px);
+  --gap-48: 3em;
+  --text-base: clamp(12px, 1.25em, 24px);
+  --text-base-m: clamp(16px, 1em, 18px);
+  --btn-gap: clamp(16px, 1.5em, 28px);
+  --gap-300: 18.75em;
+  --gap-72: 4.5em;
+  --gap-140: 8.75em;
+  --font-weight-regular: 450;
+
+  --nav-active: var(--color-white);
+  --nav-inactive: var(--color-light-gray);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media screen and (max-width: 767px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --size-container-ideal: 620;
+    --size-container-min: 480px;
+    --size-container-max: 767px;
   }
 }
 
+@media screen and (max-width: 479px) {
+  :root {
+    --size-container-ideal: 400;
+    --size-container-min: 0px;
+    --size-container-max: 479px;
+  }
+}
+
+html {
+  height: 100%;
+  font-display: block;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+/* `clip` (not `hidden`) so body doesn't become a scroll container,
+   which would break the position:sticky pinned sections */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  font-size: var(--size-font);
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--color-white);
+  color: var(--color-black);
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  vertical-align: middle;
+  display: inline-block;
+  border: 0;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: inherit;
+}
+
+.w-inline-block {
+  max-width: 100%;
+  display: inline-block;
+}
+
+.u-container {
+  max-width: var(--size-container);
+}
+
+/* ----- Navbar link states ----- */
+[data-navbar] [data-nav-link] {
+  color: var(--nav-inactive);
+  transition: color 350ms ease;
+}
+
+[data-navbar] [data-nav-link].is-active {
+  color: var(--nav-active);
+  transition: color 250ms ease;
+}
+
+body.is-home [data-navbar] [data-nav-link] {
+  color: var(--nav-active);
+}
+
+[data-navbar]:has([data-nav-link]:hover) [data-nav-link] {
+  color: var(--nav-inactive);
+}
+
+[data-navbar]:has([data-nav-link]:hover) [data-nav-link]:hover {
+  color: var(--nav-active);
+}
+
+/* ----- Loader / cursor / transition helpers ----- */
+#loader[aria-hidden="true"] {
+  display: none;
+}
+
+[data-loader-bar-fill] {
+  transform-origin: left center;
+  clip-path: inset(0 100% 0 0);
+}
+
+[data-custom-cursor],
+[data-custom-cursor] * {
+  cursor: none !important;
+}
+
+#cursor-svg {
+  pointer-events: none;
+}
+
+.page_transition {
+  position: fixed !important;
+}
+
+.split-line {
+  padding-bottom: 0.075em !important;
+}
+
+.split-line-mask {
+  display: block;
+  overflow: hidden;
+}
+
+::selection {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+/* FAQ card body - the question keeps the original's display size, the answer
+   sits under it at reading size. */
+.svc_tst_faq_answer {
+  color: var(--color-gray);
+  margin-top: 1em;
+  text-wrap: pretty;
+}
+
+/* ----- Process tiles (About) -----
+   Reuses the team grid's cell, but holds text instead of a portrait. */
+.process_tile {
+  background-color: #171717;
+  color: var(--color-white);
+}
+
+.process_tile_inner {
+  aspect-ratio: 3.5 / 4.5;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  padding: 1.5em;
+}
+
+.process_tile_step {
+  color: var(--color-light-gray);
+}
+
+.process_tile_body {
+  display: flex;
+  flex-flow: column;
+  gap: 0.5em;
+}
+
+.process_tile_name {
+  text-transform: uppercase;
+  line-height: 100%;
+}
+
+.process_tile_text {
+  color: #b3b3b3;
+  text-wrap: balance;
+}
+
+@media screen and (max-width: 767px) {
+  .process_tile_inner {
+    aspect-ratio: auto;
+    min-height: 14em;
+  }
+}
+
+/* ----- Brand mark ----- */
+
+.wordmark {
+  display: inline-flex;
+  align-items: flex-start;
+  white-space: nowrap;
+}
+
+/* the loader mark was a 20em-wide vector; as live text it needs a font size
+   rather than a width to reach the same measure */
+.wordmark.loader_svg_logo {
+  width: auto;
+  font-size: 2.9em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.wordmark_letter {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* The wordmark is longer than the one this layout was built for, so keep it on
+   a single line - a wrap would also break the slide-up hover, which relies on a
+   fixed-height mask.
+   Deliberately NOT applied to .footer_link_text: that column is narrow, and
+   nowrap made a long label overflow into the navigation column instead of
+   wrapping. Wrapping is the safer failure. */
+.nav_logo,
+.nav_menu_link_text {
+  white-space: nowrap;
+}
+
+/* Rules my CSS port dropped: the filter required an underscore after the
+   block name, so bare `.modal` and `.rect` never matched. Without the padding
+   the modal content ran flush to its border. */
+.modal {
+  height: 100%;
+  padding: 3.75em;
+  position: relative;
+}
+
+.rect {
+  transform: skew(0deg);
+}
+
+@media screen and (max-width: 767px) {
+  .modal {
+    padding: 2.25em;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .modal {
+    padding: 1.5em;
+  }
+}
+
+/* Arrow reveal and the "+"→"−" swap are applied as inline styles from
+   AboutPage (matching the original's autoAlpha tweens); only the easing of
+   those changes lives here. */
+.abt_values_item_arrow,
+.svc_about_item_svg .rect {
+  transition: opacity 0.125s ease;
+}
+
+/* `.svc_svc_container` ships `overflow: hidden`, which makes it a scroll
+   container and stops `position: sticky` inside it from ever sticking - the
+   services card stack would scroll past instead of pinning. `clip` gives the
+   same masking without creating a scroll container. */
+.svc_svc_container {
+  overflow: clip;
+}
+
+/* About values: the "+" loses its vertical bar when the row opens, becoming "−" */
+.svc_about_item_svg .rect {
+  transition: opacity 0.125s ease;
+}
+
+/* Marquee item hover zoom (CSS so the ticking marquee never re-renders) */
+.projects_list_cms_item_image {
+  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.projects_list_cms_item_wrap:hover .projects_list_cms_item_image {
+  transform: scale(1.05);
+}
+
+/* ----- Home image band -----
+   A full-bleed strip between About and the CTA, scrubbed sideways by scroll. */
+.band_container {
+  background-color: #0a0a0a;
+  margin-top: var(--gap-140);
+  /* keeps the headline's difference blend from reaching the page behind the
+     band - CoverSection's transform already does, but not obviously */
+  isolation: isolate;
+}
+
+.band_viewport {
+  /* `clip` not `hidden`, per the rest of this file - the track is many times
+     wider than the viewport and must not become a scroll container */
+  overflow: clip;
+  /* the strip runs off both sides rather than butting against a hard cut, so
+     pictures arrive and leave instead of appearing and vanishing */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    #0000 0%,
+    #000 7%,
+    #000 93%,
+    #0000 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    #0000 0%,
+    #000 7%,
+    #000 93%,
+    #0000 100%
+  );
+}
+
+.band_track {
+  grid-column-gap: var(--gap-base);
+  align-items: center;
+  width: max-content;
+  height: 33em;
+  display: flex;
+  will-change: transform;
+}
+
+/* One size, 4:3, filling the full height of the track - the strip reads as a
+   single even run rather than a composition. */
+.band_cell {
+  flex: none;
+  border-radius: 0.25em;
+  width: 44em;
+  height: 33em;
+  overflow: hidden;
+}
+
+/* No `will-change` here: sixteen promoted layers this size cost more GPU memory
+   than the strip is worth, and the hover is a one-off CSS transition rather
+   than something running every frame. */
+.band_img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.band_cell:hover .band_img {
+  transform: scale(1.05);
+}
+
+.band_overlay {
+  z-index: 1;
+  pointer-events: none;
+  background-color: #0a0a0a4d;
+  position: absolute;
+  inset: 0;
+}
+
+.band_text_wrap {
+  z-index: 2;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  place-items: center;
+  padding: 0 var(--gap-base);
+  display: grid;
+  position: absolute;
+  inset: 0;
+}
+
+/* `place-items: center` sizes the item to max-content, so without this cap the
+   headline refuses to wrap and runs straight off a phone screen */
+.band_text {
+  color: var(--color-white);
+  max-width: 100%;
+  text-align: center;
+  text-wrap: balance;
+}
+
+@media screen and (max-width: 991px) {
+  .band_track,
+  .band_cell {
+    height: 25.5em;
+  }
+
+  .band_cell {
+    width: 34em;
+  }
+
+  /* matching the step-downs obscura.css gives its other u-text-xl headlines */
+  .band_text.u-text-xl {
+    font-size: 4.8em;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .band_container {
+    margin-top: 5em;
+  }
+
+  .band_track,
+  .band_cell {
+    height: 20em;
+  }
+
+  .band_cell {
+    width: 26.5em;
+  }
+
+  .band_text.u-text-xl {
+    font-size: 4em;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .band_text.u-text-xl {
+    font-size: 3.2em;
+  }
+}
+
+/* Percentage-based transforms on SVG paths behave like GSAP's (bounding-box relative) */
+.loader_svg_logo path,
+.hero_svg path,
+.about_top_heading_svg path,
+.about_hero_top_svg path,
+.svc_hero_top_svg path,
+.projects_top_svg path,
+.svc_svc_into_svg path,
+.abt_team_svg path,
+.abt_team_svg_cnt path,
+.abt_values_top_svg path,
+.footer_bottom_svg path {
+  transform-box: fill-box;
 }
