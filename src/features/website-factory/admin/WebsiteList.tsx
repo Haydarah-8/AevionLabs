@@ -148,12 +148,20 @@ export function WebsiteList() {
       {!loading && !rows.length ? (
         <div className="mt-8 rounded-2xl border border-dashed border-white/15 px-6 py-14 text-center">
           <p className="text-white/55">No websites yet.</p>
-          <Link
-            href="/admin/websites/templates"
-            className="mt-4 inline-flex rounded-full bg-white px-5 py-2.5 text-sm text-[#0d1730]"
-          >
-            Browse templates
-          </Link>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <Link
+              href="/admin/websites/new"
+              className="inline-flex rounded-full bg-white px-5 py-2.5 text-sm text-[#0d1730]"
+            >
+              Open blank canvas
+            </Link>
+            <Link
+              href="/admin/websites/templates"
+              className="inline-flex rounded-full border border-white/15 px-5 py-2.5 text-sm text-white/75 hover:text-white"
+            >
+              Browse templates
+            </Link>
+          </div>
         </div>
       ) : null}
     </div>

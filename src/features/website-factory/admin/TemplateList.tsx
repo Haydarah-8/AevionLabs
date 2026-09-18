@@ -59,7 +59,7 @@ export function TemplateList() {
           href="/admin/websites/new"
           className="rounded-full bg-white px-5 py-2.5 text-sm text-[#0d1730]"
         >
-          Create without template
+          Create blank canvas
         </Link>
       </div>
 

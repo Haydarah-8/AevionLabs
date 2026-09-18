@@ -34,7 +34,7 @@ export function TypeGame({ settings, ink, paper, autoStart }: GameViewProps) {
   const [mode, setMode] = useState<"ready" | "play" | "over">("ready");
   const [level, setLevel] = useState(settings.startLevel);
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(settings.lives);
+  const [lives, setLives] = useState<number>(settings.lives);
   const [best, setBest] = useState(0);
   const [typed, setTyped] = useState("");
   const [left, setLeft] = useState(10);

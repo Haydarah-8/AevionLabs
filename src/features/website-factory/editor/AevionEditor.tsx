@@ -41,6 +41,7 @@ import type { InspectorTab } from "@/features/website-factory/editor/inspector-t
 import {
   Archive,
   Boxes,
+  Briefcase,
   Cable,
   ChevronDown,
   Copy,
@@ -63,6 +64,7 @@ import {
   Undo2,
   Upload,
 } from "lucide-react";
+import { StudioBusinessPanel } from "@/features/website-factory/editor/StudioBusinessPanel";
 
 const useEditorPuck = createUsePuck();
 
@@ -73,6 +75,7 @@ function hexColor(value?: string) {
 type SaveState = "saved" | "saving" | "failed";
 type LeftTab =
   | "pages"
+  | "site"
   | "add"
   | "layers"
   | "assets"
@@ -340,7 +343,9 @@ function StudioChrome({
   const viewports = useEditorPuck((s) => s.appState.ui?.viewports);
   const selectedItem = useEditorPuck((s) => s.selectedItem);
   const itemSelector = useEditorPuck((s) => s.appState.ui?.itemSelector);
-  const [left, setLeft] = useState<LeftTab>("pages");
+  const [left, setLeft] = useState<LeftTab>(
+    bundle.business.name === "Untitled site" ? "site" : "pages",
+  );
   const [leftOpen, setLeftOpen] = useState(true);
   const [right, setRight] = useState<RightTab>("content");
   const [command, setCommand] = useState("");
@@ -1320,6 +1325,14 @@ function StudioChrome({
           </button>
           <button
             type="button"
+            className={`ae-rail-btn${leftOpen && left === "site" ? " is-on" : ""}`}
+            title="Site details"
+            onClick={() => toggleLeft("site")}
+          >
+            <Briefcase />
+          </button>
+          <button
+            type="button"
             className={`ae-rail-btn${leftOpen && left === "add" ? " is-on" : ""}`}
             title="Add"
             onClick={() => toggleLeft("add")}
@@ -1407,22 +1420,33 @@ function StudioChrome({
             <div className="ae-panel-head">
               {left === "pages"
                 ? "Pages"
-                : left === "add"
-                  ? "Add"
-                  : left === "layers"
-                    ? "Navigator"
-                    : left === "assets"
-                      ? "Assets"
-                      : left === "import"
-                        ? "Import"
-                        : left === "cms"
-                          ? "CMS"
-                          : left === "api"
-                            ? "API & MCP"
-                            : left === "deploy"
-                              ? "Deploy"
-                              : "AI"}
+                : left === "site"
+                  ? "Site"
+                  : left === "add"
+                    ? "Add"
+                    : left === "layers"
+                      ? "Navigator"
+                      : left === "assets"
+                        ? "Assets"
+                        : left === "import"
+                          ? "Import"
+                          : left === "cms"
+                            ? "CMS"
+                            : left === "api"
+                              ? "API & MCP"
+                              : left === "deploy"
+                                ? "Deploy"
+                                : "AI"}
             </div>
+            {left === "site" ? (
+              <StudioBusinessPanel
+                bundle={bundle}
+                onSaved={(next) => {
+                  setBundle(next);
+                  setNotice("Site details saved");
+                }}
+              />
+            ) : null}
             {left === "pages" ? (
               <div className="ae-panel-scroll">
                 <input

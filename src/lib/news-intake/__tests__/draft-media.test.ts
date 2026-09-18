@@ -5,6 +5,7 @@ import type { NewsItem } from "@/lib/news-intake/types";
 import { articleImageAllowed } from "@/lib/news/media";
 
 const item: NewsItem = {
+  id: "test-verge-laptop",
   title: "The Verge reviews a new coding laptop",
   source: "The Verge",
   provider: "the-verge",

@@ -20,7 +20,9 @@ import { SITE_IMAGES } from "@/lib/images";
 import { getPlatformTopic } from "@/data/topics";
 import { topicSlug, withHref } from "@/lib/topic-slug";
 
-const PRESETS = new Map(TOOL_CARDS.map((card) => [card.name, card]));
+const PRESETS = new Map<string, (typeof TOOL_CARDS)[number]>(
+  TOOL_CARDS.map((card) => [card.name, card]),
+);
 const tailwindCopy = PRESETS.get("Tailwind");
 if (tailwindCopy) PRESETS.set("Tailwind CSS", tailwindCopy);
 

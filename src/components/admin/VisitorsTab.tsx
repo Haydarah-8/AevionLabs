@@ -13,10 +13,7 @@ import { VisitorModalBody } from "@/components/admin/VisitorModal";
 import { computeVisitorStats } from "@/lib/analytics-aggregator";
 import { isAutomated } from "@/lib/visitors/intel";
 import type { VisitorRecord } from "@/lib/tracker-store";
-import {
-  buildVisitorProfile,
-  recordsForVisitor,
-} from "@/lib/visitors/profile";
+import { buildVisitorProfile, recordsForVisitor } from "@/lib/visitors/profile";
 
 type Filter = "all" | "new" | "returning";
 
@@ -42,7 +39,11 @@ interface VisitorsTabProps {
  * carry the same facts with room to breathe, and clicking one still opens the
  * whole person rather than the single view that was clicked.
  */
-export function VisitorsTab({ visitors, loading, onRefresh }: VisitorsTabProps) {
+export function VisitorsTab({
+  visitors,
+  loading,
+  onRefresh,
+}: VisitorsTabProps) {
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
@@ -304,7 +305,6 @@ function place(record: VisitorRecord): string {
       .join(", ") || "Unknown"
   );
 }
-
 
 /** One page view, as it arrived. */
 function ViewRow({

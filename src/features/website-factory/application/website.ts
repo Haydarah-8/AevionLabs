@@ -1,13 +1,16 @@
 import {
   addPage,
+  createProject,
   deletePage,
   duplicatePage,
   duplicateProject,
   getProjectBundle,
+  getTemplate,
   listProjects,
   listTemplates,
   publishLive,
   publishPreview,
+  replaceProjectPages,
   restoreVersion,
   updatePage,
   updateProject,
@@ -16,7 +19,8 @@ import {
 import { generateWebsite, generateWebsiteFromWizard } from "../services/generate";
 import { emitFactoryEvent } from "./events";
 import type { BusinessInput } from "../services/schemas";
-import type { ThemeTokens } from "../types";
+import { emptyPuck, type ThemeTokens } from "../types";
+import { SEEDED_TEMPLATES } from "../templates/seeds";
 
 export async function listWebsites() {
   return listProjects();
@@ -57,6 +61,90 @@ export async function createWebsiteFromWizard(
     actorType: actorId ? "admin" : "system",
     meta: { slug: bundle.project.slug },
   });
+  return bundle;
+}
+
+/** Create an untitled draft with one empty Home page and open Studio immediately. */
+export async function createBlankWebsite(
+  input: { name?: string; templateId?: string } = {},
+  actorId?: string | null,
+) {
+  const templates = await listTemplates();
+  const preferred =
+    (input.templateId
+      ? await getTemplate(input.templateId)
+      : null) ||
+    templates[0] ||
+    (await getTemplate(SEEDED_TEMPLATES[0].id)) ||
+    (await getTemplate(SEEDED_TEMPLATES[0].slug));
+  if (!preferred) {
+    throw new Error("No templates available to attach to a blank site");
+  }
+
+  const name = input.name?.trim() || "Untitled site";
+  const business = await upsertBusiness({
+    name,
+    tagline: "",
+    description: "",
+    industry: "",
+    logoUrl: "",
+    faviconUrl: "",
+    heroUrl: "",
+    phone: "",
+    email: "",
+    website: "",
+    address: "",
+    postcode: "",
+    openingHours: {},
+    social: {},
+    yearsInBusiness: null,
+    certifications: [],
+    awards: [],
+    primaryCta: { label: "Contact", href: "/contact" },
+    secondaryCta: { label: "", href: "" },
+    usps: [],
+    trustIndicators: [],
+    prospectLabel: "",
+    services: [],
+    team: [],
+    reviews: [],
+    media: [],
+  });
+  if (!business) throw new Error("Could not create business");
+
+  const project = await createProject({
+    businessId: business.id,
+    templateId: preferred.id,
+    name,
+  });
+
+  await replaceProjectPages(project.id, [
+    {
+      slug: "home",
+      title: "Home",
+      navLabel: "Home",
+      showInNav: true,
+      navOrder: 0,
+      draftData: {
+        ...emptyPuck(),
+        root: { props: { title: "Home" } },
+      },
+    },
+  ]);
+
+  const bundle = await getProjectBundle(project.id);
+  if (!bundle) throw new Error("Blank website create failed");
+
+  await emitFactoryEvent({
+    name: "website.created",
+    projectId: project.id,
+    resourceType: "website",
+    resourceId: project.id,
+    actorId,
+    actorType: actorId ? "admin" : "system",
+    meta: { slug: project.slug, blank: true },
+  });
+
   return bundle;
 }
 

@@ -120,19 +120,18 @@ export function ChromeError({
       <motion.nav
         className="lost-links"
         aria-label="Leave"
-        initial={reduce || !is404 ? undefined : "hidden"}
-        animate={reduce || !is404 ? undefined : "show"}
-        variants={
-          is404 && !reduce
-            ? {
+        {...(is404 && !reduce
+          ? {
+              initial: "hidden" as const,
+              animate: "show" as const,
+              variants: {
                 hidden: {},
                 show: {
                   transition: { staggerChildren: 0.1, delayChildren: 2.62 },
                 },
-              }
-            : undefined
-        }
-        {...(is404 ? {} : rise(reduce, 0.16))}
+              },
+            }
+          : rise(reduce, 0.16))}
       >
         {kind === "offline" || kind === "timeout" || kind === "error" ? (
           <button type="button" onClick={() => reload(kind)}>

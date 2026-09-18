@@ -154,11 +154,7 @@ export function Modal({
           </div>
           <div className="flex shrink-0 items-center gap-6">
             {actions}
-            <button
-              type="button"
-              onClick={onClose}
-              className={quietControl}
-            >
+            <button type="button" onClick={onClose} className={quietControl}>
               Close
             </button>
           </div>
