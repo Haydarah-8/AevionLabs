@@ -94,7 +94,7 @@ export function AdminShell({
   return (
     <div className="admin-shell flex h-full min-h-0 flex-col overflow-hidden bg-[#0a0a0f] text-zinc-100 antialiased">
       <header className="sticky top-0 z-50 shrink-0 border-b border-white/[0.07] bg-[#0a0a0f]/92 backdrop-blur-xl select-none">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-6 px-6 py-5 sm:px-10">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-4 py-4 sm:gap-6 sm:px-10 sm:py-5">
           <div className="flex min-w-0 items-center gap-10">
             <Link href="/admin" className="shrink-0 group">
               <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-white/45 group-hover:text-white/70">
@@ -159,7 +159,7 @@ export function AdminShell({
         </main>
       ) : (
         <main className="min-h-0 flex-1 overflow-y-auto">
-          <div className="mx-auto flex max-w-[1400px] flex-col px-6 py-10 sm:px-10 sm:py-12">
+          <div className="mx-auto flex max-w-[1400px] flex-col px-4 py-8 sm:px-10 sm:py-12">
             {description ? (
               <p className="mb-8 max-w-2xl text-[0.95rem] font-light leading-relaxed text-white/45">
                 {description}

@@ -89,6 +89,7 @@ export function Navbar({
   sticky?: boolean;
   homeHref?: string;
 }) {
+  const items = links ?? [];
   return (
     <header className={`wf-nav${sticky === false ? "" : " is-sticky"}`}>
       <a className="wf-nav-brand" href={homeHref || "/"}>
@@ -96,13 +97,30 @@ export function Navbar({
         <span>{name}</span>
       </a>
       <nav className="wf-nav-links" aria-label="Main">
-        {(links ?? []).map((link) => (
+        {items.map((link) => (
           <a key={`${link.href}-${link.label}`} href={link.href}>
             {link.label}
           </a>
         ))}
       </nav>
-      <Btn href={ctaHref} label={ctaLabel} />
+      <div className="wf-nav-cta">
+        <Btn href={ctaHref} label={ctaLabel} />
+      </div>
+      <details className="wf-nav-menu">
+        <summary aria-label="Open menu">Menu</summary>
+        <div className="wf-nav-menu-panel">
+          {items.map((link) => (
+            <a key={`m-${link.href}-${link.label}`} href={link.href}>
+              {link.label}
+            </a>
+          ))}
+          {ctaLabel ? (
+            <a className="wf-btn" href={ctaHref || "#"}>
+              {ctaLabel}
+            </a>
+          ) : null}
+        </div>
+      </details>
     </header>
   );
 }

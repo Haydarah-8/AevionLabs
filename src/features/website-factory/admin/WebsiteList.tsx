@@ -97,7 +97,9 @@ export function WebsiteList() {
             <p className="text-[0.65rem] uppercase tracking-[0.18em] text-white/40">
               {label}
             </p>
-            <p className="mt-2 text-3xl tracking-[-0.03em] text-white">{value}</p>
+            <p className="mt-2 text-3xl tracking-[-0.03em] text-white">
+              {value}
+            </p>
           </div>
         ))}
       </div>
@@ -131,7 +133,9 @@ export function WebsiteList() {
                 factoryPreviewPath(row.slug).replace(/^\//, "")}
             </p>
             <div className="mt-5 flex gap-2 text-sm text-white/70">
-              <span className="underline-offset-2 hover:underline">Open editor</span>
+              <span className="underline-offset-2 hover:underline">
+                Open editor
+              </span>
               <span className="text-white/25">·</span>
               <Link
                 href={`/admin/websites/${row.id}`}

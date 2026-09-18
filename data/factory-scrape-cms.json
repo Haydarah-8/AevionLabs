@@ -1,5 +1,607 @@
 [
   {
+    "id": "19f55f55-e6b1-4954-bcc4-ce5061de5ea8",
+    "projectId": "75b3c9e0-32a3-4610-a968-a6d6ec3db74e",
+    "jobId": "683cd3bb-052f-4d42-8cb4-a18ba1941beb",
+    "sourceUrl": "https://www.theaevionlabs.com/",
+    "status": "imported",
+    "title": "Aevion Labs",
+    "summary": "See it working. Then fund it.",
+    "pageCount": 6,
+    "assetCount": 17,
+    "serviceCount": 10,
+    "result": {
+      "sourceUrl": "https://www.theaevionlabs.com/",
+      "name": "Aevion Labs",
+      "tagline": "See it working. Then fund it.",
+      "description": "Manchester studio for company sites, SaaS products, ecommerce, and internal tools. You see a working prototype before the rest of the budget unlocks.",
+      "phone": "",
+      "email": "hello@theaevionlabs.com",
+      "address": "Manchester · sites, SaaS, tools",
+      "postcode": "U003CP",
+      "logoUrl": "",
+      "faviconUrl": "https://www.theaevionlabs.com/favicon.ico?favicon.01-3.3hl4xa07.ico",
+      "heroUrl": "https://theaevionlabs.com/icon.svg",
+      "social": {
+        "youtube": "https://www.youtube.com/"
+      },
+      "brandColors": [
+        "#4285f4",
+        "#ffc107",
+        "#ff3d00",
+        "#4caf50",
+        "#1976d2"
+      ],
+      "services": [
+        {
+          "name": "Every week without a working system costs you the same traffic twice.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "Good products are engineering, not decoration.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "See it working.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "The risk comes out before the money does.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "Prototype first",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "One team",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "You own it",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "The stack the product runs on.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "What it is",
+          "description": "Google is often already in the room: a login, a map, a measurement plan. We use the pieces that help the product, and we leave the rest out.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "What it does",
+          "description": "Google is often already in the room: a login, a map, a measurement plan. We use the pieces that help the product, and we leave the rest out.",
+          "imageUrl": "",
+          "include": true
+        }
+      ],
+      "reviews": [],
+      "pages": [
+        {
+          "url": "https://www.theaevionlabs.com/",
+          "title": "Aevion Labs | Sites, SaaS, and tools",
+          "type": "home",
+          "heading": "See it working. Then fund it.",
+          "excerpt": "Manchester studio for company sites, SaaS products, ecommerce, and internal tools. You see a working prototype before the rest of the budget unlocks.",
+          "body": "Manchester · sites, SaaS, toolsPaid ads land on a site nobody can update. A SaaS idea sits in a deck. The shop still runs on a theme you cannot trust. An internal tool is still a spreadsheet. The loss is quiet, and it compounds.We plan, design, and ship the product you can put in front of customers or your team. Company websites, ecommerce, SaaS, and tools built for how you actually work. One studio in Manchester. You see it in the browser before the rest of the spend unlocks.You do not buy the full build until you have seen the system working.You do not buy the full build until you have seen the system working.Studio still · 01 / 01BaseManchesterModelPrototype firstOwnershipYour repositoryAevion Labs is a Manchester studio built on the belief that a site, a store, or a tool is never just a coat of paint. It is the first and most persistent thing a company communicates.We work slowly and selectively. We settle the brief before anyone opens a design file, and we build systems that still hold after the project ends. You see the product in the browser before the rest of the spend unlocks.PrototypeSee it working.A clickable system first. The rest of the budget stays locked until you have used it.You judge the product in the browser. Then the remaining spend unlocks.01Prototype firstYou use the system before the rest of the budget unlocks.01 / 0302One teamStrategy, design, and engineering stay in the same room.02 / 0303You own itCode, CMS, domain, and hosting sit in your name.03 / 03The rest of the spend waits.See the process →PlatformsThe stack the product runs on.Next.js, Stripe, and the CMS your team already uses. You own the keys.GoogleGoogle sign-in when it is the right default, not the only option.Google CloudHosting and jobs for products that already live in a Google organisation.Google MapsStore locators that filter by service, not just by pin.GeminiDrafting and summarising inside a CMS or an internal tool.YouTubeProduct films on a company site that do not wreck Core Web Vitals.OpenAIFirst drafts in a CMS or a support queue.ChromeCore Web Vitals measured in Chrome, on the pages that convert.FirebaseAuth for a first SaaS prototype your team can click this week.MicrosoftCompany sites and portals that sign in with the work account.AzureHosting for products that must stay inside an existing Azure estate.AWSStatic and server-rendered sites that stay fast at the edge.Google AnalyticsConversion events for forms, pricing, and checkout.AppleSites and web apps that feel finished in Safari.App StoreCompanion apps for a SaaS people already use in the browser.XcodeCompanion iOS apps for a product that already has a web home.AndroidCompany sites and SaaS that stay fast on mid-range Android.AnthropicLong-document summaries inside an internal tool.ClaudeRewrites and summaries in a publishing workflow.TypeScriptTyped JavaScript so the product stays changeable..NETCompany tools that must sit next to existing C# services.JavaScriptInteractive product surfaces that stay readable in the source.PythonImports and reports that used to live in a spreadsheet.HTML5Marketing pages that stay readable with JavaScript off.CSSDesign systems that ship as CSS variables the app already uses.SwiftCompanion apps for a SaaS people already use in the browser.KotlinCompanion Android apps for a product that already has a site.GoWebhooks and workers for billing or import.ReactThe interface layer for sites, SaaS, and tools.Next.jsThe framework we ship production sites on.Node.jsRoute handlers and jobs beside a Next.js app.Tailwind CSSThe CSS system that keeps pages consistent.Vue.jsNew sections on a Vue estate you are not ready to leave.NuxtCompany sites on a Vue team.SvelteCampaign pages with a hard weight budget.PostgreSQLThe database the product actually owns.PrismaSaaS and tools where every query should be typed.WebflowCampaign and brochure sites a marketing team will own.FramerLaunch and campaign pages with real motion.WordPressCompany sites with editors who al",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/google",
+          "title": "Aevion Labs | Google",
+          "type": "home",
+          "heading": "Google",
+          "excerpt": "Google is often already in the room: a login, a map, a measurement plan. We use the pieces that help the product, and we leave the rest out.",
+          "body": "What it isGoogle is the company behind Search, Gmail, Android, Maps, YouTube, Chrome, and the advertising system that still funds a large share of the open web. For a product team it is less one tool and more a set of defaults people already have: an account, a map, a browser, a way to find a page.Alphabet also sells the cloud, analytics, maps APIs, and AI models that sit behind those consumer products. The public face is a search box. The working face is a catalogue of APIs you can wire into a site or an app without asking the user to learn a new world.What it doesTeams reach for Google when a user already lives there. Sign in with a Google account so a first visit is not another password. Embed a map people already know how to pinch. Tag journeys so marketing can see which pages convert.It is also the default stack for Android apps, YouTube embeds, Chrome testing, and Workspace mail. The useful move is to pick the one or two APIs that remove friction, then keep the rest of the product on a repository you own rather than wrapping the brand in Google chrome.Why we use itSearch, accounts, and the defaults people already trust.We start from the conversion map, not from a partner checklist. If a visitor already has a Google account, we can offer it. If the business lives on the high street, we can put maps on the locator. If paid traffic is part of the plan, we name events after the steps that make money. The rest of the product stays on a repository you own, with a CMS your team can publish from.Google should feel like furniture in the product, not like the landlord.Built on itYouTubeGoogle's own video product, and the largest public video library on the web.AndroidThe mobile operating system licensed to Samsung, Pixel, and most of the world's phones.The New York TimesRuns a substantial part of its digital operation on Google Cloud.SpotifyHas used Google Cloud for back-end and data work at global scale.UberLaunched its locator on Google Maps, the map people already trusted.NextGoogle Cloud",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/google-cloud",
+          "title": "Aevion Labs | Google Cloud",
+          "type": "home",
+          "heading": "Google Cloud",
+          "excerpt": "Some teams already run on Google Cloud. We meet them there, or we keep the product portable so you are not paying rent on a decision you have not made yet.",
+          "body": "What it isGoogle Cloud is Alphabet's public cloud: compute, Kubernetes, object storage, BigQuery, Cloud Run, and the Vertex AI layer that serves Gemini. It sits next to Amazon Web Services and Microsoft Azure as one of the three places a company can rent machines, databases, and managed services instead of owning a data centre.The pitch is not only servers. It is data tools that talk to the rest of Google, identity through Cloud IAM, and a global network Google already had to build for Search and YouTube. For a product team it is an account, a region, a bill, and a set of services you should be able to name.What it doesCompanies use Google Cloud to host applications, run containers, store files, query warehouses, and train or call models without standing up their own racks. Startups often land on Cloud Run or Firebase. Larger teams land on GKE, BigQuery, and a VPC they can explain to security.We put it in a build when the tenancy already exists, when BigQuery is the warehouse, or when Vertex is the model host. We do not move a healthy AWS or Azure estate onto Google Cloud because a slide said multi-cloud.Why we use itInfrastructure when the product has to live on Google.We design the journeys first. Then we place hosting, files, and jobs on the smallest set of Google Cloud services that will carry them. Finance should be able to read the invoice. Your team should be able to rotate a key without us. Preview URLs still exist, even inside a Google organisation, so sign-off stays in the browser.If Google Cloud is not already the house, we will say so, and we will not invent a reason to move.Built on itSpotifyA long-standing Google Cloud customer for serving and data infrastructure.PayPalRuns substantial payment infrastructure on Google Cloud.The New York TimesUses Google Cloud to publish and analyse at newspaper scale.TargetHas described Google Cloud as part of its retail technology stack.SnapUses Google Cloud to serve Snapchat to hundreds of millions of people.NextGoogle Maps",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/google-maps",
+          "title": "Aevion Labs | Google Maps",
+          "type": "home",
+          "heading": "Google Maps",
+          "excerpt": "A store finder or a delivery map should load with the rest of the interface. We treat Maps as a component, with a budget, not as a widget dumped in a sidebar.",
+          "body": "What it isGoogle Maps is the mapping platform most people already know how to use. Under the consumer app sits a set of APIs: map tiles, geocoding, Places search, directions, distance matrix, and Street View. Those APIs are how a store locator, a delivery tracker, or a job map gets a map that does not look like a demo.It is not the only mapping stack. Mapbox, Apple Maps, and OpenStreetMap exist for a reason. Google Maps wins when the user already trusts the pins, the traffic, and the search box, and when the product can pay for the requests.What it doesProduct teams embed Google Maps to show where something is, how to get there, and what sits nearby. A clinic finder, a van on a route, a branch list with filters: the map is the interface for place, not a decorative tile in a footer.The work is the journey around the map. Search, filters, a list that still works when the tile set is slow, and a key that lives in your project so the invoice is yours. A default embed with no fallback is not a locator.Why we use itMaps that stay part of the page, not a second product.Sometimes Mapbox is the better engine for a custom style. Sometimes Google Maps is already in the contract and the Places API is what the team needs. We choose in the brief, then we budget tiles, script, and a fallback list so a blocked key does not kill the page. The locator is a page your CMS can still edit.If the map is the first thing you notice, we have not finished the interface.Built on itUberUsed Google Maps to put cars and riders on a map people already understood.LyftHas used Google's mapping and location APIs in the passenger app.AirbnbShowed listings on Google Maps so a stay could be judged by the street, not only the photos.The Home DepotUses store maps and location search so a shopper can find a branch.FedExHas used Google Maps Platform for tracking and routing surfaces.NextGemini",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/gemini",
+          "title": "Aevion Labs | Gemini",
+          "type": "home",
+          "heading": "Gemini",
+          "excerpt": "Gemini is useful when it shortens a real task: a draft, a summary, a search across your own content. We wire it to that task and keep a human in the loop.",
+          "body": "What it isGemini is Google's family of generative models: text, image, audio, and code, served through Gemini on the web, through Workspace, through Android, and through Vertex AI for companies that want a contract and a region. It is the model Google put behind Search's AI features and behind the assistant on Pixel.It is not a product on its own. It is a model you call, with prompts, limits, and a fallback when the API is slow. The useful question is which step in the work it should draft, classify, or summarise, not whether the homepage needs a chat widget.What it doesTeams use Gemini to draft copy, summarise documents, classify tickets, extract fields from messy text, and assist inside tools people already open. Workspace users meet it in Gmail and Docs. Product teams meet it as an API with a key, a log, and a spend cap.We put it on a named step in the interface. The page still submits when the model is down. Prompts live in the repository. The Google Cloud project stays in your name.Why we use itA model in the product, not a chat bolted on the side.The interface is the product. Gemini fills a field or a panel. If Google Cloud is already the house, we can keep the call in that estate. If it is not, we still use your keys. The prototype includes the assist and the off switch. The rest of the budget waits until you have used both.If the flow does not work when Gemini is down, we have designed the wrong product.Built on itGoogle SearchGemini sits behind Google's own AI answers and the Gemini app.Google WorkspaceDraft and summarise features in Gmail, Docs, and Sheets call Gemini.AndroidPixel and Android assistants use Gemini as the on-device and cloud model.SamsungHas built Gemini into Galaxy phones as a Google partner.Vertex AI customersBanks, retailers, and publishers call Gemini through Google Cloud rather than the consumer app.NextYouTube",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/youtube",
+          "title": "Aevion Labs | YouTube",
+          "type": "home",
+          "heading": "YouTube",
+          "excerpt": "YouTube is how a lot of work gets explained. We embed it so the site still loads, the type still holds, and the video is a chapter, not the whole page.",
+          "body": "What it isYouTube is Google's video platform: upload, host, recommend, advertise, and stream live. It is the place most people already go to watch a talk, a review, a tutorial, or a match. For a company it is a channel, an embed, and sometimes a full watch experience that still lives on youtube.com.It is also an API. The Data API, IFrame player, and analytics let a site list uploads, play a video without sending people into a stranger's recommended sidebar, and measure what was actually watched. The brand is the play button. The product is a library with a URL for every cut.What it doesBrands use YouTube to publish films, product films, talks, and support clips that would crush a marketing site if they were self-hosted. A landing page embeds the official player. A newsroom lists a playlist. A campaign measures views without pretending the site is a streaming service.We embed with intent: the right video, no autoplay surprise, a layout that still reads if the player is blocked, and a channel the client owns. We do not build a fake YouTube on a brochure site.Why we use itVideo that belongs on the page, not a tab people never open.Lazy loads, privacy-aware embeds, and CMS entries so your team can swap a film without a developer. Product films, course pages, and internal explainers all use the same pattern. If the brief is really a channel strategy, we will say that is a different job from a company site.The headline and the action stay first. The film loads when someone chooses it.Built on itYouTube itselfGoogle's own product, and the default public video library.The White HousePublishes briefings and addresses on an official YouTube channel.NASAStreams launches and mission films to a public that already has the app.VEVOThe music industry's main licensed window on YouTube.Premier League clubsUse YouTube as the public highlight and behind-the-scenes channel.NextOpenAI",
+          "include": true
+        }
+      ],
+      "images": [
+        {
+          "url": "https://theaevionlabs.com/icon.svg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/home-intro.jpg",
+          "alt": "A desk monitor and keyboard lit by a single lamp",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/home-about.jpg",
+          "alt": "A blade of hard light falling across a studio wall",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-hero.jpg",
+          "alt": "Layered translucent panels receding into shadow",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-2.jpg",
+          "alt": "An electrical cord coiled on a bare floor",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/orbit-hero.jpg",
+          "alt": "A phone and laptop side by side, screens glowing",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-1.jpg",
+          "alt": "Sheets of tracing paper overlapping on a light table",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/baseplate-hero.jpg",
+          "alt": "A grid of identical modules with one raised out of alignment",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-3.jpg",
+          "alt": "Sheets of frosted acrylic stacked on concrete",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-hero.jpg",
+          "alt": "A bolt on concrete casting a long shadow",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-3.jpg",
+          "alt": "Stacked raw paper sheets under raking light",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-hero.jpg",
+          "alt": "Printed page layouts pinned across a studio wall",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/prism-3.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/folio-3.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/home-about.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/hero-4.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/forge-1.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        }
+      ],
+      "provenance": [
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/",
+          "importedAt": "2026-09-18T10:55:21.690Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/google",
+          "importedAt": "2026-09-18T10:55:22.240Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/google-cloud",
+          "importedAt": "2026-09-18T10:55:22.916Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/google-maps",
+          "importedAt": "2026-09-18T10:55:23.442Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/gemini",
+          "importedAt": "2026-09-18T10:55:24.188Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/youtube",
+          "importedAt": "2026-09-18T10:55:24.949Z",
+          "contentType": "home"
+        }
+      ],
+      "robotsAllowed": true,
+      "engine": "readability+linkedom+jsonld"
+    },
+    "createdAt": "2026-09-18T10:55:24.971Z",
+    "updatedAt": "2026-09-18T10:55:24.971Z",
+    "appliedAt": null
+  },
+  {
+    "id": "0706c41d-ca50-430e-8683-fd94ece77a89",
+    "projectId": "75b3c9e0-32a3-4610-a968-a6d6ec3db74e",
+    "jobId": "b688eb75-0842-4845-b21d-c73b3ffdecaf",
+    "sourceUrl": "https://www.theaevionlabs.com/",
+    "status": "applied",
+    "title": "Aevion Labs",
+    "summary": "See it working. Then fund it.",
+    "pageCount": 6,
+    "assetCount": 17,
+    "serviceCount": 10,
+    "result": {
+      "sourceUrl": "https://www.theaevionlabs.com/",
+      "name": "Aevion Labs",
+      "tagline": "See it working. Then fund it.",
+      "description": "Manchester studio for company sites, SaaS products, ecommerce, and internal tools. You see a working prototype before the rest of the budget unlocks.",
+      "phone": "",
+      "email": "hello@theaevionlabs.com",
+      "address": "Manchester · sites, SaaS, tools",
+      "postcode": "U003CP",
+      "logoUrl": "",
+      "faviconUrl": "https://www.theaevionlabs.com/favicon.ico?favicon.01-3.3hl4xa07.ico",
+      "heroUrl": "https://theaevionlabs.com/icon.svg",
+      "social": {
+        "youtube": "https://www.youtube.com/"
+      },
+      "brandColors": [
+        "#4285f4",
+        "#ffc107",
+        "#ff3d00",
+        "#4caf50",
+        "#1976d2"
+      ],
+      "services": [
+        {
+          "name": "Every week without a working system costs you the same traffic twice.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "Good products are engineering, not decoration.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "See it working.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "The risk comes out before the money does.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "Prototype first",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "One team",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "You own it",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "The stack the product runs on.",
+          "description": "A working prototype first. The rest of the budget stays locked.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "What it is",
+          "description": "Google is often already in the room: a login, a map, a measurement plan. We use the pieces that help the product, and we leave the rest out.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "What it does",
+          "description": "Google is often already in the room: a login, a map, a measurement plan. We use the pieces that help the product, and we leave the rest out.",
+          "imageUrl": "",
+          "include": true
+        }
+      ],
+      "reviews": [],
+      "pages": [
+        {
+          "url": "https://www.theaevionlabs.com/",
+          "title": "Aevion Labs | Sites, SaaS, and tools",
+          "type": "home",
+          "heading": "See it working. Then fund it.",
+          "excerpt": "Manchester studio for company sites, SaaS products, ecommerce, and internal tools. You see a working prototype before the rest of the budget unlocks.",
+          "body": "Manchester · sites, SaaS, toolsPaid ads land on a site nobody can update. A SaaS idea sits in a deck. The shop still runs on a theme you cannot trust. An internal tool is still a spreadsheet. The loss is quiet, and it compounds.We plan, design, and ship the product you can put in front of customers or your team. Company websites, ecommerce, SaaS, and tools built for how you actually work. One studio in Manchester. You see it in the browser before the rest of the spend unlocks.You do not buy the full build until you have seen the system working.You do not buy the full build until you have seen the system working.Studio still · 01 / 01BaseManchesterModelPrototype firstOwnershipYour repositoryAevion Labs is a Manchester studio built on the belief that a site, a store, or a tool is never just a coat of paint. It is the first and most persistent thing a company communicates.We work slowly and selectively. We settle the brief before anyone opens a design file, and we build systems that still hold after the project ends. You see the product in the browser before the rest of the spend unlocks.PrototypeSee it working.A clickable system first. The rest of the budget stays locked until you have used it.You judge the product in the browser. Then the remaining spend unlocks.01Prototype firstYou use the system before the rest of the budget unlocks.01 / 0302One teamStrategy, design, and engineering stay in the same room.02 / 0303You own itCode, CMS, domain, and hosting sit in your name.03 / 03The rest of the spend waits.See the process →PlatformsThe stack the product runs on.Next.js, Stripe, and the CMS your team already uses. You own the keys.GoogleGoogle sign-in when it is the right default, not the only option.Google CloudHosting and jobs for products that already live in a Google organisation.Google MapsStore locators that filter by service, not just by pin.GeminiDrafting and summarising inside a CMS or an internal tool.YouTubeProduct films on a company site that do not wreck Core Web Vitals.OpenAIFirst drafts in a CMS or a support queue.ChromeCore Web Vitals measured in Chrome, on the pages that convert.FirebaseAuth for a first SaaS prototype your team can click this week.MicrosoftCompany sites and portals that sign in with the work account.AzureHosting for products that must stay inside an existing Azure estate.AWSStatic and server-rendered sites that stay fast at the edge.Google AnalyticsConversion events for forms, pricing, and checkout.AppleSites and web apps that feel finished in Safari.App StoreCompanion apps for a SaaS people already use in the browser.XcodeCompanion iOS apps for a product that already has a web home.AndroidCompany sites and SaaS that stay fast on mid-range Android.AnthropicLong-document summaries inside an internal tool.ClaudeRewrites and summaries in a publishing workflow.TypeScriptTyped JavaScript so the product stays changeable..NETCompany tools that must sit next to existing C# services.JavaScriptInteractive product surfaces that stay readable in the source.PythonImports and reports that used to live in a spreadsheet.HTML5Marketing pages that stay readable with JavaScript off.CSSDesign systems that ship as CSS variables the app already uses.SwiftCompanion apps for a SaaS people already use in the browser.KotlinCompanion Android apps for a product that already has a site.GoWebhooks and workers for billing or import.ReactThe interface layer for sites, SaaS, and tools.Next.jsThe framework we ship production sites on.Node.jsRoute handlers and jobs beside a Next.js app.Tailwind CSSThe CSS system that keeps pages consistent.Vue.jsNew sections on a Vue estate you are not ready to leave.NuxtCompany sites on a Vue team.SvelteCampaign pages with a hard weight budget.PostgreSQLThe database the product actually owns.PrismaSaaS and tools where every query should be typed.WebflowCampaign and brochure sites a marketing team will own.FramerLaunch and campaign pages with real motion.WordPressCompany sites with editors who al",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/google",
+          "title": "Aevion Labs | Google",
+          "type": "home",
+          "heading": "Google",
+          "excerpt": "Google is often already in the room: a login, a map, a measurement plan. We use the pieces that help the product, and we leave the rest out.",
+          "body": "What it isGoogle is the company behind Search, Gmail, Android, Maps, YouTube, Chrome, and the advertising system that still funds a large share of the open web. For a product team it is less one tool and more a set of defaults people already have: an account, a map, a browser, a way to find a page.Alphabet also sells the cloud, analytics, maps APIs, and AI models that sit behind those consumer products. The public face is a search box. The working face is a catalogue of APIs you can wire into a site or an app without asking the user to learn a new world.What it doesTeams reach for Google when a user already lives there. Sign in with a Google account so a first visit is not another password. Embed a map people already know how to pinch. Tag journeys so marketing can see which pages convert.It is also the default stack for Android apps, YouTube embeds, Chrome testing, and Workspace mail. The useful move is to pick the one or two APIs that remove friction, then keep the rest of the product on a repository you own rather than wrapping the brand in Google chrome.Why we use itSearch, accounts, and the defaults people already trust.We start from the conversion map, not from a partner checklist. If a visitor already has a Google account, we can offer it. If the business lives on the high street, we can put maps on the locator. If paid traffic is part of the plan, we name events after the steps that make money. The rest of the product stays on a repository you own, with a CMS your team can publish from.Google should feel like furniture in the product, not like the landlord.Built on itYouTubeGoogle's own video product, and the largest public video library on the web.AndroidThe mobile operating system licensed to Samsung, Pixel, and most of the world's phones.The New York TimesRuns a substantial part of its digital operation on Google Cloud.SpotifyHas used Google Cloud for back-end and data work at global scale.UberLaunched its locator on Google Maps, the map people already trusted.NextGoogle Cloud",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/google-cloud",
+          "title": "Aevion Labs | Google Cloud",
+          "type": "home",
+          "heading": "Google Cloud",
+          "excerpt": "Some teams already run on Google Cloud. We meet them there, or we keep the product portable so you are not paying rent on a decision you have not made yet.",
+          "body": "What it isGoogle Cloud is Alphabet's public cloud: compute, Kubernetes, object storage, BigQuery, Cloud Run, and the Vertex AI layer that serves Gemini. It sits next to Amazon Web Services and Microsoft Azure as one of the three places a company can rent machines, databases, and managed services instead of owning a data centre.The pitch is not only servers. It is data tools that talk to the rest of Google, identity through Cloud IAM, and a global network Google already had to build for Search and YouTube. For a product team it is an account, a region, a bill, and a set of services you should be able to name.What it doesCompanies use Google Cloud to host applications, run containers, store files, query warehouses, and train or call models without standing up their own racks. Startups often land on Cloud Run or Firebase. Larger teams land on GKE, BigQuery, and a VPC they can explain to security.We put it in a build when the tenancy already exists, when BigQuery is the warehouse, or when Vertex is the model host. We do not move a healthy AWS or Azure estate onto Google Cloud because a slide said multi-cloud.Why we use itInfrastructure when the product has to live on Google.We design the journeys first. Then we place hosting, files, and jobs on the smallest set of Google Cloud services that will carry them. Finance should be able to read the invoice. Your team should be able to rotate a key without us. Preview URLs still exist, even inside a Google organisation, so sign-off stays in the browser.If Google Cloud is not already the house, we will say so, and we will not invent a reason to move.Built on itSpotifyA long-standing Google Cloud customer for serving and data infrastructure.PayPalRuns substantial payment infrastructure on Google Cloud.The New York TimesUses Google Cloud to publish and analyse at newspaper scale.TargetHas described Google Cloud as part of its retail technology stack.SnapUses Google Cloud to serve Snapchat to hundreds of millions of people.NextGoogle Maps",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/google-maps",
+          "title": "Aevion Labs | Google Maps",
+          "type": "home",
+          "heading": "Google Maps",
+          "excerpt": "A store finder or a delivery map should load with the rest of the interface. We treat Maps as a component, with a budget, not as a widget dumped in a sidebar.",
+          "body": "What it isGoogle Maps is the mapping platform most people already know how to use. Under the consumer app sits a set of APIs: map tiles, geocoding, Places search, directions, distance matrix, and Street View. Those APIs are how a store locator, a delivery tracker, or a job map gets a map that does not look like a demo.It is not the only mapping stack. Mapbox, Apple Maps, and OpenStreetMap exist for a reason. Google Maps wins when the user already trusts the pins, the traffic, and the search box, and when the product can pay for the requests.What it doesProduct teams embed Google Maps to show where something is, how to get there, and what sits nearby. A clinic finder, a van on a route, a branch list with filters: the map is the interface for place, not a decorative tile in a footer.The work is the journey around the map. Search, filters, a list that still works when the tile set is slow, and a key that lives in your project so the invoice is yours. A default embed with no fallback is not a locator.Why we use itMaps that stay part of the page, not a second product.Sometimes Mapbox is the better engine for a custom style. Sometimes Google Maps is already in the contract and the Places API is what the team needs. We choose in the brief, then we budget tiles, script, and a fallback list so a blocked key does not kill the page. The locator is a page your CMS can still edit.If the map is the first thing you notice, we have not finished the interface.Built on itUberUsed Google Maps to put cars and riders on a map people already understood.LyftHas used Google's mapping and location APIs in the passenger app.AirbnbShowed listings on Google Maps so a stay could be judged by the street, not only the photos.The Home DepotUses store maps and location search so a shopper can find a branch.FedExHas used Google Maps Platform for tracking and routing surfaces.NextGemini",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/gemini",
+          "title": "Aevion Labs | Gemini",
+          "type": "home",
+          "heading": "Gemini",
+          "excerpt": "Gemini is useful when it shortens a real task: a draft, a summary, a search across your own content. We wire it to that task and keep a human in the loop.",
+          "body": "What it isGemini is Google's family of generative models: text, image, audio, and code, served through Gemini on the web, through Workspace, through Android, and through Vertex AI for companies that want a contract and a region. It is the model Google put behind Search's AI features and behind the assistant on Pixel.It is not a product on its own. It is a model you call, with prompts, limits, and a fallback when the API is slow. The useful question is which step in the work it should draft, classify, or summarise, not whether the homepage needs a chat widget.What it doesTeams use Gemini to draft copy, summarise documents, classify tickets, extract fields from messy text, and assist inside tools people already open. Workspace users meet it in Gmail and Docs. Product teams meet it as an API with a key, a log, and a spend cap.We put it on a named step in the interface. The page still submits when the model is down. Prompts live in the repository. The Google Cloud project stays in your name.Why we use itA model in the product, not a chat bolted on the side.The interface is the product. Gemini fills a field or a panel. If Google Cloud is already the house, we can keep the call in that estate. If it is not, we still use your keys. The prototype includes the assist and the off switch. The rest of the budget waits until you have used both.If the flow does not work when Gemini is down, we have designed the wrong product.Built on itGoogle SearchGemini sits behind Google's own AI answers and the Gemini app.Google WorkspaceDraft and summarise features in Gmail, Docs, and Sheets call Gemini.AndroidPixel and Android assistants use Gemini as the on-device and cloud model.SamsungHas built Gemini into Galaxy phones as a Google partner.Vertex AI customersBanks, retailers, and publishers call Gemini through Google Cloud rather than the consumer app.NextYouTube",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/with/youtube",
+          "title": "Aevion Labs | YouTube",
+          "type": "home",
+          "heading": "YouTube",
+          "excerpt": "YouTube is how a lot of work gets explained. We embed it so the site still loads, the type still holds, and the video is a chapter, not the whole page.",
+          "body": "What it isYouTube is Google's video platform: upload, host, recommend, advertise, and stream live. It is the place most people already go to watch a talk, a review, a tutorial, or a match. For a company it is a channel, an embed, and sometimes a full watch experience that still lives on youtube.com.It is also an API. The Data API, IFrame player, and analytics let a site list uploads, play a video without sending people into a stranger's recommended sidebar, and measure what was actually watched. The brand is the play button. The product is a library with a URL for every cut.What it doesBrands use YouTube to publish films, product films, talks, and support clips that would crush a marketing site if they were self-hosted. A landing page embeds the official player. A newsroom lists a playlist. A campaign measures views without pretending the site is a streaming service.We embed with intent: the right video, no autoplay surprise, a layout that still reads if the player is blocked, and a channel the client owns. We do not build a fake YouTube on a brochure site.Why we use itVideo that belongs on the page, not a tab people never open.Lazy loads, privacy-aware embeds, and CMS entries so your team can swap a film without a developer. Product films, course pages, and internal explainers all use the same pattern. If the brief is really a channel strategy, we will say that is a different job from a company site.The headline and the action stay first. The film loads when someone chooses it.Built on itYouTube itselfGoogle's own product, and the default public video library.The White HousePublishes briefings and addresses on an official YouTube channel.NASAStreams launches and mission films to a public that already has the app.VEVOThe music industry's main licensed window on YouTube.Premier League clubsUse YouTube as the public highlight and behind-the-scenes channel.NextOpenAI",
+          "include": true
+        }
+      ],
+      "images": [
+        {
+          "url": "https://theaevionlabs.com/icon.svg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/home-intro.jpg",
+          "alt": "A desk monitor and keyboard lit by a single lamp",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/home-about.jpg",
+          "alt": "A blade of hard light falling across a studio wall",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-hero.jpg",
+          "alt": "Layered translucent panels receding into shadow",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-2.jpg",
+          "alt": "An electrical cord coiled on a bare floor",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/orbit-hero.jpg",
+          "alt": "A phone and laptop side by side, screens glowing",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-1.jpg",
+          "alt": "Sheets of tracing paper overlapping on a light table",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/baseplate-hero.jpg",
+          "alt": "A grid of identical modules with one raised out of alignment",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-3.jpg",
+          "alt": "Sheets of frosted acrylic stacked on concrete",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-hero.jpg",
+          "alt": "A bolt on concrete casting a long shadow",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-3.jpg",
+          "alt": "Stacked raw paper sheets under raking light",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-hero.jpg",
+          "alt": "Printed page layouts pinned across a studio wall",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/prism-3.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/folio-3.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/home-about.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/hero-4.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://theaevionlabs.com/images/forge-1.jpg",
+          "alt": "Hero",
+          "kind": "hero",
+          "include": true
+        }
+      ],
+      "provenance": [
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/",
+          "importedAt": "2026-09-18T10:54:31.235Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/google",
+          "importedAt": "2026-09-18T10:54:31.570Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/google-cloud",
+          "importedAt": "2026-09-18T10:54:31.902Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/google-maps",
+          "importedAt": "2026-09-18T10:54:33.302Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/gemini",
+          "importedAt": "2026-09-18T10:54:33.927Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/with/youtube",
+          "importedAt": "2026-09-18T10:54:34.315Z",
+          "contentType": "home"
+        }
+      ],
+      "robotsAllowed": true,
+      "engine": "readability+linkedom+jsonld"
+    },
+    "createdAt": "2026-09-18T10:54:34.476Z",
+    "updatedAt": "2026-09-18T10:56:20.608Z",
+    "appliedAt": "2026-09-18T10:56:20.608Z"
+  },
+  {
     "id": "fb614f29-6d1c-4f0c-84f0-b81fe4a1457b",
     "projectId": "e8653693-2725-4e99-aa32-fee06f9b2e1d",
     "jobId": "8347efff-3f60-450a-a7e7-fa9fd1888ce3",

@@ -19,8 +19,8 @@
   --sage: #ffffff;
   --color-white: #ffffff;
   --color-black: #111111;
-  --section-x: clamp(1.25rem, 4vw, 3.25rem);
-  --section-y: clamp(5rem, 11vw, 8.75rem);
+  --section-x: clamp(1rem, 4vw, 3.25rem);
+  --section-y: clamp(3.75rem, 11vw, 8.75rem);
   --section-max: 72.5rem;
 }
 
@@ -118,6 +118,24 @@ body {
     background-color 0.28s ease,
     color 0.28s ease,
     transform 0.28s ease;
+}
+
+@media (max-width: 479px) {
+  .site-display {
+    max-width: none;
+    font-size: clamp(1.85rem, 9.5vw, 2.65rem);
+  }
+
+  #site-hero .site-btn {
+    width: 100%;
+    max-width: 20rem;
+  }
+
+  #site-hero .mt-12 {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .site-btn:hover {

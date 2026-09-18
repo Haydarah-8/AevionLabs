@@ -1130,3 +1130,44 @@ a.ae-rail-btn {
   font-size: 0.72rem;
   margin-right: 2px;
 }
+
+@media (max-width: 900px) {
+  .ae-body {
+    grid-template-columns: 44px minmax(0, 1fr) !important;
+  }
+
+  .aevion-studio.is-left-open .ae-body {
+    grid-template-columns: 44px minmax(0, 1fr) !important;
+  }
+
+  .ae-left {
+    position: fixed !important;
+    z-index: 40;
+    top: 48px;
+    bottom: 48px;
+    left: 44px;
+    width: min(20rem, 88vw);
+    max-width: 88vw;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 48px rgba(0, 0, 0, 0.45);
+  }
+
+  .ae-right {
+    display: none !important;
+  }
+
+  .ae-top {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding-inline: 0.5rem;
+  }
+
+  .ae-top .ae-btn.ghost {
+    display: none;
+  }
+
+  .ae-devices {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+}

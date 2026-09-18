@@ -24,9 +24,9 @@ const BLEND = {
 };
 
 const headlineClass =
-  "text-[clamp(2.85rem,7.4vw,6rem)] font-normal leading-[1.05] tracking-[-0.04em]";
+  "text-[clamp(2.15rem,8.2vw,6rem)] font-normal leading-[1.05] tracking-[-0.04em]";
 const bodyClass =
-  "mx-auto mt-8 max-w-[36rem] text-[1.0625rem] font-light leading-[1.75] text-white/80 sm:mt-10 sm:text-[1.1875rem]";
+  "mx-auto mt-6 max-w-[36rem] text-[1rem] font-light leading-[1.7] text-white/80 sm:mt-10 sm:text-[1.1875rem]";
 
 function isTalkHref(href?: string) {
   return !href || href === "#talk" || href === "/about";
@@ -195,12 +195,12 @@ export function Hero({
         />
       ) : null}
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[var(--section-max)] flex-1 flex-col items-center justify-center px-[var(--section-x)] pt-32 pb-16 text-center">
+      <div className="relative z-10 mx-auto flex w-full max-w-[var(--section-max)] flex-1 flex-col items-center justify-center px-[var(--section-x)] pt-[max(6.5rem,env(safe-area-inset-top))] pb-16 text-center sm:pt-32">
         <motion.p
           initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="mb-7 text-[0.6875rem] font-medium uppercase tracking-[0.22em] text-white/55"
+          className="mb-5 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-white/55 sm:mb-7 sm:text-[0.6875rem] sm:tracking-[0.22em]"
         >
           {HERO_KICKER}
         </motion.p>
@@ -216,7 +216,7 @@ export function Hero({
           initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.45 }}
-          className="mt-12 flex flex-wrap items-center justify-center gap-3"
+          className="mt-10 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:mt-12 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center"
         >
           {talk ? (
             <TalkTrigger className="site-btn site-btn-light">

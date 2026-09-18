@@ -46,7 +46,7 @@
 @media screen and (max-width: 767px) {
   :root {
     --size-container-ideal: 620;
-    --size-container-min: 480px;
+    --size-container-min: 0px;
     --size-container-max: 767px;
   }
 }
