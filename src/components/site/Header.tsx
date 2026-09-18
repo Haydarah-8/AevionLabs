@@ -8,7 +8,6 @@ import { useLenis } from "lenis/react";
 import { EASE } from "@/lib/utils";
 import { HoverGroup, SlideUpHover } from "@/components/anim/SlideUpHover";
 import { LinkBtn } from "@/components/anim/LinkBtn";
-import { splitLines } from "@/components/anim/text";
 import { useContactModal } from "@/components/chrome/ContactModal";
 import { FALLBACK_NAV } from "@/lib/cms/constants";
 import type { NavItem } from "@/lib/cms/types";
@@ -59,34 +58,20 @@ export function Header({ items }: { items?: NavItem[] }) {
     setMenuOpen(true);
     lenisRef.current?.stop();
     document.documentElement.style.overflow = "hidden";
+    document.body.classList.add("nav-menu-open");
 
     const menu = menuRef.current;
-    if (!menu) return;
+    if (!menu) {
+      animating.current = false;
+      return;
+    }
     menu.style.display = "flex";
     animate(
       menu,
-      { clipPath: ["inset(0 0 100% 0)", "inset(0 0 0% 0)"] },
-      { duration: 0.8, ease: EASE.power4inOut },
+      { opacity: [0, 1] },
+      { duration: 0.35, ease: EASE.power2out },
     ).then(() => {
       animating.current = false;
-    });
-
-    const links = menu.querySelectorAll<HTMLElement>(".nav_menu_link_text");
-    links.forEach((link, i) => {
-      if (!link.dataset.split) {
-        link.dataset.split = "1";
-        splitLines(link);
-      }
-      const lines = link.querySelectorAll<HTMLElement>(".split-line");
-      if (!lines.length) return;
-      lines.forEach((line) => {
-        line.style.transform = "translateY(120%)";
-      });
-      animate(
-        lines,
-        { transform: ["translateY(120%)", "translateY(0%)"] },
-        { duration: 0.8, ease: EASE.power4out, delay: 0.3 + i * 0.08 },
-      );
     });
   };
 
@@ -95,15 +80,17 @@ export function Header({ items }: { items?: NavItem[] }) {
     if (!menu) return;
     if (animating.current && !instant) return;
     setMenuOpen(false);
+    document.body.classList.remove("nav-menu-open");
     if (instant) {
       menu.style.display = "none";
-      menu.style.clipPath = "inset(0 0 100% 0)";
+      menu.style.opacity = "0";
+      animating.current = false;
     } else {
       animating.current = true;
       animate(
         menu,
-        { clipPath: ["inset(0 0 0% 0)", "inset(0 0 100% 0)"] },
-        { duration: 0.5, ease: EASE.power4inOut },
+        { opacity: [1, 0] },
+        { duration: 0.28, ease: EASE.power2inOut },
       ).then(() => {
         menu.style.display = "none";
         animating.current = false;
@@ -120,11 +107,12 @@ export function Header({ items }: { items?: NavItem[] }) {
 
   useEffect(() => {
     closeMenu(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- close on route change only
   }, [pathname]);
 
   useEffect(() => {
     const onResize = () => {
-      if (window.innerWidth >= 768 && menuOpen) closeMenu();
+      if (window.innerWidth >= 768 && menuOpen) closeMenu(true);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -139,13 +127,14 @@ export function Header({ items }: { items?: NavItem[] }) {
   }, [menuOpen]);
 
   return (
-    <div className="site-chrome">
+    <div className={`site-chrome${menuOpen ? " is-menu-open" : ""}`}>
       <div className="navbar_container u-container">
         <div className="navbar_wrap grid-col-12" data-navbar="">
           <Link
             href="/"
             className="nav_logo_link w-inline-block"
             aria-label="Aevion Labs home"
+            onClick={() => closeMenu(true)}
           >
             <HoverGroup>
               <SlideUpHover>
@@ -166,7 +155,9 @@ export function Header({ items }: { items?: NavItem[] }) {
               >
                 <HoverGroup>
                   <SlideUpHover>
-                    <span className="nav_link_text u-text-base">{item.label}</span>
+                    <span className="nav_link_text u-text-base">
+                      {item.label}
+                    </span>
                   </SlideUpHover>
                 </HoverGroup>
               </Link>
@@ -180,24 +171,19 @@ export function Header({ items }: { items?: NavItem[] }) {
           </div>
 
           <div className="mobile_btns_wrap">
-            <LinkBtn onClick={goTalk} lineClassName="navbar">
-              Get in touch
-            </LinkBtn>
             <button
               type="button"
-              className="btn_btn"
+              className={`nav_burger${menuOpen ? " is-open" : ""}`}
               aria-expanded={menuOpen}
               aria-controls="site-nav-menu"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               onClick={() => (menuOpen ? closeMenu() : openMenu())}
             >
-              <HoverGroup hovered={menuOpen}>
-                <SlideUpHover className="link_btn_text u-text-base" clone={<>Close</>}>
-                  Menu
-                </SlideUpHover>
-              </HoverGroup>
-              <div className="link_btn_line navbar" />
-              <div className="link_btn_line is-2 navbar" />
+              <span className="nav_burger_lines" aria-hidden>
+                <span />
+                <span />
+                <span />
+              </span>
             </button>
           </div>
         </div>
@@ -207,21 +193,32 @@ export function Header({ items }: { items?: NavItem[] }) {
         ref={menuRef}
         id="site-nav-menu"
         className="nav_menu"
-        style={{ display: "none", clipPath: "inset(0 0 100% 0)" }}
+        style={{ display: "none", opacity: 0 }}
+        aria-hidden={!menuOpen}
       >
         <div className="nav_menu_inner_wrap">
+          <p className="nav_menu_kicker">Menu</p>
           <nav className="nav_menu_links" aria-label="Mobile">
-            {menuLinks.map((item) => (
+            {menuLinks.map((item, index) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="nav_menu_link"
+                className={`nav_menu_link${navActive(pathname, item.href) ? " is-active" : ""}`}
                 onClick={() => closeMenu(true)}
               >
-                <div className="nav_menu_link_text">{item.label}</div>
+                <span className="nav_menu_index">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="nav_menu_link_text">{item.label}</span>
               </Link>
             ))}
           </nav>
+          <div className="nav_menu_footer">
+            <button type="button" className="nav_menu_cta" onClick={goTalk}>
+              Let&apos;s talk
+            </button>
+            <p className="nav_menu_place">Manchester · Sites, SaaS, tools</p>
+          </div>
         </div>
       </div>
     </div>

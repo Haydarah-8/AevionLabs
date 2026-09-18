@@ -31,11 +31,11 @@ export function ServiceOfferings({
         </div>
       </div>
 
-      <ol className="mx-auto mt-16 m-0 w-full max-w-[var(--section-max)] list-none px-[var(--section-x)] pb-[var(--section-y)] lg:mt-20">
+      <ol className="mx-auto mt-12 m-0 w-full max-w-[var(--section-max)] list-none px-[var(--section-x)] pb-[var(--section-y)] sm:mt-16 lg:mt-20">
         {steps.map((step, index) => (
           <li
             key={step.title}
-            className="grid gap-3 border-t border-black/15 py-12 lg:grid-cols-[4.75rem_minmax(0,0.9fr)_minmax(0,1.2fr)] lg:items-start lg:gap-12 lg:py-16"
+            className="grid gap-2 border-t border-black/15 py-9 sm:gap-3 sm:py-12 lg:grid-cols-[4.75rem_minmax(0,0.9fr)_minmax(0,1.2fr)] lg:items-start lg:gap-12 lg:py-16"
           >
             <p className="m-0 text-[0.75rem] font-medium tracking-[0.16em] text-[#6a6a6a]">
               {String(index + 1).padStart(2, "0")}

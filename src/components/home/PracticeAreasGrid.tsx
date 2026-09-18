@@ -61,13 +61,13 @@ export function PracticeAreasGrid({
         ) : null}
       </div>
 
-      <div className="mx-auto mt-12 grid w-full max-w-[var(--section-max)] px-[var(--section-x)] sm:grid-cols-2 lg:mt-16">
+      <div className="mx-auto mt-10 grid w-full max-w-[var(--section-max)] px-[var(--section-x)] sm:mt-12 sm:grid-cols-2 lg:mt-16">
         {cards.map((area) => (
           <Link
             key={area.id}
             id={area.id}
             href={area.href || serviceHref(area.id)}
-            className="group scroll-mt-24 block border-t border-black/15 py-8 no-underline sm:px-8 sm:odd:pl-0 sm:even:border-l sm:even:pr-0 lg:py-10"
+            className="group scroll-mt-24 block border-t border-black/15 py-7 no-underline sm:px-8 sm:py-8 sm:odd:pl-0 sm:even:border-l sm:even:pr-0 lg:py-10"
           >
             {TAGS[area.id] ? (
               <p className="m-0 text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-[#6a6a6a]">

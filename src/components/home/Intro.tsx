@@ -90,7 +90,7 @@ export function Intro({
         </div>
         <RevealLines
           as="h2"
-          className="mt-10 max-w-[18ch] whitespace-pre-line text-[clamp(2.7rem,6vw,5.4rem)] font-normal leading-[0.94] tracking-[-0.05em] text-[#111]"
+          className="site-section-display mt-8 max-w-none whitespace-pre-line text-[clamp(2rem,9vw,5.4rem)] font-normal leading-[0.94] tracking-[-0.05em] text-[#111] sm:mt-10 sm:max-w-[18ch] sm:text-[clamp(2.7rem,6vw,5.4rem)]"
         >
           {heading}
         </RevealLines>
