@@ -94,6 +94,11 @@ body {
   color: inherit;
 }
 
+.hero-cta {
+  width: min(100%, 16.5rem);
+  margin-inline: auto;
+}
+
 @media (max-width: 767px) {
   .site-display {
     max-width: none;
@@ -135,13 +140,6 @@ body {
     background-color 0.28s ease,
     color 0.28s ease,
     transform 0.28s ease;
-}
-
-@media (max-width: 479px) {
-  .site-btn {
-    width: 100%;
-    max-width: 22rem;
-  }
 }
 
 .site-btn:hover {

@@ -9,6 +9,7 @@ import {
   logoFlatMark,
   type HeroLogo,
 } from "@/components/home/ClientLogos";
+import { DragMarquee } from "@/components/home/DragMarquee";
 import { LinkBtn } from "@/components/anim/LinkBtn";
 import {
   TOOL_CARDS,
@@ -39,6 +40,7 @@ function Card({ logo, use }: { logo: HeroLogo; use: string }) {
       href={withHref(logo.name)}
       className={`tool-card${logo.painted ? " is-painted" : ""}`}
       style={{ "--logo-color": hoverColor(logo.color) } as CSSProperties}
+      draggable={false}
     >
       <span className="tool-card-logo">
         {logo.painted && Paint ? (
@@ -62,18 +64,24 @@ function Card({ logo, use }: { logo: HeroLogo; use: string }) {
 
 function Track({ staticList = false }: { staticList?: boolean }) {
   const row = staticList ? [...LOGOS] : [...LOGOS, ...LOGOS];
+  const cards = row.map((logo, index) => (
+    <Card key={`${logo.name}-${index}`} logo={logo} use={cardCopy(logo.name)} />
+  ));
+
+  if (staticList) {
+    return (
+      <div className="capability-marquee-track is-cards is-static">{cards}</div>
+    );
+  }
+
   return (
-    <div
-      className={`capability-marquee-track is-cards${staticList ? " is-static" : ""}`}
+    <DragMarquee
+      className="capability-marquee-drag is-drag"
+      trackClassName="capability-marquee-track is-cards is-drag"
+      speed={24}
     >
-      {row.map((logo, index) => (
-        <Card
-          key={`${logo.name}-${index}`}
-          logo={logo}
-          use={cardCopy(logo.name)}
-        />
-      ))}
-    </div>
+      {cards}
+    </DragMarquee>
   );
 }
 

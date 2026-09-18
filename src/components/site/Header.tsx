@@ -197,19 +197,15 @@ export function Header({ items }: { items?: NavItem[] }) {
         aria-hidden={!menuOpen}
       >
         <div className="nav_menu_inner_wrap">
-          <p className="nav_menu_kicker">Menu</p>
           <nav className="nav_menu_links" aria-label="Mobile">
-            {menuLinks.map((item, index) => (
+            {menuLinks.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`nav_menu_link${navActive(pathname, item.href) ? " is-active" : ""}`}
                 onClick={() => closeMenu(true)}
               >
-                <span className="nav_menu_index">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="nav_menu_link_text">{item.label}</span>
+                {item.label}
               </Link>
             ))}
           </nav>
@@ -217,7 +213,6 @@ export function Header({ items }: { items?: NavItem[] }) {
             <button type="button" className="nav_menu_cta" onClick={goTalk}>
               Let&apos;s talk
             </button>
-            <p className="nav_menu_place">Manchester · Sites, SaaS, tools</p>
           </div>
         </div>
       </div>

@@ -216,20 +216,23 @@ export function Hero({
           initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.45 }}
-          className="mt-10 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:mt-12 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center"
+          className="mt-10 flex w-full flex-col items-center justify-center gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:justify-center"
         >
           {talk ? (
-            <TalkTrigger className="site-btn site-btn-light">
+            <TalkTrigger className="site-btn site-btn-light hero-cta">
               {ctaLabel}
             </TalkTrigger>
           ) : (
-            <Link href={ctaHref} className="site-btn site-btn-light text-white">
+            <Link
+              href={ctaHref}
+              className="site-btn site-btn-light hero-cta text-white"
+            >
               {ctaLabel}
             </Link>
           )}
           <Link
             href={HERO_SECONDARY_HREF}
-            className="site-btn site-btn-light text-white"
+            className="site-btn site-btn-light hero-cta text-white"
           >
             {HERO_SECONDARY_LABEL}
           </Link>

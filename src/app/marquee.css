@@ -44,6 +44,14 @@
   animation-play-state: paused;
 }
 
+.client-logos-marquee.is-drag .client-logos-marquee-track {
+  animation: none;
+}
+
+.client-logos-marquee.is-drag:hover .client-logos-marquee-track {
+  animation-play-state: running;
+}
+
 .client-logo {
   display: flex;
   align-items: center;
@@ -274,6 +282,11 @@
 .capability-marquee-track.is-cards:has(.tool-card:hover),
 .capability-marquee-track.is-cards:has(.tool-card:focus-visible) {
   animation-play-state: paused;
+}
+
+.capability-marquee-track.is-drag,
+.capability-marquee-drag.is-drag .capability-marquee-track {
+  animation: none;
 }
 
 .tool-card {

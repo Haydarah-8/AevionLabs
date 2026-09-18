@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
+import { DragMarquee } from "@/components/home/DragMarquee";
 import { topicSlug, withHref } from "@/lib/topic-slug";
 import type { SimpleIcon } from "simple-icons";
 import {
@@ -223,46 +224,49 @@ export function LogoMarquee({ tone = "light" }: { tone?: "light" | "hero" }) {
   const hero = tone === "hero";
 
   return (
-    <div className={`client-logos-marquee${hero ? " is-hero" : ""}`}>
-      <div className="client-logos-marquee-track">
-        {LOOP.map((logo, i) => {
-          const mark = (
-            <>
-              <span className="sr-only">{logo.name}</span>
-              {hero && logo.Paint ? (
-                <>
-                  <span className="client-logo-paint" aria-hidden>
-                    <logo.Paint />
-                  </span>
-                  <span className="client-logo-flat">{logoFlatMark(logo)}</span>
-                </>
-              ) : hero ? (
-                (logo.mark ?? logo.svg)
-              ) : (
-                logo.svg
-              )}
-            </>
-          );
+    <DragMarquee
+      className={`client-logos-marquee is-drag${hero ? " is-hero" : ""}`}
+      trackClassName="client-logos-marquee-track"
+      speed={hero ? 30 : 38}
+    >
+      {LOOP.map((logo, i) => {
+        const mark = (
+          <>
+            <span className="sr-only">{logo.name}</span>
+            {hero && logo.Paint ? (
+              <>
+                <span className="client-logo-paint" aria-hidden>
+                  <logo.Paint />
+                </span>
+                <span className="client-logo-flat">{logoFlatMark(logo)}</span>
+              </>
+            ) : hero ? (
+              (logo.mark ?? logo.svg)
+            ) : (
+              logo.svg
+            )}
+          </>
+        );
 
-          const style = {
-            color: hero ? undefined : logo.color,
-            "--logo-color": hero ? hoverColor(logo.color) : logo.color,
-          } as CSSProperties;
+        const style = {
+          color: hero ? undefined : logo.color,
+          "--logo-color": hero ? hoverColor(logo.color) : logo.color,
+        } as CSSProperties;
 
-          return (
-            <Link
-              key={`${logo.name}-${i}`}
-              href={withHref(logo.name)}
-              className={`client-logo${logo.painted ? " is-painted" : ""}`}
-              style={style}
-              title={logo.name}
-            >
-              {mark}
-            </Link>
-          );
-        })}
-      </div>
-    </div>
+        return (
+          <Link
+            key={`${logo.name}-${i}`}
+            href={withHref(logo.name)}
+            className={`client-logo${logo.painted ? " is-painted" : ""}`}
+            style={style}
+            title={logo.name}
+            draggable={false}
+          >
+            {mark}
+          </Link>
+        );
+      })}
+    </DragMarquee>
   );
 }
 
