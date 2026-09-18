@@ -14,7 +14,7 @@ export default function AdminLayout({
 }) {
   return (
     <AdminProviders>
-      <div className="admin-panel flex h-dvh min-h-0 flex-col overflow-hidden bg-[#09090b] text-zinc-100 font-sans antialiased">
+      <div className="admin-panel flex h-dvh min-h-0 flex-col overflow-hidden bg-[#0a0a0f] text-zinc-100 font-sans antialiased">
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {children}
         </div>

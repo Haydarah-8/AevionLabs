@@ -4,10 +4,10 @@
 
 html:has(.admin-panel),
 body:has(.admin-panel) {
-  background-color: #09090b !important;
+  background-color: #0a0a0f !important;
   color-scheme: dark !important;
-  --background: #09090b;
-  --foreground: #f4f4f5;
+  --background: #0a0a0f;
+  --foreground: #ececec;
 }
 
 html:has(.admin-panel) .bn-container,
@@ -44,23 +44,25 @@ html:has(.admin-panel) .bn-block-content[data-content-type="heading"] {
 html:has(.admin-panel) .bn-root,
 html:has(.admin-panel) .bn-root[data-color-scheme="light"],
 html:has(.admin-panel) .bn-root[data-color-scheme="dark"] {
-  --bn-colors-editor-background: #09090b;
+  --bn-colors-editor-background: #0a0a0f;
   --bn-colors-editor-text: #ececec;
   --bn-font-family: var(--font-sans), system-ui, sans-serif;
 }
 
+/* Remap leftover light utility classes inside admin to dark surfaces */
 .admin-panel
   .bg-white:not(button):not([type="submit"]):not(.factory-site):not(
     .factory-site *
   ) {
-  background-color: #111113;
+  background-color: #111118;
 }
 
 .admin-panel .bg-white\/90 {
-  background-color: rgba(9, 9, 11, 0.9);
+  background-color: rgba(10, 10, 15, 0.9);
 }
 
-.admin-panel .bg-\[\#f6f6f6\] {
+.admin-panel .bg-\[\#f6f6f6\],
+.admin-panel .bg-\[\#f4f4f5\] {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -82,28 +84,84 @@ html:has(.admin-panel) .bn-root[data-color-scheme="dark"] {
 }
 
 .admin-panel .border-black\/10,
+.admin-panel .border-black\/20,
 .admin-panel .border-black\/\[0\.08\] {
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-panel .hover\:text-black:hover,
+.admin-panel .group:hover .group-hover\:text-black {
+  color: #ffffff;
+}
+
+.admin-panel .hover\:bg-black\/\[0\.04\]:hover,
+.admin-panel .hover\:bg-black\/\[0\.05\]:hover,
+.admin-panel .hover\:bg-black\/\[0\.03\]:hover,
+.admin-panel .hover\:bg-black\/\[0\.06\]:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Primary dark-mode CTAs that used near-black fills */
+.admin-panel .bg-\[\#111\] {
+  background-color: #ececec;
+  color: #111111;
+}
+
+.admin-panel .bg-\[\#111\].text-white {
+  color: #111111;
+}
+
+.admin-panel input:not(.factory-site input),
+.admin-panel textarea:not(.factory-site textarea),
+.admin-panel select:not(.factory-site select) {
+  background-color: #16161d;
+  color: #ececec;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.admin-panel input::placeholder,
+.admin-panel textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.admin-panel option {
+  background-color: #16161d;
+  color: #ececec;
+}
+
+/* Keep website previews light */
+.admin-panel .factory-site {
+  background-color: var(--wf-bg, #ffffff) !important;
+  color: var(--wf-fg, #111111) !important;
+  color-scheme: light;
+}
+
+.admin-panel .factory-site .bg-white {
+  background-color: #ffffff;
+}
+
+.admin-panel .factory-site .text-black,
+.admin-panel .factory-site .text-\[\#111\] {
+  color: #111111;
+}
+
+.admin-panel .factory-site input,
+.admin-panel .factory-site textarea,
+.admin-panel .factory-site select {
+  background-color: var(--wf-bg);
+  color: var(--wf-fg);
+  border-color: color-mix(in srgb, var(--wf-fg) 18%, transparent);
 }
 
 .admin-shell {
-  font-feature-settings: "ss01" on, "cv11" on;
+  background-color: #0a0a0f;
+  color: #ececec;
 }
 
-.admin-shell a.home-visit-like {
-  display: inline-block;
-  padding: 0 0 0.12rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
-  color: #f4f4f5;
-  font-size: 0.8125rem;
-  letter-spacing: -0.01em;
-  text-decoration: none;
+.plain-row-table > td {
+  transition: background-color 150ms ease;
 }
 
-.admin-shell a.home-visit-like:hover {
-  opacity: 0.45;
-}
-
-.create-canvas .factory-site {
-  min-height: 100%;
+.plain-row-table:hover > td {
+  background-color: rgba(255, 255, 255, 0.05);
 }

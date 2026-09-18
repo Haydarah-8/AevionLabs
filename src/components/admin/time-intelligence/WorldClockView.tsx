@@ -336,13 +336,13 @@ export function WorldClockView({
                   </div>
                   
                   <div className="flex items-center justify-center gap-2 text-xs text-white/45 font-bold">
-                    <span className="bg-white border border-white/10 px-2 py-0.5 rounded font-mono text-xs text-white">
+                    <span className="bg-white/[0.08] border border-white/10 px-2 py-0.5 rounded font-mono text-xs text-white">
                       {offsetPart} ({abbreviation})
                     </span>
                     <span>•</span>
                     <span>{diffStr}</span>
                     {isNextDay && (
-                      <span className="text-xs text-white/45 bg-white border border-white/10 px-1.5 rounded">
+                      <span className="text-xs text-white/45 bg-white/[0.06] border border-white/10 px-1.5 rounded">
                         +1d
                       </span>
                     )}

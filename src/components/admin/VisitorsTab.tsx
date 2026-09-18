@@ -151,7 +151,7 @@ export function VisitorsTab({ visitors, loading, onRefresh }: VisitorsTabProps) 
             {label}
             <span
               className={`ml-2 tabular-nums ${
-                filter === id ? "text-black/55" : "text-white/45"
+                filter === id ? "text-white/55" : "text-white/45"
               }`}
             >
               {counts[id].length}

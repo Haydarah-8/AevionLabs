@@ -3,57 +3,45 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { LivePulse } from "@/components/admin/LivePulse";
 import { signOutAdmin, useAdminGuard } from "@/components/admin/useAdminGuard";
 import { useVisitorFeedContext } from "@/components/admin/VisitorFeedProvider";
 import { VisitorsLauncher } from "@/components/admin/VisitorsLauncher";
 
-type NavItem = {
-  href: string;
-  label: string;
-  match?: "exact" | "prefix";
-};
-
-const GROUPS: Array<{ label: string; items: NavItem[] }> = [
+const NAV = [
+  { href: "/admin", label: "Overview", match: "exact" as const },
+  { href: "/admin/websites", label: "Editor", match: "prefix" as const },
   {
-    label: "Desk",
-    items: [
-      { href: "/admin", label: "Overview", match: "exact" },
-      { href: "/admin/websites", label: "Sites", match: "prefix" },
-      { href: "/admin/websites/new", label: "Create", match: "exact" },
-      { href: "/admin/websites/templates", label: "Templates", match: "exact" },
-    ],
+    href: "/admin/websites/templates",
+    label: "Templates",
+    match: "exact" as const,
   },
-  {
-    label: "Publish",
-    items: [
-      { href: "/admin/blog", label: "Insights", match: "prefix" },
-      { href: "/admin/gallery", label: "Gallery", match: "prefix" },
-    ],
-  },
-  {
-    label: "System",
-    items: [
-      { href: "/admin/developer", label: "Platform", match: "prefix" },
-      { href: "/admin/settings", label: "Settings", match: "prefix" },
-    ],
-  },
+  { href: "/admin/developer", label: "Platform", match: "prefix" as const },
+  { href: "/admin/blog", label: "Insights", match: "prefix" as const },
+  { href: "/admin/gallery", label: "Gallery", match: "prefix" as const },
+  { href: "/admin/settings", label: "Settings", match: "prefix" as const },
 ];
 
-function isActive(pathname: string, item: NavItem) {
-  if (item.href === "/admin/websites/new") {
-    return pathname === item.href;
-  }
+const DESCRIPTIONS: Record<string, string> = {
+  "/admin": "Traffic, audit stream, and time — one control surface",
+  "/admin/websites": "Create, edit, and publish client websites in Studio",
+  "/admin/websites/templates": "Starter templates — use as a base, then edit",
+  "/admin/developer": "API, MCP, Skills, Connect, and Core audit",
+  "/admin/blog": "Write and publish insights",
+  "/admin/gallery": "Visual feed of coverage and media",
+  "/admin/settings": "Agency name, emails, footer, and shared images",
+};
+
+function isActive(
+  pathname: string,
+  item: (typeof NAV)[number],
+) {
   if (item.href === "/admin/websites/templates") {
     return pathname === item.href || pathname.startsWith(`${item.href}/`);
   }
   if (item.href === "/admin/websites") {
-    if (
-      pathname.startsWith("/admin/websites/templates") ||
-      pathname.startsWith("/admin/websites/new")
-    ) {
-      return false;
-    }
+    if (pathname.startsWith("/admin/websites/templates")) return false;
     return pathname === item.href || pathname.startsWith(`${item.href}/`);
   }
   if (item.match === "exact") return pathname === item.href;
@@ -75,9 +63,19 @@ export function AdminShell({
   const pathname = usePathname();
   const { liveCount } = useVisitorFeedContext();
 
+  const description =
+    subtitle ??
+    DESCRIPTIONS[
+      Object.keys(DESCRIPTIONS)
+        .sort((a, b) => b.length - a.length)
+        .find((key) =>
+          key === "/admin" ? pathname === "/admin" : pathname.startsWith(key),
+        ) ?? "/admin"
+    ];
+
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#09090b] text-[0.95rem] text-white/45">
+      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f] text-[0.95rem] text-white/50">
         Loading…
       </div>
     );
@@ -94,82 +92,58 @@ export function AdminShell({
   }
 
   return (
-    <div className="admin-shell flex h-full min-h-0 overflow-hidden bg-[#09090b] text-zinc-100 antialiased">
-      <aside className="hidden w-[220px] shrink-0 flex-col border-r border-white/[0.07] bg-[#0b0b0d] md:flex">
-        <div className="border-b border-white/[0.07] px-5 py-6">
-          <Link href="/admin" className="block group">
-            <p className="text-[0.65rem] font-medium uppercase tracking-[0.2em] text-white/40 group-hover:text-white/65">
-              Aevion Labs
-            </p>
-            <p className="mt-2 text-[1.35rem] font-normal leading-none tracking-[-0.04em] text-white">
-              Admin
-            </p>
-          </Link>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto px-3 py-5">
-          {GROUPS.map((group) => (
-            <div key={group.label} className="mb-7">
-              <p className="mb-2 px-2 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-white/30">
-                {group.label}
+    <div className="admin-shell flex h-full min-h-0 flex-col overflow-hidden bg-[#0a0a0f] text-zinc-100 antialiased">
+      <header className="sticky top-0 z-50 shrink-0 border-b border-white/[0.07] bg-[#0a0a0f]/92 backdrop-blur-xl select-none">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-6 px-6 py-5 sm:px-10">
+          <div className="flex min-w-0 items-center gap-10">
+            <Link href="/admin" className="shrink-0 group">
+              <p className="text-[0.65rem] font-medium uppercase tracking-[0.22em] text-white/45 group-hover:text-white/70">
+                Aevion Labs
               </p>
-              <ul className="space-y-0.5">
-                {group.items.map((item) => {
-                  const active = isActive(pathname, item);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={`block rounded-lg px-3 py-2 text-[0.92rem] tracking-[-0.015em] transition-colors ${
-                          active
-                            ? "bg-white text-[#09090b]"
-                            : "text-white/55 hover:bg-white/[0.05] hover:text-white"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </nav>
-
-        <div className="border-t border-white/[0.07] px-4 py-4">
-          <div className="mb-3 px-1">
-            <LivePulse count={liveCount} />
+              <h1 className="mt-1 text-[1.15rem] font-normal leading-none tracking-[-0.03em] text-white">
+                Control
+              </h1>
+            </Link>
+            <nav className="hidden items-center gap-1 overflow-x-auto md:flex">
+              {NAV.map((item) => {
+                const active = isActive(pathname, item);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`whitespace-nowrap rounded-full px-3.5 py-2 text-[0.9rem] tracking-[-0.01em] transition-colors ${
+                      active
+                        ? "bg-white text-[#0d1730]"
+                        : "text-white/55 hover:bg-white/[0.06] hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
-          <button
-            type="button"
-            onClick={() => void signOutAdmin()}
-            className="w-full rounded-lg border border-white/10 px-3 py-2 text-left text-[0.85rem] text-white/50 transition-colors hover:border-white/25 hover:text-white"
-          >
-            Sign out
-          </button>
+          <div className="flex items-center gap-4">
+            <LivePulse count={liveCount} />
+            <motion.button
+              onClick={() => void signOutAdmin()}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="cursor-pointer rounded-full border border-white/10 px-4 py-2 text-[0.85rem] text-white/55 transition-colors hover:border-white/25 hover:text-white"
+            >
+              Sign out
+            </motion.button>
+          </div>
         </div>
-      </aside>
-
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.07] px-4 py-3 md:hidden">
-          <Link href="/admin">
-            <p className="text-[0.65rem] uppercase tracking-[0.18em] text-white/40">
-              Aevion
-            </p>
-            <p className="text-[1rem] tracking-[-0.03em] text-white">Admin</p>
-          </Link>
-          <LivePulse count={liveCount} />
-        </header>
-
-        <nav className="flex shrink-0 gap-1 overflow-x-auto border-b border-white/[0.07] px-3 py-2 md:hidden">
-          {GROUPS.flatMap((g) => g.items).map((item) => {
+        <nav className="flex gap-1 overflow-x-auto border-t border-white/[0.06] px-4 py-2 md:hidden">
+          {NAV.map((item) => {
             const active = isActive(pathname, item);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[0.8rem] ${
-                  active ? "bg-white text-[#09090b]" : "text-white/50"
+                className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[0.85rem] ${
+                  active ? "bg-white text-[#0d1730]" : "text-white/50"
                 }`}
               >
                 {item.label}
@@ -177,29 +151,27 @@ export function AdminShell({
             );
           })}
         </nav>
+      </header>
 
-        {fullBleed ? (
-          <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
-            {children}
-          </main>
-        ) : (
-          <main className="min-h-0 flex-1 overflow-y-auto">
-            <div className="mx-auto flex max-w-[1200px] flex-col px-6 py-10 sm:px-10 sm:py-14">
-              {subtitle ? (
-                <p className="mb-8 max-w-xl text-[0.95rem] font-light leading-relaxed text-white/45">
-                  {subtitle}
-                </p>
-              ) : null}
-              <div className="min-h-[520px]">{children}</div>
-              <footer className="mt-20 border-t border-white/[0.06] pt-8">
-                <p className="text-[0.65rem] uppercase tracking-[0.18em] text-white/25">
-                  Aevion Labs
-                </p>
-              </footer>
-            </div>
-          </main>
-        )}
-      </div>
+      {fullBleed ? (
+        <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+          {children}
+        </main>
+      ) : (
+        <main className="min-h-0 flex-1 overflow-y-auto">
+          <div className="mx-auto flex max-w-[1400px] flex-col px-6 py-10 sm:px-10 sm:py-12">
+            {description ? (
+              <p className="mb-8 max-w-2xl text-[0.95rem] font-light leading-relaxed text-white/45">
+                {description}
+              </p>
+            ) : null}
+            <div className="min-h-[560px]">{children}</div>
+            <footer className="mt-16 border-t border-white/[0.06] pt-8 text-center text-[0.75rem] uppercase tracking-[0.16em] text-white/30">
+              Aevion Labs
+            </footer>
+          </div>
+        </main>
+      )}
 
       <VisitorsLauncher />
     </div>

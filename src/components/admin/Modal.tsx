@@ -52,7 +52,7 @@ export function Modal({
    * choice.
    */
   const quietControl =
-    "text-[0.85rem] text-[#737373] transition-colors hover:text-black";
+    "text-[0.85rem] text-white/45 transition-colors hover:text-white";
   const panelRef = useRef<HTMLDivElement>(null);
   const restoreRef = useRef<HTMLElement | null>(null);
   const closeRef = useRef(onClose);
@@ -127,11 +127,11 @@ export function Modal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[200] flex flex-col bg-white"
+      className="fixed inset-0 z-[200] flex flex-col bg-[#0a0a0f] text-zinc-100"
       ref={panelRef}
       tabIndex={-1}
     >
-      <header className="shrink-0 border-b border-black/10">
+      <header className="shrink-0 border-b border-white/10">
         <div className="mx-auto flex max-w-6xl items-start justify-between gap-10 px-6 py-8 sm:px-12">
           <div className="min-w-0">
             {onBack ? (
@@ -144,11 +144,11 @@ export function Modal({
               </button>
             ) : null}
             {eyebrow ? (
-              <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.85rem] text-[#737373]">
+              <div className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.85rem] text-white/45">
                 {eyebrow}
               </div>
             ) : null}
-            <h2 className="text-[1.6rem] font-medium leading-snug text-[#111]">
+            <h2 className="text-[1.6rem] font-medium leading-snug text-white">
               {title}
             </h2>
           </div>

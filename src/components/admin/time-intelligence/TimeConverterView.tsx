@@ -208,7 +208,7 @@ export function TimeConverterView() {
            
            <div className="flex flex-col items-center gap-2">
               <span className="text-[0.65rem] font-black uppercase tracking-[0.2em] text-white/45">Sync Path</span>
-              <button onClick={handleSwap} className="px-4 py-2.5 rounded-xl bg-white hover:bg-black/[0.06] text-[0.65rem] font-bold text-white/45 hover:text-white transition-all hover:scale-105 active:scale-95 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] cursor-pointer">
+              <button onClick={handleSwap} className="px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-[0.65rem] font-bold text-white/45 hover:text-white transition-all hover:scale-105 active:scale-95 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] cursor-pointer">
                  SWAP DIRECTIONS
               </button>
            </div>
@@ -225,7 +225,7 @@ export function TimeConverterView() {
              <button
                onClick={() => setTimeMode(timeMode === "live" ? "custom" : "live")}
                className={`w-full py-3 rounded-xl text-xs font-bold transition-all tracking-[0.1em] uppercase cursor-pointer ${
-                 timeMode === "custom" ? "bg-[#111111]/10 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]" : "bg-white text-white/45 hover:text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]"
+                 timeMode === "custom" ? "bg-[#111111]/10 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]" : "bg-white/[0.04] text-white/45 hover:text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]"
                }`}
              >
                {timeMode === "live" ? "Lock Custom" : "Return Live"}
@@ -250,10 +250,10 @@ export function TimeConverterView() {
            </div>
 
            <div className="flex flex-col gap-2 w-full pt-6">
-             <button onClick={handleShare} className="w-full text-center text-[0.65rem] font-black uppercase tracking-[0.1em] text-white/45 hover:text-white transition-colors py-2 px-3 bg-white hover:bg-black/[0.05] rounded-xl cursor-pointer">
+             <button onClick={handleShare} className="w-full text-center text-[0.65rem] font-black uppercase tracking-[0.1em] text-white/45 hover:text-white transition-colors py-2 px-3 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl cursor-pointer">
                Share Conversion
              </button>
-             <button onClick={() => { navigator.clipboard.writeText(baseDate.toISOString()); alert("ISO Timestamp copied!"); }} className="w-full text-center text-[0.65rem] font-black uppercase tracking-[0.1em] text-white/45 hover:text-white transition-colors py-2 px-3 bg-white hover:bg-black/[0.05] rounded-xl cursor-pointer">
+             <button onClick={() => { navigator.clipboard.writeText(baseDate.toISOString()); alert("ISO Timestamp copied!"); }} className="w-full text-center text-[0.65rem] font-black uppercase tracking-[0.1em] text-white/45 hover:text-white transition-colors py-2 px-3 bg-white/[0.06] hover:bg-white/[0.1] rounded-xl cursor-pointer">
                Copy ISO Timestamp
              </button>
            </div>
@@ -373,7 +373,7 @@ export function TimeConverterView() {
                         let glowClass = "";
 
                         if (isBusiness) {
-                          bgClass = "bg-white";
+                          bgClass = "bg-white/[0.06]";
                           textClass = "text-white font-bold";
                         } 
 
@@ -442,7 +442,7 @@ function DigitalClock({ date, format, showSeconds, align = "left" }: { date: Dat
         {displayHr}:{mins}{showSeconds ? `:${secs}` : ""}
       </div>
       {format === 12 && (
-        <span className="text-lg font-bold text-black/30 ml-1">{ampm}</span>
+        <span className="text-lg font-bold text-white/30 ml-1">{ampm}</span>
       )}
     </div>
   );

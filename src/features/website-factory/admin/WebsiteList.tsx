@@ -63,34 +63,17 @@ export function WebsiteList() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              void (async () => {
-                setError("");
-                try {
-                  const res = await fetch("/api/admin/websites/demo/abc", {
-                    method: "POST",
-                  });
-                  const data = await res.json();
-                  if (!res.ok) throw new Error(data.error || "Demo failed");
-                  router.push(`/admin/websites/${data.project.id}/editor`);
-                } catch (err) {
-                  setError(
-                    err instanceof Error ? err.message : "Demo failed",
-                  );
-                }
-              })();
-            }}
-            className="rounded-full border border-white/15 px-4 py-2 text-sm text-white/75 hover:text-white"
-          >
-            Open ABC Roofing
-          </button>
           <Link
             href="/admin/websites/templates"
             className="rounded-full border border-white/15 px-4 py-2 text-sm text-white/75 hover:text-white"
           >
             Templates
+          </Link>
+          <Link
+            href="/admin/developer"
+            className="rounded-full border border-white/15 px-4 py-2 text-sm text-white/75 hover:text-white"
+          >
+            Platform
           </Link>
           <Link
             href="/admin/websites/new"
