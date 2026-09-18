@@ -1,0 +1,121 @@
+name: News ingest cron
+
+on:
+  schedule:
+    # Every 30 minutes. The desk's freshness is bounded by this interval, and
+    # the previous daily run meant the newsroom could be showing a corpus most
+    # of a day old. GitHub delays scheduled runs under load, so treat this as
+    # "about every half hour" rather than a guarantee.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+# A slow ingest must not overlap the next tick and double-write.
+concurrency:
+  group: news-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Trigger news ingest
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          set -euo pipefail
+
+          # Fail rather than skip. This step used to exit 0 when the secrets
+          # were missing, so the workflow reported success while ingesting
+          # nothing at all — the newsroom went stale with a green tick.
+          if [ -z "${CRON_SECRET:-}" ] || [ -z "${SITE_URL:-}" ]; then
+            echo "::error::CRON_SECRET and SITE_URL must be set in repository secrets; no news was ingested."
+            exit 1
+          fi
+
+          response=$(mktemp)
+          code=$(curl -sS -o "$response" -w '%{http_code}' --max-time 120 \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${SITE_URL%/}/api/cron/news/ingest")
+
+          echo "HTTP $code"
+          head -c 2000 "$response"
+          echo
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Ingest returned HTTP $code"
+            exit 1
+          fi
+
+          # A 200 carrying an error body is still a failed ingest.
+          if grep -q '"error"' "$response"; then
+            echo "::error::Ingest reported an error"
+            exit 1
+          fi
+
+      - name: Ingest API providers
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          set -euo pipefail
+
+          # Its own call for the same reason as the step below: three jobs, one
+          # 60s ceiling each. Sharing a function with the feeds meant the
+          # providers were either skipped on every run or pushed the run to 52
+          # seconds of the 60 available, which timed out whenever anything was
+          # slower than usual.
+          if [ -z "${CRON_SECRET:-}" ] || [ -z "${SITE_URL:-}" ]; then
+            echo "::error::CRON_SECRET and SITE_URL must be set in repository secrets."
+            exit 1
+          fi
+
+          response=$(mktemp)
+          code=$(curl -sS -o "$response" -w '%{http_code}' --max-time 120             -H "Authorization: Bearer ${CRON_SECRET}"             "${SITE_URL%/}/api/cron/news/providers")
+
+          echo "HTTP $code"
+          head -c 2000 "$response"
+          echo
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Providers returned HTTP $code"
+            exit 1
+          fi
+
+      - name: Read article pages
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          set -euo pipefail
+
+          # A separate call because the two jobs do not fit in one 60s
+          # function: ingesting the feeds uses nearly all of it, which left
+          # enrichment a zero budget every single run when they shared a route.
+          # Feeds carry no video and no article text — both live on the page —
+          # so without this step the desk fills up with headlines and nothing
+          # else.
+          if [ -z "${CRON_SECRET:-}" ] || [ -z "${SITE_URL:-}" ]; then
+            echo "::error::CRON_SECRET and SITE_URL must be set in repository secrets."
+            exit 1
+          fi
+
+          response=$(mktemp)
+          code=$(curl -sS -o "$response" -w '%{http_code}' --max-time 120 \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${SITE_URL%/}/api/cron/news/enrich")
+
+          echo "HTTP $code"
+          head -c 2000 "$response"
+          echo
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Enrich returned HTTP $code"
+            exit 1
+          fi
+
+          if grep -q '"error"' "$response"; then
+            echo "::error::Enrich reported an error"
+            exit 1
+          fi

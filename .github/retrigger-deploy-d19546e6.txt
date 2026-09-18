@@ -1,0 +1,9 @@
+Re-triggering deployment by re-committing referenced commit.
+
+Original commit: d19546e6443ea322ff32e80f498ad200848cee74
+Original message: chore(deploy): retrigger deployment after failed build
+Original permalink: https://github.com/EWG-ppURL/EWG/commit/d19546e6443ea322ff32e80f498ad200848cee74
+
+This file was created to force a new commit and retrigger the deployment pipeline.
+
+Date: 2026-08-14

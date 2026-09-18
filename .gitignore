@@ -1,0 +1,65 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Crawlee local storage
+/workers/news-ingest/storage
+/workers/news-ingest/node_modules
+
+# Supabase CLI scratch (version cache); not part of the project.
+supabase/.temp/
+
+# Superseded by the blog_posts table; kept only as a local backup.
+data/blog-posts.json*
+
+# Local Website Factory fallback when Supabase tables are missing.
+data/website-factory.json*
+data/website-factory-jobs.json*
+
+# Scraped media downloaded into local public storage
+/public/factory-assets/
+
+# locally installed agent skills (not project code)
+/.agents/
+/.cursor/
+/skills-lock.json
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example

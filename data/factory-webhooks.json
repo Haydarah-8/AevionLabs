@@ -1,0 +1,16 @@
+[
+  {
+    "id": "f2a0f274-2a00-4160-9f62-7f4503e94962",
+    "name": "test-hook",
+    "url": "https://example.com/hook",
+    "secret": "whsec_2vUxxVkYp3VPRgzYEwfvo5hvvV4sIA86",
+    "secretHash": "5a25050eedd594dd76f508bc927f3b5709e7753974a62b89a3817327db46368f",
+    "secretPrefix": "whsec_2vUx",
+    "events": [
+      "website.published"
+    ],
+    "active": true,
+    "createdAt": "2026-09-18T08:12:36.282Z",
+    "updatedAt": "2026-09-18T08:12:36.283Z"
+  }
+]

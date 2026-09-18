@@ -1,0 +1,29 @@
+{
+  "name": "ewg-news-ingest",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "job": "tsx src/index.ts",
+    "discover": "tsx src/index.ts discoverFeeds",
+    "crawl": "tsx src/index.ts crawlSources",
+    "extract": "tsx src/index.ts extractArticles",
+    "normalise": "tsx src/index.ts normaliseArticles",
+    "dedupe": "tsx src/index.ts deduplicateArticles",
+    "cluster": "tsx src/index.ts clusterStories",
+    "classify": "tsx src/index.ts classifyArticles",
+    "breaking": "tsx src/index.ts calculateBreakingScores",
+    "cleanup": "tsx src/index.ts cleanupOldData"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.0",
+    "crawlee": "^3.13.0",
+    "cheerio": "^1.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.54.0"
+  }
+}

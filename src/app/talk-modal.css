@@ -1,0 +1,109 @@
+.talk-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  background: rgba(8, 8, 8, 0.55);
+  isolation: isolate;
+  mix-blend-mode: normal;
+}
+
+.talk-modal-wrap {
+  width: min(40rem, 100%);
+  max-height: min(90vh, 42rem);
+  overflow: auto;
+  background: #ffffff;
+  border: 1px solid rgba(17, 17, 17, 0.15);
+  color: #111;
+  isolation: isolate;
+  mix-blend-mode: normal;
+}
+
+.talk-modal {
+  position: relative;
+  padding: clamp(2rem, 5vw, 3.5rem);
+}
+
+.talk-modal-kicker {
+  margin: 0 0 1.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.talk-modal-heading {
+  max-width: 14ch;
+  margin: 0;
+  font-size: clamp(2.15rem, 4.4vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.talk-modal-lede,
+.talk-modal-note {
+  margin: 1.5rem 0 0;
+  max-width: 38rem;
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: #3f3f3f;
+}
+
+.talk-modal-note {
+  margin-top: 1rem;
+}
+
+.talk-modal-action {
+  margin-top: 2.25rem;
+}
+
+.talk-modal-mail {
+  margin: 1.25rem 0 0;
+  font-size: 0.98rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #3f3f3f;
+}
+
+.talk-modal-mail a {
+  color: #111;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(17, 17, 17, 0.3);
+}
+
+.talk-modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #111;
+  cursor: pointer;
+}
+
+.talk-modal-close svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.talk-modal-close:hover {
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talk-modal-overlay,
+  .talk-modal-wrap {
+    transition: none;
+  }
+}

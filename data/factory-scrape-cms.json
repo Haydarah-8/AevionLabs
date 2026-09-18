@@ -1,0 +1,483 @@
+[
+  {
+    "id": "fb614f29-6d1c-4f0c-84f0-b81fe4a1457b",
+    "projectId": "e8653693-2725-4e99-aa32-fee06f9b2e1d",
+    "jobId": "8347efff-3f60-450a-a7e7-fa9fd1888ce3",
+    "sourceUrl": "https://www.theaevionlabs.com/",
+    "status": "imported",
+    "title": "We design and build websites that load fast, convert better, and stay easy to change long after launch.",
+    "summary": "We design and build websites that load fast, convert better, and stay easy to change long after launch.",
+    "pageCount": 6,
+    "assetCount": 32,
+    "serviceCount": 5,
+    "result": {
+      "sourceUrl": "https://www.theaevionlabs.com/",
+      "name": "We design and build websites that load fast, convert better, and stay easy to change long after launch.",
+      "tagline": "We design and build websites that load fast, convert better, and stay easy to change long after launch.",
+      "description": "Web design and development studio. We handle strategy, interface and engineering in one team. Sites that load fast, convert better, and stay easy to change after launch.",
+      "phone": "",
+      "email": "hello@theaevionlabs.com",
+      "address": "",
+      "postcode": "",
+      "logoUrl": "",
+      "faviconUrl": "https://www.theaevionlabs.com/favicon.ico?favicon.2vob68tjqpejf.ico",
+      "heroUrl": "https://www.theaevionlabs.com/images/hero-1.avif",
+      "social": {},
+      "brandColors": [
+        "#f3f3f3"
+      ],
+      "services": [
+        {
+          "name": "Good sites are engineering, not decoration.",
+          "description": "Most sites fail quietly. They load slowly, nobody can update them without a developer, and the traffic you pay for leaves before it converts. Rarely because of one bad decision. Usually a dozen small ones.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "Prism",
+          "description": "Prism is an analytics product whose value only becomes obvious once you are inside it, which is what made the marketing site a hard problem. The work was a new site, and a design system the product team could build the app from as well.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "Forge",
+          "description": "Forge supplies fixings and fabricated parts to trade. Six thousand products, a search that did not work, and a catalogue that took two days and a developer to add a single line to.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "Baseplate",
+          "description": "Baseplate is a component library and documentation site for a team running four products with four different button styles. The work was one system, documented well enough that people actually reach for it.",
+          "imageUrl": "",
+          "include": true
+        },
+        {
+          "name": "Folio",
+          "description": "Folio is an independent publication with a print sensibility and a website that had none. The redesign gave the editorial team a set of layouts to compose with, instead of one template everything was poured into.",
+          "imageUrl": "",
+          "include": true
+        }
+      ],
+      "reviews": [],
+      "pages": [
+        {
+          "url": "https://www.theaevionlabs.com/",
+          "title": "AEVION LABS · Creative Studio",
+          "type": "home",
+          "heading": "We design and build websites that load fast, convert better, and stay easy to change long after launch.",
+          "excerpt": "Web design and development studio. We handle strategy, interface and engineering in one team. Sites that load fast, convert better, and stay easy to change after launch.",
+          "body": "Most sites fail quietly. They load slowly, nobody can update them without a developer, and the traffic you pay for leaves before it converts. Rarely because of one bad decision. Usually a dozen small ones.We handle the strategy, the design and the engineering ourselves, so there is no gap between what was planned and what ships, and one team accountable when you need something changed.Get to know us →Each project begins with a different question and ends in the same place: something that couldn't look any other way.(Case Study)An analytics product with a site that explains the decision, not the feature list.Prism01Product & UXDesign SystemNext.js Build2026AEVION LABS is a small creative studio built on the belief that visual identity is never superficial. It's the first and most persistent thing a brand communicates.We work slowly and selectively. We ask difficult questions before we make anything, and we build visual systems that hold their conviction after the project end.Learn more about us →",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/prism",
+          "title": "Prism · AEVION LABS",
+          "type": "home",
+          "heading": "Prism · AEVION LABS",
+          "excerpt": "Web design and development studio. We handle strategy, interface and engineering in one team. Sites that load fast, convert better, and stay easy to change after launch.",
+          "body": "Prism is an analytics product whose value only becomes obvious once you are inside it, which is what made the marketing site a hard problem. The work was a new site, and a design system the product team could build the app from as well.Product & UXDesign SystemNext.js Build2026The old site sold features. Nobody buys an analytics tool because of a feature list. They buy it because they believe it will make one specific decision easier.Two audiences, one page. Engineers wanted the data model and the API. The people signing the invoice wanted a reason to care. Neither would sit through the other's version.03 · SolutionOne scrolling narrative that opens on the decision and works backwards into the mechanics, so both readers reach their answer without a tab switch or a second page to keep up to date.Built as a component library first and a website second. Every block on the marketing site is the same code the product ships, so the two stopped drifting apart the week after launch.A component library for a team with four products and four different buttons.",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/forge",
+          "title": "Forge · AEVION LABS",
+          "type": "home",
+          "heading": "Forge · AEVION LABS",
+          "excerpt": "Web design and development studio. We handle strategy, interface and engineering in one team. Sites that load fast, convert better, and stay easy to change after launch.",
+          "body": "Forge supplies fixings and fabricated parts to trade. Six thousand products, a search that did not work, and a catalogue that took two days and a developer to add a single line to.Information ArchitectureHeadless CMSNext.js Build2026Their customers knew exactly what they wanted and still could not find it. That is an information architecture problem long before it is a design one.Six thousand products, inconsistent naming, and a catalogue that had grown one supplier at a time for eleven years. It had to be restructured without breaking a single existing link.03 · SolutionA rebuilt taxonomy, faceted search filtering on the attributes trade buyers actually use, and specification sheets on the product page rather than behind an email.Moved onto a headless CMS their own team runs. Adding a product line is a form now, not a support ticket and a wait.An independent publication given layouts its editors can compose with.",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/baseplate",
+          "title": "Baseplate · AEVION LABS",
+          "type": "home",
+          "heading": "Baseplate · AEVION LABS",
+          "excerpt": "Web design and development studio. We handle strategy, interface and engineering in one team. Sites that load fast, convert better, and stay easy to change after launch.",
+          "body": "Baseplate is a component library and documentation site for a team running four products with four different button styles. The work was one system, documented well enough that people actually reach for it.Design SystemComponent LibraryDocumentation2026Every team had quietly rebuilt the same twelve components slightly differently. Nobody had done anything wrong. There was simply no shared place to put them.Design systems fail on adoption, not on design. Whatever we built had to be faster to use than rebuilding from scratch, or it would be ignored inside a month.03 · SolutionTokens first, components second, documentation written alongside both, with live, editable examples, so a developer can see the prop they need instead of reading about it.Every component ships with its states, its accessibility notes and its do-and-don't in the same view. Nothing lives in a separate spec that quietly goes stale.Six thousand products, and a search that finally returns the right part.",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/folio",
+          "title": "Folio · AEVION LABS",
+          "type": "home",
+          "heading": "Folio · AEVION LABS",
+          "excerpt": "Web design and development studio. We handle strategy, interface and engineering in one team. Sites that load fast, convert better, and stay easy to change after launch.",
+          "body": "Folio is an independent publication with a print sensibility and a website that had none. The redesign gave the editorial team a set of layouts to compose with, instead of one template everything was poured into.Editorial DesignHeadless CMSPerformance2026Long-form writing was being published into a layout designed for blog posts. The reading experience undercut the work before anyone finished the first paragraph.Editorial teams need range without needing a developer. Every layout we added had to be something an editor could choose, fill and publish on their own.03 · SolutionA small set of composable article layouts (full-bleed, two-column, pull-quote, gallery) arranged block by block in the CMS by whoever is writing.Typography sized for reading rather than for screenshots, and images served at the size they are actually displayed. The heaviest article arrives in under a second.A storefront rebuilt for the phone, where nine in ten of its customers already were.",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/about",
+          "title": "About · AEVION LABS",
+          "type": "about",
+          "heading": "About · AEVION LABS",
+          "excerpt": "Web design and development studio. We handle strategy, interface and engineering in one team. Sites that load fast, convert better, and stay easy to change after launch.",
+          "body": "I started AEVION LABS after watching too many sites get designed by one team, built by another, and launched slower, uglier and harder to edit than anyone intended.I am a solo developer. That is deliberate: it keeps the work direct, the costs honest, and means nothing gets lost between the person who promised it and the person who has to build it.I take on a small number of projects at a time, mostly for founders and small teams who need a site that earns its keep rather than just looking current.(01)You talk to the person building itNo account managers, no handoffs, no brief passed down a chain until the intent is gone. The person you scope the project with is the person who designs it and writes the code.(02)You own everythingCode sits on your repository, content in a CMS you control, domain and hosting in your name. Keep me on because the work is good, not because leaving would be painful.(03)Fast is a featureEvery second of load time costs conversions. Performance and accessibility are measured before launch and after, not treated as a nice-to-have once the design is signed off.(04)Built to be changedMost sites die because updating them is harder than living with them. Yours is built in components, documented, and made so your team can edit it without calling anyone.(01)DiscoveryA call about what the site has to achieve, who it is for, and what is failing now.(02)StructureSitemap, page-by-page content plan and user flows agreed before any visual work.(03)DesignKey pages designed as a reusable system, not one-off mockups. You review as it goes.(04)BuildBuilt in Next.js on your own repository, with a CMS for anything you will edit.(05)LaunchTesting, performance and accessibility passes, analytics wired, then we go live.(06)SupportKeep me on for changes and improvements, or take the code and run it yourself.",
+          "include": true
+        }
+      ],
+      "images": [
+        {
+          "url": "https://www.theaevionlabs.com/images/hero-1.avif",
+          "alt": "A monitor glowing in a darkened studio",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/hero-2.avif",
+          "alt": "Macro view of a code editor, characters dissolved into bokeh",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/hero-3.avif",
+          "alt": "Overhead view of wireframe sketches laid out on a desk",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/hero-4.avif",
+          "alt": "Hands resting on a mechanical keyboard under hard light",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/hero-5.avif",
+          "alt": "A phone lying on a concrete surface, screen glowing faintly",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/home-intro.avif",
+          "alt": "A desk monitor and keyboard lit by a single lamp",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-hero.avif",
+          "alt": "Layered translucent panels receding into shadow",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-hero.avif",
+          "alt": "A bolt on concrete casting a long shadow",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/baseplate-hero.avif",
+          "alt": "A grid of identical modules with one raised out of alignment",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-bg.avif",
+          "alt": "An unlit neon tube mounted on a concrete wall",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-bg.avif",
+          "alt": "A wide empty studio interior in low light",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/baseplate-bg.avif",
+          "alt": "A concrete block casting a hard shadow",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/home-about.avif",
+          "alt": "A blade of hard light falling across a studio wall",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-2.avif",
+          "alt": "An electrical cord coiled on a bare floor",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/orbit-hero.avif",
+          "alt": "A phone and laptop side by side, screens glowing",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-1.avif",
+          "alt": "Sheets of tracing paper overlapping on a light table",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-3.avif",
+          "alt": "Sheets of frosted acrylic stacked on concrete",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-1.avif",
+          "alt": "Panes of glass casting overlapping shadows",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-2.avif",
+          "alt": "A frosted glass panel lit from behind",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/prism-4.avif",
+          "alt": "A narrow slot cut through a concrete wall",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-1.avif",
+          "alt": "A steel rod lying across grey tile",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-3.avif",
+          "alt": "Black card stock torn along a sharp edge",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/forge-4.avif",
+          "alt": "An empty studio interior with a single desk",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-hero.avif",
+          "alt": "Printed page layouts pinned across a studio wall",
+          "kind": "hero",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/baseplate-1.avif",
+          "alt": "A black cube resting on a concrete surface",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/baseplate-2.avif",
+          "alt": "A glossy black organic form, half matte and half polished",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/baseplate-3.avif",
+          "alt": "An empty studio corner stacked with concrete blocks",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/baseplate-4.avif",
+          "alt": "A sculptural black form catching a single highlight",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-2.avif",
+          "alt": "A stack of paper viewed edge-on",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-3.avif",
+          "alt": "Stacked raw paper sheets under raking light",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/folio-4.avif",
+          "alt": "Paper boards lit by a hard directional light",
+          "kind": "gallery",
+          "include": true
+        },
+        {
+          "url": "https://www.theaevionlabs.com/images/about-wide.avif",
+          "alt": "An empty concrete hall with a grid of square openings",
+          "kind": "gallery",
+          "include": true
+        }
+      ],
+      "provenance": [
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/",
+          "importedAt": "2026-09-18T07:44:16.736Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/prism",
+          "importedAt": "2026-09-18T07:44:17.559Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/forge",
+          "importedAt": "2026-09-18T07:44:18.340Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/baseplate",
+          "importedAt": "2026-09-18T07:44:19.030Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/folio",
+          "importedAt": "2026-09-18T07:44:19.835Z",
+          "contentType": "home"
+        },
+        {
+          "sourceUrl": "https://www.theaevionlabs.com/",
+          "sourcePage": "https://www.theaevionlabs.com/about",
+          "importedAt": "2026-09-18T07:44:20.563Z",
+          "contentType": "about"
+        }
+      ],
+      "robotsAllowed": true,
+      "engine": "readability+linkedom+jsonld"
+    },
+    "createdAt": "2026-09-18T07:44:20.571Z",
+    "updatedAt": "2026-09-18T07:44:20.571Z",
+    "appliedAt": null
+  },
+  {
+    "id": "f550753d-5e04-4bd7-af22-21e7f6fc39bd",
+    "projectId": "00000000-0000-4000-8000-000000000099",
+    "jobId": null,
+    "sourceUrl": "https://example.com/",
+    "status": "imported",
+    "title": "Example Co",
+    "summary": "Demo",
+    "pageCount": 1,
+    "assetCount": 0,
+    "serviceCount": 1,
+    "result": {
+      "sourceUrl": "https://example.com/",
+      "name": "Example Co",
+      "tagline": "Demo",
+      "description": "A demo business",
+      "phone": "",
+      "email": "hi@example.com",
+      "address": "",
+      "postcode": "",
+      "logoUrl": "",
+      "faviconUrl": "",
+      "heroUrl": "",
+      "social": {},
+      "brandColors": [
+        "#111111"
+      ],
+      "services": [
+        {
+          "name": "Consulting",
+          "description": "Advice",
+          "imageUrl": "",
+          "include": true
+        }
+      ],
+      "reviews": [],
+      "pages": [
+        {
+          "url": "https://example.com/",
+          "title": "Home",
+          "type": "home",
+          "heading": "Hello",
+          "excerpt": "Welcome",
+          "body": "Body",
+          "include": true
+        }
+      ],
+      "images": [],
+      "provenance": [
+        {
+          "sourceUrl": "https://example.com/",
+          "sourcePage": "https://example.com/",
+          "importedAt": "2026-09-18T07:42:36.931Z",
+          "contentType": "home"
+        }
+      ],
+      "robotsAllowed": true,
+      "engine": "test"
+    },
+    "createdAt": "2026-09-18T07:42:36.938Z",
+    "updatedAt": "2026-09-18T07:42:36.938Z",
+    "appliedAt": null
+  },
+  {
+    "id": "3f98afaf-4421-489e-9feb-38ae30840453",
+    "projectId": "00000000-0000-4000-8000-000000000099",
+    "jobId": null,
+    "sourceUrl": "https://example.com/",
+    "status": "imported",
+    "title": "Example Co",
+    "summary": "Demo",
+    "pageCount": 1,
+    "assetCount": 0,
+    "serviceCount": 1,
+    "result": {
+      "sourceUrl": "https://example.com/",
+      "name": "Example Co",
+      "tagline": "Demo",
+      "description": "A demo business",
+      "phone": "",
+      "email": "hi@example.com",
+      "address": "",
+      "postcode": "",
+      "logoUrl": "",
+      "faviconUrl": "",
+      "heroUrl": "",
+      "social": {},
+      "brandColors": [
+        "#111111"
+      ],
+      "services": [
+        {
+          "name": "Consulting",
+          "description": "Advice",
+          "imageUrl": "",
+          "include": true
+        }
+      ],
+      "reviews": [],
+      "pages": [
+        {
+          "url": "https://example.com/",
+          "title": "Home",
+          "type": "home",
+          "heading": "Hello",
+          "excerpt": "Welcome",
+          "body": "Body",
+          "include": true
+        }
+      ],
+      "images": [],
+      "provenance": [
+        {
+          "sourceUrl": "https://example.com/",
+          "sourcePage": "https://example.com/",
+          "importedAt": "2026-09-18T07:41:50.119Z",
+          "contentType": "home"
+        }
+      ],
+      "robotsAllowed": true,
+      "engine": "test"
+    },
+    "createdAt": "2026-09-18T07:41:50.132Z",
+    "updatedAt": "2026-09-18T07:41:50.132Z",
+    "appliedAt": null
+  }
+]

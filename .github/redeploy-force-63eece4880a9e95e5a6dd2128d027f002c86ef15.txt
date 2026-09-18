@@ -1,0 +1,5 @@
+Reapplying admin features commit (63eece4880a9e95e5a6dd2128d027f002c86ef15) to force redeploy on main.
+
+This commit is made by the repository bot at user request. It does not change application code — it is a lightweight retrigger intended to start a new deployment build that includes the admin features added in commit 63eece4880a9e95e5a6dd2128d027f002c86ef15.
+
+If the deployment still does not trigger, please check Vercel/GitHub integration, branch protections, and required status checks, or tell me and I'll open a PR with the original feature changes.

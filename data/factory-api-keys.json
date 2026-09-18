@@ -1,0 +1,26 @@
+[
+  {
+    "id": "4822476b-ef1e-4406-90ca-8637a9ea4e57",
+    "name": "Connect claude 2026-09-18",
+    "keyPrefix": "ae_live_nXgH",
+    "keyHash": "1d54b127c6bc397923e2fa04f336fbb18d1e1085b59c3dcec035834398722f1d",
+    "scopes": [
+      "websites:read",
+      "websites:write",
+      "pages:read",
+      "pages:write",
+      "assets:read",
+      "templates:read",
+      "themes:read",
+      "themes:write",
+      "deployments:read",
+      "deployments:write",
+      "domains:read",
+      "mcp:use"
+    ],
+    "createdBy": "3863837f-da97-4ccf-86e9-c4af6a32f238",
+    "lastUsedAt": null,
+    "revokedAt": null,
+    "createdAt": "2026-09-18T09:01:39.559Z"
+  }
+]

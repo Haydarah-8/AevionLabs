@@ -1,0 +1,10 @@
+Applying admin features commit 63eece4880a9e95e5a6dd2128d027f002c86ef15 to main to force redeploy.
+
+This is an authoritative push by the repository account per your request (user authorized). It adds this retrigger file to create a new commit on main so the deployment system picks up the admin changes.
+
+If the deployment still does not start, please check:
+- Vercel/GitHub integration and linked branch
+- Branch protection rules and required status checks
+- That main is the branch Vercel watches for deploys
+
+Commit message: "chore(deploy): apply admin features to main (force redeploy)"

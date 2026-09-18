@@ -1,0 +1,109 @@
+.admin-panel {
+  color-scheme: dark;
+}
+
+html:has(.admin-panel),
+body:has(.admin-panel) {
+  background-color: #09090b !important;
+  color-scheme: dark !important;
+  --background: #09090b;
+  --foreground: #f4f4f5;
+}
+
+html:has(.admin-panel) .bn-container,
+html:has(.admin-panel) .bn-editor,
+html:has(.admin-panel) .bn-block-group {
+  background: transparent !important;
+  color: #ececec !important;
+  font-family: var(--font-sans), system-ui, sans-serif !important;
+}
+
+html:has(.admin-panel) .bn-editor {
+  padding-inline: 0 !important;
+  padding-block: 0 !important;
+}
+
+html:has(.admin-panel) .bn-block-content {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #c4c4cc;
+}
+
+html:has(.admin-panel)
+  .bn-inline-content:has(> .bn-block-content-empty:first-child)::before,
+html:has(.admin-panel) [data-placeholder] {
+  color: #6b6b76 !important;
+}
+
+html:has(.admin-panel) h1.bn-inline-content,
+html:has(.admin-panel) .bn-block-content[data-content-type="heading"] {
+  font-family: var(--font-sans), system-ui, sans-serif !important;
+  color: #f4f4f5 !important;
+}
+
+html:has(.admin-panel) .bn-root,
+html:has(.admin-panel) .bn-root[data-color-scheme="light"],
+html:has(.admin-panel) .bn-root[data-color-scheme="dark"] {
+  --bn-colors-editor-background: #09090b;
+  --bn-colors-editor-text: #ececec;
+  --bn-font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.admin-panel
+  .bg-white:not(button):not([type="submit"]):not(.factory-site):not(
+    .factory-site *
+  ) {
+  background-color: #111113;
+}
+
+.admin-panel .bg-white\/90 {
+  background-color: rgba(9, 9, 11, 0.9);
+}
+
+.admin-panel .bg-\[\#f6f6f6\] {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-panel .text-\[\#111\],
+.admin-panel .text-black {
+  color: #f4f4f5;
+}
+
+.admin-panel .text-\[\#404040\] {
+  color: #d4d4d8;
+}
+
+.admin-panel .text-\[\#737373\] {
+  color: #a1a1aa;
+}
+
+.admin-panel .text-\[\#a3a3a3\] {
+  color: #71717a;
+}
+
+.admin-panel .border-black\/10,
+.admin-panel .border-black\/\[0\.08\] {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-shell {
+  font-feature-settings: "ss01" on, "cv11" on;
+}
+
+.admin-shell a.home-visit-like {
+  display: inline-block;
+  padding: 0 0 0.12rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  color: #f4f4f5;
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.admin-shell a.home-visit-like:hover {
+  opacity: 0.45;
+}
+
+.create-canvas .factory-site {
+  min-height: 100%;
+}

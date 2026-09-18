@@ -1,0 +1,7 @@
+Reapplied commit 48821ce9b932552b12f771f6624d3345bf4f835c to retrigger deployment.
+
+Original commit: https://github.com/EWG-ppURL/EWG/commit/48821ce9b932552b12f771f6624d3345bf4f835c
+
+Timestamp: 2026-08-13T17:16:10Z
+
+Note: The repository already contained that commit; this file is a lightweight retrigger created by the Copilot assistant to force a new commit and redeploy.

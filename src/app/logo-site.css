@@ -1,0 +1,123 @@
+.logo-site-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: rgba(8, 8, 8, 0.68);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.logo-site-wrap {
+  width: min(72rem, 100%);
+  height: min(86vh, 48rem);
+}
+
+.logo-site {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-site-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem 1.25rem;
+  padding: 0.95rem 1.15rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo-site-meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.logo-site-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.logo-site-url {
+  margin: 0.2rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.logo-site-open {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  padding-bottom: 0.15rem;
+}
+
+.logo-site-close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.logo-site-frame {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #0a0a0a;
+}
+
+.logo-site-iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+.logo-site-placeholder {
+  position: absolute;
+  inset: 0;
+  background: #111;
+}
+
+.logo-site-shot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  background: #fff;
+}
+
+.logo-site-shot-label {
+  pointer-events: none;
+  position: absolute;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  background: rgba(10, 10, 10, 0.88);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}

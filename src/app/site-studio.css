@@ -1,0 +1,9 @@
+@import "./studio.css";
+
+/* Keep Geist after the Webflow reset in obscura.css. Leave body font-size
+   as the studio fluid em scale so CoverSection layouts still breathe. */
+body {
+  font-family: var(--font-geist), Arial, sans-serif;
+  color: #111111;
+  background-color: #fff;
+}

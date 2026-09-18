@@ -1,0 +1,9 @@
+Reapplied commit 63eece4880a9e95e5a6dd2128d027f002c86ef15 to retrigger deployment.
+
+Original commit: https://github.com/EWG-ppURL/EWG/commit/63eece4880a9e95e5a6dd2128d027f002c86ef15
+
+Message: "Improve admin news intake, social feeds, and ingestion pipeline.\n\nAdd news source registry, story clustering, and feed dismissals migrations; streamline admin live API and polling; limit social to YouTube/X; fix load-more pagination and draft media extraction."
+
+Timestamp: 2026-08-14T08:46:33Z
+
+Note: This is a lightweight retrigger file created by the Copilot assistant to force a new commit and redeploy with the latest admin panel changes (news, events, social feeds, ingestion). If you instead want an exact cherry-pick of the full commit (recreating all changed files as in the original), tell me and I will perform a cherry-pick instead.

@@ -1,0 +1,7 @@
+Retriggering deployment on user request.
+
+Original admin commit: https://github.com/EWG-ppURL/EWG/commit/63eece4880a9e95e5a6dd2128d027f002c86ef15
+
+Pushed by Copilot to force a redeploy for the account that requested it.
+
+If this doesn't trigger your hosting provider, check: default branch, Vercel/GitHub deploy settings, protected branches, and required status checks.

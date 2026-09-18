@@ -1,0 +1,402 @@
+/* Separate file so Tailwind’s pipeline doesn’t affect the animation. */
+@keyframes client-logos-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.client-logos-marquee {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+
+.client-logos-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 4.5rem;
+  padding: 0.75rem 2.75rem;
+  animation: client-logos-marquee 80s linear infinite;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+}
+
+.client-logos-marquee:hover .client-logos-marquee-track {
+  animation-play-state: paused;
+}
+
+.client-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3.75rem;
+  width: auto;
+  min-width: 3.75rem;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.88;
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
+}
+
+.client-logo svg {
+  display: block;
+  height: 3.75rem;
+  width: auto;
+  max-width: 7.25rem;
+}
+
+@media (min-width: 768px) {
+  .client-logos-marquee-track {
+    gap: 5.75rem;
+    padding: 0.75rem 3.25rem;
+  }
+
+  .client-logo {
+    height: 5.25rem;
+    min-width: 5.25rem;
+  }
+
+  .client-logo svg {
+    height: 5.25rem;
+    max-width: 9.5rem;
+  }
+}
+
+.client-logo.is-painted svg {
+  max-width: 8.25rem;
+}
+
+.client-logo:hover {
+  opacity: 1;
+  transform: translateY(-3px) scale(1.06);
+}
+
+.hero-logo-band {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.06) 45%,
+    rgba(0, 0, 0, 0.16) 100%
+  );
+  padding: 0.5rem 0 1.75rem;
+}
+
+.client-logos-marquee.is-hero .client-logo {
+  position: relative;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  padding: 0.35rem 0.45rem;
+  color: #d0d0d0;
+  opacity: 0.78;
+  filter: none;
+  cursor: pointer;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  transition:
+    color 0.35s ease,
+    opacity 0.28s ease,
+    transform 0.28s ease;
+}
+
+.client-logos-marquee.is-hero .client-logo svg {
+  height: 2.5rem;
+  max-width: 5.5rem;
+}
+
+.client-logos-marquee.is-hero .client-logo.is-painted svg {
+  max-width: 6.25rem;
+}
+
+@media (min-width: 768px) {
+  .client-logos-marquee.is-hero .client-logo {
+    height: 3.25rem;
+    min-width: 3.25rem;
+  }
+
+  .client-logos-marquee.is-hero .client-logo svg {
+    height: 3.25rem;
+    max-width: 6.75rem;
+  }
+}
+
+.client-logos-marquee.is-hero .client-logo-paint,
+.client-logos-marquee.is-hero .client-logo-flat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.client-logos-marquee.is-hero .client-logo-paint {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.client-logos-marquee.is-hero .client-logo-flat {
+  position: relative;
+  transition: opacity 0.35s ease;
+}
+
+.client-logos-marquee.is-hero
+  .client-logo-flat
+  :is(path, circle, rect):not(.logo-keep) {
+  fill: currentColor !important;
+}
+
+.client-logos-marquee.is-hero .client-logo-paint .aws-letters {
+  fill: #e8e8e8;
+}
+
+@media (hover: hover) {
+  .client-logos-marquee.is-hero .client-logo:hover {
+    opacity: 1;
+    color: var(--logo-color, #e8e8e8);
+    filter: none;
+    transform: translateY(-2px);
+  }
+
+  .client-logos-marquee.is-hero .client-logo.is-painted:hover {
+    color: #d0d0d0;
+  }
+
+  .client-logos-marquee.is-hero
+    .client-logo.is-painted:hover
+    .client-logo-paint {
+    opacity: 1;
+  }
+
+  .client-logos-marquee.is-hero
+    .client-logo.is-painted:hover
+    .client-logo-flat {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .client-logos-marquee-track {
+    animation: none;
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    row-gap: 2rem;
+  }
+
+  .client-logos-marquee {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+
+.capability-marquee {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.capability-marquee-bg,
+.capability-marquee-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.capability-marquee-bg {
+  background-size: cover;
+  background-position: center;
+  opacity: 0.42;
+}
+
+.capability-marquee-shade {
+  background: rgba(8, 8, 8, 0.58);
+}
+
+.capability-marquee-stage {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 5%,
+    #000 95%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 5%,
+    #000 95%,
+    transparent
+  );
+}
+
+.capability-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: stretch;
+  animation: client-logos-marquee 200s linear infinite;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.capability-marquee-track.is-cards {
+  gap: 0.85rem;
+  padding-inline: var(--section-x);
+}
+
+.capability-marquee-track.is-cards:has(.tool-card:hover),
+.capability-marquee-track.is-cards:has(.tool-card:focus-visible) {
+  animation-play-state: paused;
+}
+
+.tool-card {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  width: min(26.5rem, 84vw);
+  min-height: 0;
+  padding: 1.45rem 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 10, 10, 0.56);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  appearance: none;
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.tool-card-logo {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 2.75rem;
+  color: rgba(255, 255, 255, 0.92);
+  transition: color 0.35s ease;
+}
+
+.tool-card-logo svg {
+  display: block;
+  height: 2.75rem;
+  width: auto;
+  max-width: 7.5rem;
+}
+
+.tool-card-paint,
+.tool-card-flat {
+  display: flex;
+  align-items: center;
+}
+
+.tool-card-paint {
+  position: absolute;
+  inset: 0 auto auto 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.tool-card-flat {
+  transition: opacity 0.35s ease;
+}
+
+.tool-card-flat :is(path, circle, rect):not(.logo-keep) {
+  fill: currentColor !important;
+}
+
+.tool-card-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 0.1rem;
+}
+
+.tool-card-name {
+  font-size: 1.28rem;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.tool-card-use {
+  font-size: 0.98rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+@media (hover: hover) {
+  .tool-card:hover {
+    background: rgba(12, 12, 12, 0.72);
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .tool-card:hover .tool-card-logo {
+    color: var(--logo-color, #e8e8e8);
+  }
+
+  .tool-card.is-painted:hover .tool-card-paint {
+    opacity: 1;
+  }
+
+  .tool-card.is-painted:hover .tool-card-flat {
+    opacity: 0;
+  }
+}
+
+.capability-marquee-track.is-static {
+  animation: none;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: var(--section-max);
+  margin-inline: auto;
+  padding-inline: var(--section-x);
+  row-gap: 0.85rem;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capability-marquee-stage {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .capability-marquee-track {
+    animation: none;
+    transform: none;
+  }
+}

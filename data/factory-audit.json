@@ -1,0 +1,44 @@
+[
+  {
+    "id": "836dd3cd-142b-4ff4-b3bd-9e9991373797",
+    "actorId": null,
+    "actorType": "mcp",
+    "action": "mcp.tool_executed",
+    "resourceType": "mcp",
+    "resourceId": "readResource",
+    "projectId": null,
+    "result": "ok",
+    "meta": {
+      "tool": "readResource"
+    },
+    "createdAt": "2026-09-18T08:12:38.343Z"
+  },
+  {
+    "id": "b1e987c4-f170-47a5-b58b-c2609aeeb276",
+    "actorId": null,
+    "actorType": "mcp",
+    "action": "mcp.tool_executed",
+    "resourceType": "mcp",
+    "resourceId": "listTools",
+    "projectId": null,
+    "result": "ok",
+    "meta": {
+      "tool": "listTools"
+    },
+    "createdAt": "2026-09-18T08:12:38.334Z"
+  },
+  {
+    "id": "a3e9e541-9c3d-4ba0-adeb-4e76a4709b89",
+    "actorId": null,
+    "actorType": "mcp",
+    "action": "mcp.tool_executed",
+    "resourceType": "mcp",
+    "resourceId": "listResources",
+    "projectId": null,
+    "result": "ok",
+    "meta": {
+      "tool": "listResources"
+    },
+    "createdAt": "2026-09-18T08:12:38.317Z"
+  }
+]

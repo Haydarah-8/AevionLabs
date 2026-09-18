@@ -1,0 +1,343 @@
+html:has(.lost-404) .site-footer {
+  display: none !important;
+}
+
+.lost-page {
+  width: 100%;
+  max-width: var(--section-max);
+  margin: 0 auto;
+  padding: 8.5rem var(--section-x) var(--section-y);
+}
+
+.lost-404 {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  padding: 7.25rem var(--section-x) 3.5rem;
+  text-align: center;
+}
+
+.lost-404 .site-display {
+  max-width: none;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  font-size: clamp(1.55rem, 2.8vw, 2.15rem);
+}
+
+.lost-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lost-face-wrap {
+  color: #111;
+}
+
+.lost-face {
+  display: block;
+  width: clamp(4.1rem, 9.5vw, 5.75rem);
+  height: auto;
+  overflow: visible;
+}
+
+.lost-face-ring,
+.lost-face-mouth {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lost-face-ring {
+  stroke-width: 1.55;
+}
+
+.lost-face-mouth {
+  stroke-width: 1.7;
+}
+
+.lost-eye {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lost-face.is-blink .lost-eye {
+  animation: lost-blink 0.16s ease-in-out;
+}
+
+.lost-code {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 0.55rem 0 0;
+  font-size: clamp(4.75rem, 14vw + 4vh, 9.75rem);
+  font-weight: 400;
+  letter-spacing: -0.07em;
+  line-height: 0.88;
+  color: #111;
+  font-variant-numeric: tabular-nums;
+}
+
+.lost-code-spin {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.04em;
+  height: 0.88em;
+}
+
+.lost-code-spin.is-glitch {
+  animation: lost-glitch 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lost-reel {
+  display: block;
+  width: 0.62em;
+  height: 0.88em;
+  overflow: hidden;
+}
+
+.lost-reel-strip {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.lost-reel-n {
+  display: flex;
+  height: 0.88em;
+  align-items: center;
+  justify-content: center;
+}
+
+.lost-rule {
+  display: block;
+  width: min(9.5rem, 36vw);
+  height: 1px;
+  margin-top: 1.5rem;
+  background: #111;
+  transform-origin: center;
+}
+
+.lost-char {
+  display: inline-block;
+}
+
+.lost-404 .lost-links span {
+  display: inline-flex;
+}
+
+.lost-lede {
+  margin: 1.15rem 0 0;
+  max-width: 28rem;
+  font-size: 1.125rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: #3f3f3f;
+}
+
+.lost-404 .lost-lede {
+  margin-top: 0.85rem;
+}
+
+.lost-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin-top: 2.25rem;
+}
+
+.lost-404 .lost-links {
+  justify-content: center;
+  margin-top: 1.85rem;
+}
+
+.lost-links a,
+.lost-links button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #111;
+  cursor: pointer;
+  font-size: 1.05rem;
+  text-decoration: underline;
+  text-decoration-color: rgba(17, 17, 17, 0.28);
+  text-underline-offset: 4px;
+}
+
+.lost-pop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  background: rgba(8, 8, 8, 0.62);
+  isolation: isolate;
+  mix-blend-mode: normal;
+}
+
+.lost-pop {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(42rem, 100%);
+  height: min(32rem, 80vh);
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(17, 17, 17, 0.15);
+  color: #111;
+  isolation: isolate;
+  mix-blend-mode: normal;
+}
+
+html.is-lost-pop .navbar_container.u-container {
+  mix-blend-mode: normal;
+}
+
+html.is-lost-pop .lost-404 {
+  visibility: hidden;
+}
+
+.lost-pop-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.35rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.15);
+}
+
+.lost-pop-bar p {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.lost-pop-bar button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #111;
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-decoration-color: rgba(17, 17, 17, 0.28);
+  text-underline-offset: 4px;
+}
+
+.lost-pop-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #ffffff;
+}
+
+.lost-play-hud {
+  margin: 0;
+  padding: 1.15rem 1.35rem 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.lost-type {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff;
+  outline: none;
+}
+
+.lost-type.is-flash {
+  background: #111;
+  color: #fff;
+}
+
+.lost-type-timer {
+  height: 1px;
+  margin: 0.85rem 1.35rem 0;
+  background: rgba(17, 17, 17, 0.14);
+}
+
+.lost-type-timer > span {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  transform-origin: left center;
+}
+
+.lost-type-line {
+  margin: 1.75rem 1.35rem 0;
+  max-width: 18ch;
+  font-size: clamp(1.65rem, 4vw, 2.6rem);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.lost-type-line .is-rest {
+  opacity: 0.28;
+}
+
+.lost-type-hint {
+  margin: 1.1rem 1.35rem 0;
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: #3f3f3f;
+}
+
+@keyframes lost-blink {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.08);
+  }
+}
+
+@keyframes lost-glitch {
+  0%,
+  100% {
+    transform: none;
+    filter: none;
+  }
+  12% {
+    transform: translateX(-9px) skewX(-8deg);
+    filter: blur(0.4px);
+  }
+  28% {
+    transform: translateX(11px) skewX(6deg);
+  }
+  46% {
+    transform: translateX(-5px);
+    filter: blur(0.2px);
+  }
+  64% {
+    transform: translateX(4px) skewX(-2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lost-face,
+  .lost-face.is-blink .lost-eye,
+  .lost-code-spin.is-glitch,
+  .lost-reel-strip {
+    animation: none !important;
+    transition: none !important;
+  }
+}

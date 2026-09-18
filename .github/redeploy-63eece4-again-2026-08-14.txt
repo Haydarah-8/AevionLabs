@@ -1,0 +1,7 @@
+Reapplying admin feature commit 63eece4880a9e95e5a6dd2128d027f002c86ef15 — retrigger attempt.
+
+This lightweight file is created to force a new commit on the default branch so the deployment system (Vercel/CI) will pick up the latest admin changes. It does not modify application source files.
+
+Original commit: https://github.com/EWG-ppURL/EWG/commit/63eece4880a9e95e5a6dd2128d027f002c86ef15
+
+If this does not trigger a deployment, ensure the project is linked to the main branch in your hosting provider and that no branch protection or required checks are blocking builds.
