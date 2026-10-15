@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 
-export type StyleBox = {
+/** Layout/type/appearance tokens (no nested responsive bag). */
+export type StyleTokens = {
   display?: string;
   direction?: string;
   wrap?: string;
@@ -36,6 +37,17 @@ export type StyleBox = {
   position?: string;
   zIndex?: string;
   shadow?: string;
+};
+
+/**
+ * Component style bag. Top-level tokens = desktop/base.
+ * Overrides: `styles.responsive.tablet` / `styles.responsive.mobile`.
+ */
+export type StyleBox = StyleTokens & {
+  responsive?: {
+    tablet?: StyleTokens;
+    mobile?: StyleTokens;
+  };
 };
 
 export const defaultBoxStyle: StyleBox = {
@@ -92,57 +104,60 @@ const SHADOWS: Record<string, string> = {
   lg: "0 18px 48px rgba(0,0,0,.16)",
 };
 
-export function boxStyleToCss(box?: StyleBox | null): CSSProperties {
+export function boxStyleToCss(box?: StyleTokens | StyleBox | null): CSSProperties {
   if (!box) return {};
+  const { responsive: _ignored, ...tokens } = box as StyleBox;
   const style: CSSProperties = {};
+  const b = tokens as StyleTokens;
 
-  if (box.display && box.display !== "block") style.display = box.display as CSSProperties["display"];
-  if (box.display === "flex" || box.display === "inline-flex") {
-    style.flexDirection = (box.direction || "row") as CSSProperties["flexDirection"];
-    style.flexWrap = (box.wrap || "nowrap") as CSSProperties["flexWrap"];
-    style.alignItems = (box.align || "stretch") as CSSProperties["alignItems"];
-    style.justifyContent = (box.justify || "flex-start") as CSSProperties["justifyContent"];
+  if (b.display && b.display !== "block")
+    style.display = b.display as CSSProperties["display"];
+  if (b.display === "flex" || b.display === "inline-flex") {
+    style.flexDirection = (b.direction || "row") as CSSProperties["flexDirection"];
+    style.flexWrap = (b.wrap || "nowrap") as CSSProperties["flexWrap"];
+    style.alignItems = (b.align || "stretch") as CSSProperties["alignItems"];
+    style.justifyContent = (b.justify || "flex-start") as CSSProperties["justifyContent"];
   }
-  if (box.display === "grid") {
-    const cols = Number(box.gridCols || "2") || 2;
+  if (b.display === "grid") {
+    const cols = Number(b.gridCols || "2") || 2;
     style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-    style.alignItems = (box.align || "stretch") as CSSProperties["alignItems"];
-    style.justifyContent = (box.justify || "flex-start") as CSSProperties["justifyContent"];
+    style.alignItems = (b.align || "stretch") as CSSProperties["alignItems"];
+    style.justifyContent = (b.justify || "flex-start") as CSSProperties["justifyContent"];
   }
-  if (box.gap) style.gap = unit(box.gap);
-  if (box.width) style.width = unit(box.width, "%");
-  if (box.maxWidth) style.maxWidth = unit(box.maxWidth);
-  if (box.minHeight) style.minHeight = unit(box.minHeight);
-  if (box.height) style.height = unit(box.height);
-  if (box.paddingTop) style.paddingTop = unit(box.paddingTop);
-  if (box.paddingRight) style.paddingRight = unit(box.paddingRight);
-  if (box.paddingBottom) style.paddingBottom = unit(box.paddingBottom);
-  if (box.paddingLeft) style.paddingLeft = unit(box.paddingLeft);
-  if (box.marginTop) style.marginTop = unit(box.marginTop);
-  if (box.marginRight) style.marginRight = unit(box.marginRight);
-  if (box.marginBottom) style.marginBottom = unit(box.marginBottom);
-  if (box.marginLeft) style.marginLeft = unit(box.marginLeft);
-  if (box.background) style.background = box.background;
-  if (box.color) style.color = box.color;
-  if (box.fontSize) style.fontSize = unit(box.fontSize);
-  if (box.fontWeight) style.fontWeight = box.fontWeight as CSSProperties["fontWeight"];
-  if (box.lineHeight) style.lineHeight = box.lineHeight;
-  if (box.letterSpacing) style.letterSpacing = unit(box.letterSpacing);
-  if (box.textAlign) style.textAlign = box.textAlign as CSSProperties["textAlign"];
-  if (box.borderWidth) {
-    style.borderWidth = unit(box.borderWidth);
-    style.borderStyle = (box.borderStyle || "solid") as CSSProperties["borderStyle"];
-    if (box.borderColor) style.borderColor = box.borderColor;
+  if (b.gap) style.gap = unit(b.gap);
+  if (b.width) style.width = unit(b.width, "%");
+  if (b.maxWidth) style.maxWidth = unit(b.maxWidth);
+  if (b.minHeight) style.minHeight = unit(b.minHeight);
+  if (b.height) style.height = unit(b.height);
+  if (b.paddingTop) style.paddingTop = unit(b.paddingTop);
+  if (b.paddingRight) style.paddingRight = unit(b.paddingRight);
+  if (b.paddingBottom) style.paddingBottom = unit(b.paddingBottom);
+  if (b.paddingLeft) style.paddingLeft = unit(b.paddingLeft);
+  if (b.marginTop) style.marginTop = unit(b.marginTop);
+  if (b.marginRight) style.marginRight = unit(b.marginRight);
+  if (b.marginBottom) style.marginBottom = unit(b.marginBottom);
+  if (b.marginLeft) style.marginLeft = unit(b.marginLeft);
+  if (b.background) style.background = b.background;
+  if (b.color) style.color = b.color;
+  if (b.fontSize) style.fontSize = unit(b.fontSize);
+  if (b.fontWeight) style.fontWeight = b.fontWeight as CSSProperties["fontWeight"];
+  if (b.lineHeight) style.lineHeight = b.lineHeight;
+  if (b.letterSpacing) style.letterSpacing = unit(b.letterSpacing);
+  if (b.textAlign) style.textAlign = b.textAlign as CSSProperties["textAlign"];
+  if (b.borderWidth) {
+    style.borderWidth = unit(b.borderWidth);
+    style.borderStyle = (b.borderStyle || "solid") as CSSProperties["borderStyle"];
+    if (b.borderColor) style.borderColor = b.borderColor;
   }
-  if (box.radius) style.borderRadius = unit(box.radius);
-  if (box.opacity) style.opacity = Number(box.opacity);
-  if (box.overflow) style.overflow = box.overflow as CSSProperties["overflow"];
-  if (box.position && box.position !== "static") {
-    style.position = box.position as CSSProperties["position"];
+  if (b.radius) style.borderRadius = unit(b.radius);
+  if (b.opacity) style.opacity = Number(b.opacity);
+  if (b.overflow) style.overflow = b.overflow as CSSProperties["overflow"];
+  if (b.position && b.position !== "static") {
+    style.position = b.position as CSSProperties["position"];
   }
-  if (box.zIndex) style.zIndex = Number(box.zIndex);
-  if (box.shadow && box.shadow !== "none") {
-    style.boxShadow = SHADOWS[box.shadow] || box.shadow;
+  if (b.zIndex) style.zIndex = Number(b.zIndex);
+  if (b.shadow && b.shadow !== "none") {
+    style.boxShadow = SHADOWS[b.shadow] || b.shadow;
   }
   return style;
 }

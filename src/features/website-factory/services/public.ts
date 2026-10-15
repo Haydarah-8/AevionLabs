@@ -1,6 +1,12 @@
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
-import type { Business, PuckData, SeoConfig, ThemeTokens } from "../types";
-import { asPuckOrNull, asTheme, getProjectBySlug } from "./store";
+import type {
+  Business,
+  PageDocument,
+  SeoConfig,
+  SiteConfig,
+  ThemeTokens,
+} from "../types";
+import { asPageDocumentOrNull, asSiteConfig, asTheme, getProjectBySlug } from "./store";
 import { isMissingTable } from "./persistence";
 
 export type PublicMode = "preview" | "live" | "draft";
@@ -8,14 +14,16 @@ export type PublicMode = "preview" | "live" | "draft";
 export type PublicFactoryPage = {
   slug: string;
   title: string;
-  data: PuckData | null;
+  data: PageDocument | null;
 };
 
 export type PublicFactorySite = {
   slug: string;
   name: string;
   status: string;
+  editorEngine: "puck";
   theme: ThemeTokens;
+  siteConfig: SiteConfig;
   seo: SeoConfig;
   faviconUrl: string;
   business: Pick<
@@ -31,6 +39,7 @@ export type PublicFactorySite = {
     | "openingHours"
     | "social"
     | "industry"
+    | "website"
   >;
   pages: PublicFactoryPage[];
 };
@@ -71,7 +80,9 @@ export async function getPublicFactorySite(
       slug: bundle.project.slug,
       name: bundle.project.name,
       status: bundle.project.status,
+      editorEngine: bundle.project.editorEngine ?? "puck",
       theme: bundle.project.theme,
+      siteConfig: bundle.project.siteConfig,
       seo: bundle.project.seoConfig,
       faviconUrl: bundle.business.faviconUrl,
       business: {
@@ -86,6 +97,7 @@ export async function getPublicFactorySite(
         openingHours: bundle.business.openingHours,
         social: bundle.business.social,
         industry: bundle.business.industry,
+        website: bundle.business.website,
       },
       pages: bundle.pages.map((page) => ({
         slug: page.slug,
@@ -97,14 +109,34 @@ export async function getPublicFactorySite(
 
   try {
     const db = getSupabaseAdmin();
-    const { data: project, error } = await db
-      .from("website_projects")
-      .select("id, slug, name, status, theme, seo_config, business_id")
-      .eq("slug", slug)
-      .maybeSingle();
-    if (error) {
-      if (isMissingTable(error)) return fromFiles();
-      throw new Error(error.message);
+    let project: Record<string, unknown> | null = null;
+    {
+      const first = await db
+        .from("website_projects")
+        .select(
+          "id, slug, name, status, theme, seo_config, site_config, business_id, editor_engine",
+        )
+        .eq("slug", slug)
+        .maybeSingle();
+      if (first.error) {
+        if (isMissingTable(first.error)) return fromFiles();
+        if (String(first.error.message || "").includes("editor_engine")) {
+          const retry = await db
+            .from("website_projects")
+            .select("id, slug, name, status, theme, seo_config, site_config, business_id")
+            .eq("slug", slug)
+            .maybeSingle();
+          if (retry.error) {
+            if (isMissingTable(retry.error)) return fromFiles();
+            throw new Error(retry.error.message);
+          }
+          project = (retry.data as Record<string, unknown> | null) ?? null;
+        } else {
+          throw new Error(first.error.message);
+        }
+      } else {
+        project = (first.data as Record<string, unknown> | null) ?? null;
+      }
     }
     if (!project) return fromFiles();
 
@@ -125,7 +157,7 @@ export async function getPublicFactorySite(
     const { data: business, error: businessError } = await db
       .from("businesses")
       .select(
-        "name, tagline, description, logo_url, favicon_url, phone, email, address, postcode, opening_hours, social, industry",
+        "name, tagline, description, logo_url, favicon_url, phone, email, address, postcode, opening_hours, social, industry, website",
       )
       .eq("id", project.business_id)
       .maybeSingle();
@@ -136,7 +168,9 @@ export async function getPublicFactorySite(
       slug: String(project.slug),
       name: String(project.name ?? ""),
       status: String(project.status ?? ""),
+      editorEngine: "puck" as const,
       theme: asTheme(project.theme),
+      siteConfig: asSiteConfig(project.site_config),
       seo: asSeo(project.seo_config),
       faviconUrl: String(business.favicon_url ?? ""),
       business: {
@@ -151,13 +185,14 @@ export async function getPublicFactorySite(
         openingHours: asStringRecord(business.opening_hours),
         social: asStringRecord(business.social),
         industry: String(business.industry ?? ""),
+        website: String(business.website ?? ""),
       },
       pages: (pages ?? []).map((row) => {
         const record = row as Record<string, unknown>;
         return {
           slug: String(record.slug ?? ""),
           title: String(record.title ?? ""),
-          data: asPuckOrNull(record[dataColumn]),
+          data: asPageDocumentOrNull(record[dataColumn]),
         };
       }),
     };

@@ -8,35 +8,34 @@ import { LivePulse } from "@/components/admin/LivePulse";
 import { signOutAdmin, useAdminGuard } from "@/components/admin/useAdminGuard";
 import { useVisitorFeedContext } from "@/components/admin/VisitorFeedProvider";
 import { VisitorsLauncher } from "@/components/admin/VisitorsLauncher";
+import { WebsiteSwitcher } from "@/components/admin/WebsiteSwitcher";
 
+/** Unified Aevion control centre */
 const NAV = [
   { href: "/admin", label: "Overview", match: "exact" as const },
-  { href: "/admin/websites", label: "Editor", match: "prefix" as const },
+  { href: "/admin/websites", label: "Websites", match: "prefix" as const },
   {
     href: "/admin/websites/templates",
     label: "Templates",
     match: "exact" as const,
   },
-  { href: "/admin/developer", label: "Platform", match: "prefix" as const },
-  { href: "/admin/blog", label: "Insights", match: "prefix" as const },
-  { href: "/admin/gallery", label: "Gallery", match: "prefix" as const },
-  { href: "/admin/settings", label: "Settings", match: "prefix" as const },
+  { href: "/admin/blog", label: "Content", match: "prefix" as const },
+  { href: "/admin/gallery", label: "Assets", match: "prefix" as const },
+  { href: "/admin/developer", label: "Developer", match: "prefix" as const },
+  { href: "/admin/settings", label: "System", match: "prefix" as const },
 ];
 
 const DESCRIPTIONS: Record<string, string> = {
   "/admin": "Traffic, audit stream, and time — one control surface",
-  "/admin/websites": "Create, edit, and publish client websites in Studio",
+  "/admin/websites": "Websites, Studio, publish, and deploy",
   "/admin/websites/templates": "Starter templates — use as a base, then edit",
   "/admin/developer": "API, MCP, Skills, Connect, and Core audit",
-  "/admin/blog": "Write and publish insights",
-  "/admin/gallery": "Visual feed of coverage and media",
+  "/admin/blog": "Agency content — posts and drafts",
+  "/admin/gallery": "Shared media and visual feed",
   "/admin/settings": "Agency name, emails, footer, and shared images",
 };
 
-function isActive(
-  pathname: string,
-  item: (typeof NAV)[number],
-) {
+function isActive(pathname: string, item: (typeof NAV)[number]) {
   if (item.href === "/admin/websites/templates") {
     return pathname === item.href || pathname.startsWith(`${item.href}/`);
   }
@@ -123,7 +122,8 @@ export function AdminShell({
               })}
             </nav>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <WebsiteSwitcher />
             <LivePulse count={liveCount} />
             <motion.button
               onClick={() => void signOutAdmin()}

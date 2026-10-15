@@ -5,11 +5,9 @@
 
 import {
   addPage,
-  createWebsiteFromWizard,
   deletePage,
   getWebsite,
   listTemplates,
-  listWebsites,
   publishWebsiteLive,
   publishWebsitePreview,
   regenerateWebsite,
@@ -33,13 +31,14 @@ import {
   addPageComponent,
   listComponentSchemas,
   listPageComponents,
+  listRegisteredComponentTypes,
   movePageComponent,
   removePageComponent,
   updatePageComponent,
 } from "../application/components";
 import { emitFactoryEvent } from "../application/events";
+import { aevionCommands } from "@/lib/aevion/commands";
 import { assertPublicHttpUrl } from "../intelligence/ssrf";
-import { COMPONENT_META } from "../puck/meta";
 
 export const MCP_TOOLS = [
   {
@@ -50,7 +49,8 @@ export const MCP_TOOLS = [
   },
   {
     name: "listResources",
-    description: "List read-only MCP resources (schemas, tokens, OpenAPI summary)",
+    description:
+      "List read-only MCP resources (schemas, tokens, OpenAPI summary)",
     inputSchema: { type: "object", properties: {} },
     scopes: ["mcp:use"],
   },
@@ -72,7 +72,8 @@ export const MCP_TOOLS = [
   },
   {
     name: "createWebsite",
-    description: "Create a website from wizard fields (name, templateId, businessName…)",
+    description:
+      "Create a website from wizard fields (name, templateId, businessName…)",
     inputSchema: {
       type: "object",
       properties: {
@@ -359,7 +360,8 @@ export const MCP_TOOLS = [
   },
   {
     name: "approveImport",
-    description: "Alias of applyScrape — approve scraped import into draft pages",
+    description:
+      "Alias of applyScrape — approve scraped import into draft pages",
     inputSchema: {
       type: "object",
       properties: {
@@ -404,7 +406,8 @@ export const MCP_RESOURCES = [
 
 function hasScope(scopes: Set<string>, needed: string[]) {
   const resourceScopes = needed.filter((scope) => scope !== "mcp:use");
-  if (!resourceScopes.length) return scopes.has("mcp:use") || needed.some((s) => scopes.has(s));
+  if (!resourceScopes.length)
+    return scopes.has("mcp:use") || needed.some((s) => scopes.has(s));
   return resourceScopes.some((scope) => scopes.has(scope));
 }
 
@@ -446,13 +449,24 @@ async function readMcpResource(uri: string) {
           "accent",
           "background",
           "foreground",
-          "muted",
-          "fontSans",
-          "fontDisplay",
+          "headingFont",
+          "bodyFont",
           "radius",
-          "buttonRadius",
+          "variables",
         ],
-        componentTypes: Object.keys(COMPONENT_META),
+        cssVars: [
+          "--wf-primary",
+          "--wf-secondary",
+          "--wf-accent",
+          "--wf-bg",
+          "--wf-fg",
+          "--wf-heading",
+          "--wf-body",
+          "--wf-radius",
+          "--wf-var-{key}",
+        ],
+        shorthands: ["$primary", "theme.accent", "$var.{key}"],
+        componentTypes: listRegisteredComponentTypes(),
       };
     default:
       throw new Error(`Unknown resource: ${uri}`);
@@ -491,7 +505,7 @@ export async function executeMcpTool(input: {
       result = await readMcpResource(String(args.uri || ""));
       break;
     case "listWebsites":
-      result = await listWebsites();
+      result = await aevionCommands.listWebsites();
       break;
     case "createWebsite": {
       const wizard =
@@ -501,7 +515,10 @@ export async function executeMcpTool(input: {
           templateId: args.templateId || "service-local",
           name: args.name,
         } as Record<string, unknown>);
-      result = await createWebsiteFromWizard(wizard as never, input.actorId);
+      result = await aevionCommands.createWebsite(
+        { wizard },
+        { actorId: input.actorId },
+      );
       break;
     }
     case "getWebsite":

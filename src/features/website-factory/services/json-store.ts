@@ -4,7 +4,11 @@ import { SEEDED_TEMPLATES } from "../templates/seeds";
 import {
   DEFAULT_THEME,
   emptyPuck,
+  isLegacyHtmlDocument,
+  isPuckData,
   type Business,
+  type EditorEngineKind,
+  type PageDocument,
   type PuckData,
   type ProjectBundle,
   type ProjectStatus,
@@ -24,6 +28,19 @@ import { getSiteUrl } from "@/lib/site";
 export { SEEDED_TEMPLATES };
 
 const FILE = path.join(process.cwd(), "data", "website-factory.json");
+const FILE_TMP = `${FILE}.tmp`;
+
+/** Serialize mutations so concurrent creates cannot wipe each other. */
+let writeChain: Promise<unknown> = Promise.resolve();
+
+function enqueueWrite<T>(fn: () => Promise<T>): Promise<T> {
+  const run = writeChain.then(fn, fn);
+  writeChain = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
 
 type Db = {
   businesses: Business[];
@@ -67,37 +84,61 @@ async function load(): Promise<Db> {
   try {
     const raw = await fs.readFile(FILE, "utf8");
     const parsed = JSON.parse(raw) as Db;
+    if (!Array.isArray(parsed.projects)) parsed.projects = [];
+    if (!Array.isArray(parsed.businesses)) parsed.businesses = [];
+    if (!Array.isArray(parsed.pages)) parsed.pages = [];
     if (!parsed.templates?.length) parsed.templates = SEEDED_TEMPLATES;
     const known = new Set(parsed.templates.map((item) => item.id));
     for (const seed of SEEDED_TEMPLATES) {
       if (!known.has(seed.id)) parsed.templates.push(seed);
     }
+    for (const project of parsed.projects ?? []) {
+      if (!project.editorEngine) {
+        (project as WebsiteProject).editorEngine = "puck";
+      }
+    }
     return parsed;
-  } catch {
-    const initial: Db = {
-      businesses: [],
-      templates: SEEDED_TEMPLATES,
-      projects: [],
-      pages: [],
-      versions: [],
-      deployments: [],
-      domains: [],
-    };
-    await save(initial);
-    return initial;
+  } catch (err) {
+    const code =
+      err && typeof err === "object" && "code" in err
+        ? String((err as { code?: string }).code)
+        : "";
+    // Only seed a new file when it truly does not exist — never wipe on parse/lock errors.
+    if (code === "ENOENT") {
+      const initial: Db = {
+        businesses: [],
+        templates: SEEDED_TEMPLATES,
+        projects: [],
+        pages: [],
+        versions: [],
+        deployments: [],
+        domains: [],
+      };
+      await save(initial);
+      return initial;
+    }
+    throw new Error(
+      `Could not read website factory store at ${FILE}: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
   }
 }
 
 async function save(db: Db) {
   await fs.mkdir(path.dirname(FILE), { recursive: true });
-  await fs.writeFile(FILE, JSON.stringify(db, null, 2), "utf8");
+  const payload = JSON.stringify(db, null, 2);
+  await fs.writeFile(FILE_TMP, payload, "utf8");
+  await fs.rename(FILE_TMP, FILE);
 }
 
 async function mutate<T>(fn: (db: Db) => T | Promise<T>) {
-  const db = await load();
-  const result = await fn(db);
-  await save(db);
-  return result;
+  return enqueueWrite(async () => {
+    const db = await load();
+    const result = await fn(db);
+    await save(db);
+    return result;
+  });
 }
 
 export async function listTemplates() {
@@ -108,8 +149,9 @@ export async function listTemplates() {
 export async function getTemplate(id: string) {
   const db = await load();
   return (
-    db.templates.find((item) => item.id === id || item.definitionKey === id || item.slug === id) ??
-    null
+    db.templates.find(
+      (item) => item.id === id || item.definitionKey === id || item.slug === id,
+    ) ?? null
   );
 }
 
@@ -143,12 +185,16 @@ export async function getBusiness(id: string) {
 
 export async function upsertBusiness(input: BusinessFields, id?: string) {
   return mutate((db) => {
-    const existing = id ? db.businesses.find((item) => item.id === id) : undefined;
+    const existing = id
+      ? db.businesses.find((item) => item.id === id)
+      : undefined;
     const businessId = existing?.id ?? nid();
-    const slug = existing?.slug ?? unique(
-      db.businesses.map((item) => item.slug),
-      input.slug || input.name,
-    );
+    const slug =
+      existing?.slug ??
+      unique(
+        db.businesses.map((item) => item.slug),
+        input.slug || input.name,
+      );
     const business: Business = {
       id: businessId,
       name: input.name,
@@ -223,8 +269,12 @@ export async function listProjects() {
     .slice()
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
     .map((project) => {
-      const business = db.businesses.find((item) => item.id === project.businessId);
-      const template = db.templates.find((item) => item.id === project.templateId);
+      const business = db.businesses.find(
+        (item) => item.id === project.businessId,
+      );
+      const template = db.templates.find(
+        (item) => item.id === project.templateId,
+      );
       return {
         ...project,
         businessName: business?.name ?? "",
@@ -277,6 +327,7 @@ export async function createProject(input: {
   name?: string;
   slug?: string;
   theme?: ThemeTokens;
+  editorEngine?: EditorEngineKind;
 }) {
   return mutate((db) => {
     const business = db.businesses.find((item) => item.id === input.businessId);
@@ -299,6 +350,7 @@ export async function createProject(input: {
         input.slug || business.slug,
       ),
       status: "draft",
+      editorEngine: "puck" as const,
       theme: input.theme ?? DEFAULT_THEME,
       siteConfig: {
         stickyHeader: true,
@@ -351,14 +403,19 @@ export async function updateProject(
     if (patch.theme) project.theme = patch.theme;
     if (patch.siteConfig) project.siteConfig = patch.siteConfig;
     if (patch.seoConfig) project.seoConfig = patch.seoConfig;
-    if (patch.deploymentStatus) project.deploymentStatus = patch.deploymentStatus;
-    if (patch.deploymentProvider) project.deploymentProvider = patch.deploymentProvider;
-    if (patch.deploymentUrl !== undefined) project.deploymentUrl = patch.deploymentUrl;
+    if (patch.deploymentStatus)
+      project.deploymentStatus = patch.deploymentStatus;
+    if (patch.deploymentProvider)
+      project.deploymentProvider = patch.deploymentProvider;
+    if (patch.deploymentUrl !== undefined)
+      project.deploymentUrl = patch.deploymentUrl;
     if (patch.publishedVersionId !== undefined) {
       project.publishedVersionId = patch.publishedVersionId;
     }
-    if (patch.publishedAt !== undefined) project.publishedAt = patch.publishedAt;
-    if (patch.customDomain !== undefined) project.customDomain = patch.customDomain;
+    if (patch.publishedAt !== undefined)
+      project.publishedAt = patch.publishedAt;
+    if (patch.customDomain !== undefined)
+      project.customDomain = patch.customDomain;
     project.updatedAt = now();
   });
 }
@@ -371,7 +428,7 @@ export async function replaceProjectPages(
     navLabel: string;
     showInNav: boolean;
     navOrder: number;
-    draftData: PuckData;
+    draftData: PageDocument;
   }>,
 ) {
   await mutate((db) => {
@@ -394,7 +451,7 @@ export async function replaceProjectPages(
   });
 }
 
-export async function savePageDraft(pageId: string, draftData: PuckData) {
+export async function savePageDraft(pageId: string, draftData: PageDocument) {
   await mutate((db) => {
     const page = db.pages.find((item) => item.id === pageId);
     if (!page) throw new Error("Page not found");
@@ -405,9 +462,17 @@ export async function savePageDraft(pageId: string, draftData: PuckData) {
   });
 }
 
-function chromeFrom(page?: WebsitePage): PuckData {
+function chromeFrom(
+  page?: WebsitePage,
+  _engine?: EditorEngineKind,
+): PageDocument {
+  if (page && isLegacyHtmlDocument(page.draftData)) {
+    return emptyPuck();
+  }
   const types = new Set(["AnnouncementBar", "Navbar", "CTA", "Footer"]);
-  const content = (page?.draftData.content ?? []).filter((node) => types.has(node.type));
+  const content = (
+    isPuckData(page?.draftData) ? page!.draftData.content : []
+  ).filter((node) => types.has(node.type));
   return { root: { props: { title: "" } }, content };
 }
 
@@ -430,8 +495,9 @@ export async function addPage(
       title: input.title.trim() || "Page",
       navLabel: input.title.trim() || "Page",
       showInNav: input.showInNav !== false,
-      navOrder: existing.reduce((max, item) => Math.max(max, item.navOrder), -1) + 1,
-      draftData: chromeFrom(existing[0]),
+      navOrder:
+        existing.reduce((max, item) => Math.max(max, item.navOrder), -1) + 1,
+      draftData: chromeFrom(existing[0], project.editorEngine),
       previewData: null,
       publishedData: null,
       updatedAt: now(),
@@ -444,7 +510,13 @@ export async function addPage(
 
 export async function updatePage(
   pageId: string,
-  patch: Partial<{ title: string; slug: string; navLabel: string; showInNav: boolean; navOrder: number }>,
+  patch: Partial<{
+    title: string;
+    slug: string;
+    navLabel: string;
+    showInNav: boolean;
+    navOrder: number;
+  }>,
 ) {
   return mutate((db) => {
     const page = db.pages.find((item) => item.id === pageId);
@@ -457,8 +529,13 @@ export async function updatePage(
     if (patch.showInNav !== undefined) page.showInNav = patch.showInNav;
     if (patch.navOrder !== undefined) page.navOrder = patch.navOrder;
     if (patch.slug) {
-      const siblings = db.pages.filter((item) => item.projectId === page.projectId && item.id !== page.id);
-      page.slug = unique(siblings.map((item) => item.slug), patch.slug);
+      const siblings = db.pages.filter(
+        (item) => item.projectId === page.projectId && item.id !== page.id,
+      );
+      page.slug = unique(
+        siblings.map((item) => item.slug),
+        patch.slug,
+      );
     }
     page.updatedAt = now();
     return page;
@@ -469,8 +546,11 @@ export async function deletePage(pageId: string) {
   return mutate((db) => {
     const page = db.pages.find((item) => item.id === pageId);
     if (!page) throw new Error("Page not found");
-    const siblings = db.pages.filter((item) => item.projectId === page.projectId);
-    if (siblings.length < 2) throw new Error("A website needs at least one page");
+    const siblings = db.pages.filter(
+      (item) => item.projectId === page.projectId,
+    );
+    if (siblings.length < 2)
+      throw new Error("A website needs at least one page");
     db.pages = db.pages.filter((item) => item.id !== pageId);
     return { ok: true };
   });
@@ -480,15 +560,21 @@ export async function duplicatePage(pageId: string) {
   return mutate((db) => {
     const page = db.pages.find((item) => item.id === pageId);
     if (!page) throw new Error("Page not found");
-    const siblings = db.pages.filter((item) => item.projectId === page.projectId);
+    const siblings = db.pages.filter(
+      (item) => item.projectId === page.projectId,
+    );
     const copy: WebsitePage = {
       ...page,
       id: nid(),
-      slug: unique(siblings.map((item) => item.slug), `${page.slug}-copy`),
+      slug: unique(
+        siblings.map((item) => item.slug),
+        `${page.slug}-copy`,
+      ),
       title: `${page.title} copy`,
       navLabel: `${page.navLabel} copy`,
-      navOrder: siblings.reduce((max, item) => Math.max(max, item.navOrder), -1) + 1,
-      draftData: JSON.parse(JSON.stringify(page.draftData)) as PuckData,
+      navOrder:
+        siblings.reduce((max, item) => Math.max(max, item.navOrder), -1) + 1,
+      draftData: JSON.parse(JSON.stringify(page.draftData)) as PageDocument,
       previewData: null,
       publishedData: null,
       updatedAt: now(),
@@ -501,7 +587,9 @@ export async function duplicatePage(pageId: string) {
 export async function reorderPages(projectId: string, pageIds: string[]) {
   await mutate((db) => {
     pageIds.forEach((id, index) => {
-      const page = db.pages.find((item) => item.id === id && item.projectId === projectId);
+      const page = db.pages.find(
+        (item) => item.id === id && item.projectId === projectId,
+      );
       if (page) page.navOrder = index;
     });
   });
@@ -511,7 +599,9 @@ export async function publishPreview(projectId: string) {
   const bundle = await mutate((db) => {
     const project = db.projects.find((item) => item.id === projectId);
     if (!project) throw new Error("Project not found");
-    for (const page of db.pages.filter((item) => item.projectId === projectId)) {
+    for (const page of db.pages.filter(
+      (item) => item.projectId === projectId,
+    )) {
       page.previewData = page.draftData;
       page.updatedAt = now();
     }
@@ -523,14 +613,24 @@ export async function publishPreview(projectId: string) {
   return `${getSiteUrl()}/p/${bundle.project.slug}`;
 }
 
-export async function publishLive(projectId: string, authorId?: string | null) {
+export async function publishLive(
+  projectId: string,
+  authorId?: string | null,
+  note?: string | null,
+) {
   return mutate((db) => {
     const project = db.projects.find((item) => item.id === projectId);
     if (!project) throw new Error("Project not found");
     const pages = db.pages.filter((item) => item.projectId === projectId);
     const nextNumber =
-      Math.max(0, ...db.versions.filter((item) => item.projectId === projectId).map((item) => item.versionNumber)) +
-      1;
+      Math.max(
+        0,
+        ...db.versions
+          .filter((item) => item.projectId === projectId)
+          .map((item) => item.versionNumber),
+      ) + 1;
+    const versionNote =
+      (note || "").trim().slice(0, 120) || `Version ${nextNumber}`;
     const version: WebsiteVersion = {
       id: nid(),
       projectId,
@@ -549,7 +649,7 @@ export async function publishLive(projectId: string, authorId?: string | null) {
           data: page.draftData,
         })),
       },
-      note: `Version ${nextNumber}`,
+      note: versionNote,
       createdAt: now(),
     };
     db.versions.unshift(version);
@@ -576,14 +676,38 @@ export async function publishLive(projectId: string, authorId?: string | null) {
       error: "",
       createdAt: now(),
     });
-    return { url, versionNumber: nextNumber };
+    return {
+      url,
+      versionNumber: nextNumber,
+      versionId: version.id,
+      note: versionNote,
+    };
+  });
+}
+
+export async function updateVersionNote(
+  projectId: string,
+  versionId: string,
+  note: string,
+) {
+  return mutate((db) => {
+    const version = db.versions.find(
+      (item) => item.id === versionId && item.projectId === projectId,
+    );
+    if (!version) throw new Error("Version not found");
+    const nextNote =
+      note.trim().slice(0, 120) || `Version ${version.versionNumber}`;
+    version.note = nextNote;
+    return { id: versionId, note: nextNote };
   });
 }
 
 export async function restoreVersion(projectId: string, versionId: string) {
   await mutate((db) => {
     const project = db.projects.find((item) => item.id === projectId);
-    const version = db.versions.find((item) => item.id === versionId && item.projectId === projectId);
+    const version = db.versions.find(
+      (item) => item.id === versionId && item.projectId === projectId,
+    );
     if (!project || !version) throw new Error("Version not found");
     const snapshot = version.snapshot as {
       theme?: ThemeTokens;
@@ -622,6 +746,7 @@ export async function restoreVersion(projectId: string, versionId: string) {
     if (project.status !== "published") project.status = "ready";
     project.updatedAt = now();
   });
+  return getProjectBundle(projectId);
 }
 
 export async function duplicateProject(projectId: string) {
@@ -654,7 +779,11 @@ export async function duplicateProject(projectId: string) {
 }
 
 export async function addDomain(projectId: string, hostname: string) {
-  const host = hostname.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  const host = hostname
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/.*$/, "");
   if (!host || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(host)) {
     throw new Error("Enter a valid domain");
   }
@@ -666,7 +795,11 @@ export async function addDomain(projectId: string, hostname: string) {
       hostname: host,
       kind: "custom",
       dnsRecords: [
-        { type: "CNAME", name: host.startsWith("www.") ? host : `www.${host}`, value: apex },
+        {
+          type: "CNAME",
+          name: host.startsWith("www.") ? host : `www.${host}`,
+          value: apex,
+        },
         {
           type: "A",
           name: host.replace(/^www\./, ""),
@@ -710,11 +843,19 @@ export async function recordDeployment(input: {
   });
 }
 
-export async function verifyDomain(projectId: string, hostname?: string, verified?: boolean, detail?: string) {
+export async function verifyDomain(
+  projectId: string,
+  hostname?: string,
+  verified?: boolean,
+  detail?: string,
+) {
   return mutate((db) => {
     const domain =
-      db.domains.find((item) => item.projectId === projectId && (!hostname || item.hostname === hostname)) ??
-      db.domains.find((item) => item.projectId === projectId);
+      db.domains.find(
+        (item) =>
+          item.projectId === projectId &&
+          (!hostname || item.hostname === hostname),
+      ) ?? db.domains.find((item) => item.projectId === projectId);
     if (!domain) throw new Error("No domain to verify");
     domain.status = verified ? "verified" : "failed";
     domain.sslStatus = verified ? "pending" : "unknown";

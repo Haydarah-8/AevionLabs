@@ -3,7 +3,6 @@
 import { ReactLenis, useLenis } from "lenis/react";
 import { useEffect, type ReactNode } from "react";
 import { ContactModalProvider } from "@/components/chrome/ContactModal";
-import { CursorProvider } from "@/components/chrome/Cursor";
 import { ErrorNetWatch } from "@/components/site/ErrorNetWatch";
 
 function LayoutSync() {
@@ -59,7 +58,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
       <ContactModalProvider>
         <LayoutSync />
         <ErrorNetWatch />
-        <CursorProvider>{children}</CursorProvider>
+        {children}
       </ContactModalProvider>
     </ReactLenis>
   );

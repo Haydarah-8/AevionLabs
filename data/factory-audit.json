@@ -1,5 +1,47 @@
 [
   {
+    "id": "bd739821-5a4c-478c-bbbb-e99b9fb20717",
+    "actorId": null,
+    "actorType": "mcp",
+    "action": "mcp.tool_executed",
+    "resourceType": "mcp",
+    "resourceId": "readResource",
+    "projectId": null,
+    "result": "ok",
+    "meta": {
+      "tool": "readResource"
+    },
+    "createdAt": "2026-09-19T10:00:33.594Z"
+  },
+  {
+    "id": "65f64d70-379a-4588-be96-f35503391172",
+    "actorId": null,
+    "actorType": "mcp",
+    "action": "mcp.tool_executed",
+    "resourceType": "mcp",
+    "resourceId": "listTools",
+    "projectId": null,
+    "result": "ok",
+    "meta": {
+      "tool": "listTools"
+    },
+    "createdAt": "2026-09-19T10:00:33.571Z"
+  },
+  {
+    "id": "8e24f50a-c003-4fcf-806e-c2817b79d1e4",
+    "actorId": null,
+    "actorType": "mcp",
+    "action": "mcp.tool_executed",
+    "resourceType": "mcp",
+    "resourceId": "listResources",
+    "projectId": null,
+    "result": "ok",
+    "meta": {
+      "tool": "listResources"
+    },
+    "createdAt": "2026-09-19T10:00:33.556Z"
+  },
+  {
     "id": "836dd3cd-142b-4ff4-b3bd-9e9991373797",
     "actorId": null,
     "actorType": "mcp",

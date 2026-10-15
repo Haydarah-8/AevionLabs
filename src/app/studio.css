@@ -9,8 +9,14 @@
   --size-container-ideal: 1500;
   --size-container-min: 768px;
   --size-container-max: 1920px;
-  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
-  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+  --size-container: clamp(
+    var(--size-container-min),
+    100vw,
+    var(--size-container-max)
+  );
+  --size-font: calc(
+    var(--size-container) / (var(--size-container-ideal) / var(--size-unit))
+  );
 
   --color-white: white;
   --color-black: black;
@@ -151,11 +157,13 @@ body.is-home [data-navbar] [data-nav-link] {
 
 [data-custom-cursor],
 [data-custom-cursor] * {
-  cursor: none !important;
+  cursor: auto !important;
 }
 
-#cursor-svg {
-  pointer-events: none;
+#cursor-svg,
+.cursor_svg {
+  display: none !important;
+  pointer-events: none !important;
 }
 
 .page_transition {
@@ -344,13 +352,7 @@ svg.loader_svg_logo {
     #000 93%,
     #0000 100%
   );
-  mask-image: linear-gradient(
-    90deg,
-    #0000 0%,
-    #000 7%,
-    #000 93%,
-    #0000 100%
-  );
+  mask-image: linear-gradient(90deg, #0000 0%, #000 7%, #000 93%, #0000 100%);
 }
 
 .band_track {
@@ -543,4 +545,3 @@ html:has(.admin-panel) body {
   margin-top: 1.6em;
   margin-bottom: 0.5em;
 }
-

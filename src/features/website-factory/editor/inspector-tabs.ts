@@ -63,8 +63,24 @@ export const ADVANCED_STYLE_KEYS = [
 ] as const;
 
 export const RESPONSIVE_HINTS = [
-  "Use the breakpoint selector in the header to preview Mobile / Tablet / Desktop / Wide.",
-  "Width, padding, and font size can be tuned under Layout and Typography for each selection.",
+  "Switch Desktop / Tablet / Mobile — edits save to that breakpoint.",
+  "Tablet and mobile store overrides under styles.responsive; empty = inherit.",
+  "Reset clears all overrides for the active breakpoint.",
+] as const;
+
+/** Keys most often tuned per breakpoint */
+export const RESPONSIVE_STYLE_KEYS = [
+  "width",
+  "maxWidth",
+  "paddingTop",
+  "paddingRight",
+  "paddingBottom",
+  "paddingLeft",
+  "fontSize",
+  "display",
+  "direction",
+  "gap",
+  "textAlign",
 ] as const;
 
 /** Content props that are not the styles bag */
@@ -104,7 +120,7 @@ export function styleKeysForTab(tab: InspectorTab): readonly string[] | null {
     case "advanced":
       return ADVANCED_STYLE_KEYS;
     case "responsive":
-      return [...LAYOUT_STYLE_KEYS, ...TYPOGRAPHY_STYLE_KEYS];
+      return RESPONSIVE_STYLE_KEYS;
     case "content":
       return null;
     default:

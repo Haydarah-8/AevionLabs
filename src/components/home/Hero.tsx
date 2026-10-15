@@ -216,7 +216,7 @@ export function Hero({
           initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.45 }}
-          className="mt-10 flex w-full flex-col items-center justify-center gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:justify-center"
+          className="mt-10 flex flex-row flex-wrap items-center justify-center gap-2 sm:mt-12 sm:gap-3"
         >
           {talk ? (
             <TalkTrigger className="site-btn site-btn-light hero-cta">

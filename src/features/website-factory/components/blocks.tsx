@@ -1,19 +1,38 @@
 "use client";
 
 import type { ComponentType, CSSProperties, ReactNode } from "react";
+import { Focusable } from "../puck/editable";
 import { boxStyleToCss, type StyleBox } from "../puck/styles";
+import {
+  CmsEntryProvider,
+  useCmsContext,
+} from "@/features/website-factory/cms/CmsContext";
+import { getCollection } from "@/features/website-factory/cms/collections";
+import type { SiteConfig } from "@/features/website-factory/types";
+
+type Copy = ReactNode;
 
 function Img({
   src,
   alt,
   style,
+  field = "imageUrl",
 }: {
   src?: string;
-  alt?: string;
+  alt?: string | ReactNode;
   style?: CSSProperties;
+  field?: string;
 }) {
   if (!src) return null;
-  return <img src={src} alt={alt || ""} style={style} />;
+  return (
+    <Focusable field={field} style={{ display: "block", lineHeight: 0 }}>
+      <img
+        src={src}
+        alt={typeof alt === "string" ? alt : ""}
+        style={{ display: "block", width: "100%", height: "auto", ...style }}
+      />
+    </Focusable>
+  );
 }
 
 function Btn({
@@ -25,23 +44,34 @@ function Btn({
   radius,
 }: {
   href?: string;
-  label?: string;
+  label?: Copy;
   ghost?: boolean;
   size?: string;
   fullWidth?: boolean;
   radius?: string;
 }) {
-  if (!href || !label) return null;
+  if (!href && !label) return null;
+  if (!label) return null;
   const pad =
     size === "sm" ? "0.5rem 1rem" : size === "lg" ? "1rem 1.75rem" : undefined;
   return (
     <a
       className={`wf-btn${ghost ? " is-ghost" : ""}`}
-      href={href}
+      href={href || "#"}
       style={{
         padding: pad,
         width: fullWidth ? "100%" : undefined,
         borderRadius: radius || undefined,
+      }}
+      onClick={(event) => {
+        // Prevent navigation while editing in the canvas
+        if (event.defaultPrevented) return;
+        if (
+          typeof window !== "undefined" &&
+          window.location.pathname.includes("/admin/")
+        ) {
+          event.preventDefault();
+        }
       }}
     >
       {label}
@@ -67,7 +97,7 @@ function Styled({
   );
 }
 
-export function AnnouncementBar({ text }: { text?: string }) {
+export function AnnouncementBar({ text }: { text?: Copy }) {
   if (!text) return null;
   return <div className="wf-announce">{text}</div>;
 }
@@ -82,9 +112,9 @@ export function Navbar({
   homeHref,
 }: {
   logoUrl?: string;
-  name?: string;
-  links?: Array<{ label: string; href: string }>;
-  ctaLabel?: string;
+  name?: Copy;
+  links?: Array<{ label: Copy; href: string }>;
+  ctaLabel?: Copy;
   ctaHref?: string;
   sticky?: boolean;
   homeHref?: string;
@@ -93,12 +123,12 @@ export function Navbar({
   return (
     <header className={`wf-nav${sticky === false ? "" : " is-sticky"}`}>
       <a className="wf-nav-brand" href={homeHref || "/"}>
-        <Img src={logoUrl} alt="" />
+        <Img src={logoUrl} alt="" field="logoUrl" />
         <span>{name}</span>
       </a>
       <nav className="wf-nav-links" aria-label="Main">
-        {items.map((link) => (
-          <a key={`${link.href}-${link.label}`} href={link.href}>
+        {items.map((link, i) => (
+          <a key={`${link.href}-${i}`} href={link.href}>
             {link.label}
           </a>
         ))}
@@ -109,8 +139,8 @@ export function Navbar({
       <details className="wf-nav-menu">
         <summary aria-label="Open menu">Menu</summary>
         <div className="wf-nav-menu-panel">
-          {items.map((link) => (
-            <a key={`m-${link.href}-${link.label}`} href={link.href}>
+          {items.map((link, i) => (
+            <a key={`m-${link.href}-${i}`} href={link.href}>
               {link.label}
             </a>
           ))}
@@ -136,15 +166,15 @@ export function Hero({
   imageUrl,
   imageAlt,
 }: {
-  eyebrow?: string;
-  heading?: string;
-  description?: string;
-  primaryLabel?: string;
+  eyebrow?: Copy;
+  heading?: Copy;
+  description?: Copy;
+  primaryLabel?: Copy;
   primaryHref?: string;
-  secondaryLabel?: string;
+  secondaryLabel?: Copy;
   secondaryHref?: string;
   imageUrl?: string;
-  imageAlt?: string;
+  imageAlt?: Copy;
 }) {
   return (
     <section className={`wf-hero${imageUrl ? " has-image" : ""}`}>
@@ -159,7 +189,7 @@ export function Hero({
       </div>
       {imageUrl ? (
         <div className="wf-hero-media">
-          <Img src={imageUrl} alt={imageAlt || ""} />
+          <Img src={imageUrl} alt={imageAlt} field="imageUrl" />
         </div>
       ) : null}
     </section>
@@ -170,8 +200,8 @@ export function PageHero({
   heading,
   description,
 }: {
-  heading?: string;
-  description?: string;
+  heading?: Copy;
+  description?: Copy;
 }) {
   return (
     <section className="wf-hero">
@@ -183,13 +213,13 @@ export function PageHero({
   );
 }
 
-export function TrustIndicators({ items }: { items?: string[] }) {
+export function TrustIndicators({ items }: { items?: Array<string | Copy> }) {
   const list = (items ?? []).filter(Boolean);
   if (!list.length) return null;
   return (
     <div className="wf-trust">
-      {list.map((item) => (
-        <span key={item}>{item}</span>
+      {list.map((item, i) => (
+        <span key={i}>{item}</span>
       ))}
     </div>
   );
@@ -202,10 +232,10 @@ export function Services({
   ctaLabel,
   ctaHref,
 }: {
-  heading?: string;
-  description?: string;
-  items?: Array<{ title: string; body?: string; imageUrl?: string }>;
-  ctaLabel?: string;
+  heading?: Copy;
+  description?: Copy;
+  items?: Array<{ title?: Copy; body?: Copy; imageUrl?: string }>;
+  ctaLabel?: Copy;
   ctaHref?: string;
 }) {
   return (
@@ -215,11 +245,15 @@ export function Services({
         <h2 className="wf-h2">{heading}</h2>
         {description ? <p className="wf-lede">{description}</p> : null}
         <div className="wf-grid cols-3" style={{ marginTop: "2rem" }}>
-          {(items ?? []).map((item) => (
-            <article className="wf-card" key={item.title}>
+          {(items ?? []).map((item, i) => (
+            <article className="wf-card" key={i}>
               {item.imageUrl ? (
                 <div className="wf-media" style={{ marginBottom: "1rem" }}>
-                  <Img src={item.imageUrl} alt="" />
+                  <Img
+                    src={item.imageUrl}
+                    alt=""
+                    field={`items[${i}].imageUrl`}
+                  />
                 </div>
               ) : null}
               <h3>{item.title}</h3>
@@ -240,8 +274,8 @@ export function AboutSection({
   body,
   imageUrl,
 }: {
-  heading?: string;
-  body?: string;
+  heading?: Copy;
+  body?: Copy;
   imageUrl?: string;
 }) {
   return (
@@ -250,17 +284,21 @@ export function AboutSection({
         <div>
           <p className="wf-kicker">About</p>
           <h2 className="wf-h2">{heading}</h2>
-          {body
-            ? body.split("\n").map((para) => (
+          {body ? (
+            typeof body === "string" ? (
+              body.split("\n").map((para) => (
                 <p className="wf-lede" key={para.slice(0, 24)}>
                   {para}
                 </p>
               ))
-            : null}
+            ) : (
+              <div className="wf-lede">{body}</div>
+            )
+          ) : null}
         </div>
         {imageUrl ? (
           <div className="wf-media">
-            <Img src={imageUrl} alt="" />
+            <Img src={imageUrl} alt="" field="imageUrl" />
           </div>
         ) : null}
       </div>
@@ -283,9 +321,13 @@ export function Gallery({
         <p className="wf-kicker">Work</p>
         <h2 className="wf-h2">{heading || "Recent work"}</h2>
         <div className="wf-grid cols-3" style={{ marginTop: "2rem" }}>
-          {photos.map((item) => (
-            <div className="wf-media" key={item.url}>
-              <Img src={item.url} alt={item.alt || ""} />
+          {photos.map((item, i) => (
+            <div className="wf-media" key={item.url || i}>
+              <Img
+                src={item.url}
+                alt={item.alt || ""}
+                field={`items[${i}].url`}
+              />
             </div>
           ))}
         </div>
@@ -299,7 +341,12 @@ export function Testimonials({
   items,
 }: {
   heading?: string;
-  items?: Array<{ quote: string; name: string; rating?: number; source?: string }>;
+  items?: Array<{
+    quote: string;
+    name: string;
+    rating?: number;
+    source?: string;
+  }>;
 }) {
   const list = items ?? [];
   if (!list.length) return null;
@@ -310,8 +357,14 @@ export function Testimonials({
         <h2 className="wf-h2">{heading || "What clients say"}</h2>
         <div className="wf-grid cols-2" style={{ marginTop: "2rem" }}>
           {list.map((item) => (
-            <blockquote className="wf-card" key={`${item.name}-${item.quote.slice(0, 12)}`}>
-              <p className="wf-stars" aria-label={`${item.rating || 5} out of 5`}>
+            <blockquote
+              className="wf-card"
+              key={`${item.name}-${item.quote.slice(0, 12)}`}
+            >
+              <p
+                className="wf-stars"
+                aria-label={`${item.rating || 5} out of 5`}
+              >
                 {"★".repeat(item.rating || 5)}
               </p>
               <p className="wf-lede">“{item.quote}”</p>
@@ -384,7 +437,12 @@ export function TeamSection({
   items,
 }: {
   heading?: string;
-  items?: Array<{ name: string; role?: string; photoUrl?: string; bio?: string }>;
+  items?: Array<{
+    name: string;
+    role?: string;
+    photoUrl?: string;
+    bio?: string;
+  }>;
 }) {
   const list = items ?? [];
   if (!list.length) return null;
@@ -495,13 +553,20 @@ export function ContactSection({
           {address ? <p className="wf-lede">{address}</p> : null}
           {hours ? <p className="wf-lede">{hours}</p> : null}
         </div>
-        <form className="wf-card" method="post" action={`mailto:${email || ""}`}>
+        <form
+          className="wf-card"
+          method="post"
+          action={`mailto:${email || ""}`}
+        >
           <p className="wf-kicker">Write to us</p>
           <p className="wf-lede">
             This form opens your email app. No messages are stored on this site.
           </p>
           <div className="wf-actions">
-            <Btn href={email ? `mailto:${email}` : undefined} label="Email us" />
+            <Btn
+              href={email ? `mailto:${email}` : undefined}
+              label="Email us"
+            />
           </div>
         </form>
       </div>
@@ -532,7 +597,9 @@ export function Footer({
           {email ? <p>{email}</p> : null}
         </div>
       </div>
-      <small>© {new Date().getFullYear()} {name}</small>
+      <small>
+        © {new Date().getFullYear()} {name}
+      </small>
     </footer>
   );
 }
@@ -593,21 +660,29 @@ export function TextBlock({
   align,
   styles,
 }: {
-  html?: string;
-  text?: string;
+  html?: Copy;
+  text?: Copy;
   align?: string;
   styles?: StyleBox;
 }) {
-  const body = html || text || "";
-  if (!body) return null;
+  if (!html && !text) return null;
   return (
     <Styled as="section" className="wf-block" styles={styles}>
       <div
         className="wf-wrap"
-        style={{ textAlign: (align as CSSProperties["textAlign"]) || undefined }}
+        style={{
+          textAlign: (align as CSSProperties["textAlign"]) || undefined,
+        }}
       >
         {html ? (
-          <div className="wf-rich" dangerouslySetInnerHTML={{ __html: html }} />
+          typeof html === "string" ? (
+            <div
+              className="wf-rich"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          ) : (
+            <div className="wf-rich">{html}</div>
+          )
         ) : (
           <p className="wf-lede">{text}</p>
         )}
@@ -643,6 +718,7 @@ export function ImageBlock({
           <Img
             src={url}
             alt={alt}
+            field="url"
             style={{
               width: width || "100%",
               height: height || "auto",
@@ -1076,7 +1152,10 @@ export function MapEmbed({ address }: { address?: string }) {
       <div className="wf-wrap">
         <p className="wf-kicker">Location</p>
         <p className="wf-lede">{address}</p>
-        <a className="wf-btn is-ghost" href={`https://www.openstreetmap.org/search?query=${q}`}>
+        <a
+          className="wf-btn is-ghost"
+          href={`https://www.openstreetmap.org/search?query=${q}`}
+        >
           Open map
         </a>
       </div>
@@ -1394,7 +1473,12 @@ export function Projects({
   items,
 }: {
   heading?: string;
-  items?: Array<{ title?: string; body?: string; imageUrl?: string; href?: string }>;
+  items?: Array<{
+    title?: string;
+    body?: string;
+    imageUrl?: string;
+    href?: string;
+  }>;
 }) {
   return (
     <section className="wf-section">
@@ -1554,7 +1638,10 @@ export function QuoteForm({
             <textarea name="details" className="wf-input" rows={4} />
           </label>
           <div className="wf-actions">
-            <Btn href={email ? `mailto:${email}` : undefined} label="Send quote request" />
+            <Btn
+              href={email ? `mailto:${email}` : undefined}
+              label="Send quote request"
+            />
           </div>
         </form>
       </div>
@@ -1577,12 +1664,115 @@ export function Newsletter({
         <h2 className="wf-h2">{heading || "Stay updated"}</h2>
         {body ? <p className="wf-lede">{body}</p> : null}
         <form className="wf-actions" onSubmit={(e) => e.preventDefault()}>
-          <input type="email" className="wf-input" placeholder="you@example.com" />
+          <input
+            type="email"
+            className="wf-input"
+            placeholder="you@example.com"
+          />
           <button type="submit" className="wf-btn">
             {label || "Subscribe"}
           </button>
         </form>
       </div>
     </section>
+  );
+}
+
+/** CMS Collection List — repeats a simple card per entry (Phase 9). */
+export function CollectionListBlock({
+  collectionId,
+  limit,
+  emptyText,
+  titleField = "name",
+  bodyField = "description",
+  imageField = "imageUrl",
+  styles,
+}: {
+  collectionId?: string;
+  limit?: string;
+  emptyText?: string;
+  titleField?: string;
+  bodyField?: string;
+  imageField?: string;
+  styles?: StyleBox;
+}) {
+  const ctx = useCmsContext();
+  const siteConfig = { collections: ctx.collections } as SiteConfig;
+  const collection = collectionId
+    ? getCollection(siteConfig, collectionId)
+    : null;
+  const max = Math.max(1, Math.min(48, Number(limit) || 12));
+  const entries = (collection?.entries || []).slice(0, max);
+
+  if (!collectionId) {
+    return (
+      <Styled className="wf-block" styles={styles}>
+        <div className="wf-wrap">
+          <p className="wf-lede">Select a collection for this list.</p>
+        </div>
+      </Styled>
+    );
+  }
+
+  if (!entries.length) {
+    return (
+      <Styled className="wf-block" styles={styles}>
+        <div className="wf-wrap">
+          <p className="wf-lede">
+            {emptyText || `No items in “${collection?.name || collectionId}”.`}
+          </p>
+        </div>
+      </Styled>
+    );
+  }
+
+  const titleKey = titleField || "name";
+  const bodyKey = bodyField || "description";
+  const imageKey = imageField || "imageUrl";
+
+  return (
+    <Styled className="wf-block" styles={styles}>
+      <div
+        className="wf-wrap"
+        style={{
+          display: "grid",
+          gap: "1.25rem",
+          gridTemplateColumns: "repeat(auto-fill, minmax(16rem, 1fr))",
+        }}
+      >
+        {entries.map((item) => {
+          const title =
+            item.values[titleKey] ||
+            item.values.name ||
+            item.values.title ||
+            item.values.customerName ||
+            "";
+          const body =
+            item.values[bodyKey] ||
+            item.values.description ||
+            item.values.quote ||
+            item.values.bio ||
+            item.values.body ||
+            "";
+          const image =
+            item.values[imageKey] ||
+            item.values.imageUrl ||
+            item.values.photoUrl ||
+            item.values.url ||
+            "";
+          return (
+            <CmsEntryProvider key={item.id} entry={item}>
+              <article className="wf-card" style={{ margin: 0 }}>
+                {image ? (
+                  <Img src={image} alt={title} field="imageUrl" />
+                ) : null}
+                {title ? <h3 className="wf-h2">{title}</h3> : null}
+                {body ? <p className="wf-lede">{body}</p> : null}
+              </article>
+            </CmsEntryProvider>
+          );
+        })}
+      </div>
+    </Styled>
   );
 }

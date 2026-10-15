@@ -1,6 +1,7 @@
 import type { Business, PuckData, PuckNode, ThemeTokens } from "../types";
 import { DEFAULT_THEME } from "../types";
 import { getTemplateDefinition, type TemplateDefinition } from "../templates";
+import { notFoundPageDef, NOT_FOUND_PAGE_SLUG } from "../pages/settings";
 
 function nid() {
   return crypto.randomUUID();
@@ -173,7 +174,7 @@ export function generatePages(
 
   void theme;
 
-  return definition.pages.map((page, index) => {
+  const pages = definition.pages.map((page, index) => {
     const content = page.sections.map((section) => {
       const base: Record<string, unknown> = {
         ...(shared[section.type as keyof typeof shared] ?? {}),
@@ -200,6 +201,35 @@ export function generatePages(
       draftData: data,
     };
   });
+
+  // Phase 11: every generated site gets an editable 404 page (not in nav).
+  if (!pages.some((page) => page.slug === NOT_FOUND_PAGE_SLUG)) {
+    const def = notFoundPageDef();
+    const content = def.sections.map((section) => {
+      const base: Record<string, unknown> = {
+        ...(shared[section.type as keyof typeof shared] ?? {}),
+      };
+      return node(section.type, { ...base, ...(section.defaults ?? {}) });
+    });
+    pages.push({
+      slug: def.slug,
+      title: def.title,
+      navLabel: def.navLabel,
+      showInNav: def.showInNav,
+      navOrder: pages.length,
+      draftData: {
+        root: {
+          props: {
+            title: `${def.title} · ${business.name}`,
+            noIndex: true,
+          },
+        },
+        content,
+      },
+    });
+  }
+
+  return pages;
 }
 
 export function generateFromBusiness(

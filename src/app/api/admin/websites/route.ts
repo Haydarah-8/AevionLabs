@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { listProjects } from "@/features/website-factory/services/store";
+import {
+  factoryPersistence,
+  resetFactoryPersistenceCache,
+} from "@/features/website-factory/services/persistence";
 
 export const dynamic = "force-dynamic";
 
@@ -9,8 +13,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const projects = await listProjects();
-    return NextResponse.json({ projects });
+    // Re-probe after migrations may have been applied mid-session
+    resetFactoryPersistenceCache();
+    const [projects, persistence] = await Promise.all([
+      listProjects(),
+      factoryPersistence(),
+    ]);
+    return NextResponse.json({ projects, persistence });
   } catch (err) {
     console.error("[admin/websites]", err);
     return NextResponse.json(

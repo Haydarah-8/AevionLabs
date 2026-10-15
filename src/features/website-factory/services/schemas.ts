@@ -12,6 +12,19 @@ export const ctaSchema = z.object({
   href: z.string().trim().max(240).default(""),
 });
 
+export const designVariableSchema = z.object({
+  id: z.string().min(1).max(80),
+  name: z.string().trim().max(80).default(""),
+  key: z
+    .string()
+    .trim()
+    .min(1)
+    .max(48)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase keys like space-md"),
+  value: z.string().max(240).default(""),
+  type: z.enum(["color", "size", "font", "string"]).default("string"),
+});
+
 export const themeSchema = z.object({
   primary: z.string().default("#111111"),
   secondary: z.string().default("#3f3f3f"),
@@ -21,6 +34,7 @@ export const themeSchema = z.object({
   headingFont: z.string().default("Georgia, 'Times New Roman', serif"),
   bodyFont: z.string().default("Arial, Helvetica, sans-serif"),
   radius: z.string().default("0px"),
+  variables: z.array(designVariableSchema).optional(),
 });
 
 export const businessInputSchema = z.object({

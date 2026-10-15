@@ -95,8 +95,9 @@ body {
 }
 
 .hero-cta {
-  width: min(100%, 16.5rem);
-  margin-inline: auto;
+  width: auto;
+  margin-inline: 0;
+  flex: 0 0 auto;
 }
 
 @media (max-width: 767px) {
@@ -341,20 +342,13 @@ html:has(.admin-panel) .bn-root[data-color-scheme="dark"] {
   padding-right: 0.75rem;
 }
 
-[data-custom-cursor],
-[data-custom-cursor] * {
-  cursor: none !important;
+.cursor_svg {
+  display: none !important;
 }
 
-.cursor_svg {
-  z-index: 1002;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
+[data-custom-cursor],
+[data-custom-cursor] * {
+  cursor: auto !important;
 }
 
 .cursor_svg.is-work {

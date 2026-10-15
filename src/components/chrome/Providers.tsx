@@ -4,7 +4,6 @@ import { ReactLenis, useLenis } from "lenis/react";
 import { useEffect, type ReactNode } from "react";
 import { TransitionPanels, TransitionProvider } from "./PageTransition";
 import { ContactModalProvider } from "./ContactModal";
-import { CursorProvider } from "./Cursor";
 import { Loader } from "./Loader";
 import { Navbar } from "./Navbar";
 
@@ -66,19 +65,17 @@ export function Providers({ children }: { children: ReactNode }) {
       <LayoutSync />
       <TransitionProvider>
         <ContactModalProvider>
-          <CursorProvider>
-            <Loader />
-            <div className="wrapper">
-              {/* the contact modal's dark wash (z-index 103, absolute within
+          <Loader />
+          <div className="wrapper">
+            {/* the contact modal's dark wash (z-index 103, absolute within
                   .wrapper) - styled entirely by the ported stylesheet */}
-              <div className="overlay" />
-              <div className="page_wrap">
-                <Navbar />
-                {children}
-                <TransitionPanels />
-              </div>
+            <div className="overlay" />
+            <div className="page_wrap">
+              <Navbar />
+              {children}
+              <TransitionPanels />
             </div>
-          </CursorProvider>
+          </div>
         </ContactModalProvider>
       </TransitionProvider>
     </ReactLenis>

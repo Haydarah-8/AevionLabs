@@ -4,6 +4,10 @@ import {
   getProjectBundle,
   updateProject,
 } from "@/features/website-factory/services/store";
+import {
+  invalidWebsiteIdMessage,
+  isWebsiteProjectId,
+} from "@/features/website-factory/ids";
 import { themeSchema } from "@/features/website-factory/services/schemas";
 import { z } from "zod";
 
@@ -38,15 +42,23 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = await params;
+  if (!isWebsiteProjectId(id)) {
+    return NextResponse.json(
+      { error: invalidWebsiteIdMessage(id) },
+      { status: 400 },
+    );
+  }
   try {
     const bundle = await getProjectBundle(id);
     if (!bundle) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(bundle);
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to load website" },
-      { status: 500 },
-    );
+    const message =
+      err instanceof Error ? err.message : "Failed to load website";
+    const status = /invalid input syntax for type uuid/i.test(message)
+      ? 400
+      : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 
@@ -58,6 +70,12 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = await params;
+  if (!isWebsiteProjectId(id)) {
+    return NextResponse.json(
+      { error: invalidWebsiteIdMessage(id) },
+      { status: 400 },
+    );
+  }
   try {
     const patch = patchSchema.parse(await request.json());
     await updateProject(id, patch);

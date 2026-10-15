@@ -1,11 +1,19 @@
 import type { Fields } from "@puckeditor/core";
 import { defaultBoxStyle, type StyleBox } from "./styles";
 
-const text = { type: "text" as const };
+/** Inline-editable text — click copy on the canvas, not only the section. */
+const text = { type: "text" as const, contentEditable: true as const };
 const select = (options: Array<{ label: string; value: string }>) => ({
   type: "select" as const,
   options,
 });
+
+export const editableText = text;
+export const editableTextarea = {
+  type: "textarea" as const,
+  contentEditable: true as const,
+};
+export const plainText = { type: "text" as const };
 
 /** Webflow-like layout / spacing / size / type / appearance object field */
 export const styleObjectField = {

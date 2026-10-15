@@ -102,6 +102,7 @@ describe("AI tools", () => {
       bundle,
     );
     expect(plan.calls[0]?.name).toBe("addComponent");
+    expect(plan.destructive).toBe(false);
     const next = applyToolCalls(
       bundle,
       { ...emptyPuck(), content: [{ type: "Services", props: { id: "s" } }] },
@@ -109,6 +110,26 @@ describe("AI tools", () => {
     );
     expect(next.data.content.some((node) => node.type === "Testimonials")).toBe(
       true,
+    );
+  });
+
+  it("plans a destructive testimonial removal", () => {
+    const plan = planFromPrompt("Remove testimonials from this page", bundle);
+    expect(plan.calls[0]?.name).toBe("removeComponent");
+    expect(plan.destructive).toBe(true);
+    const next = applyToolCalls(
+      bundle,
+      {
+        ...emptyPuck(),
+        content: [
+          { type: "Hero", props: { id: "h" } },
+          { type: "Testimonials", props: { id: "t" } },
+        ],
+      },
+      plan.calls,
+    );
+    expect(next.data.content.some((node) => node.type === "Testimonials")).toBe(
+      false,
     );
   });
 });

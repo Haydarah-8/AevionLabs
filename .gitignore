@@ -63,3 +63,14 @@ data/website-factory-jobs.json*
 .env
 .env.*
 !.env.example
+.tmp-session.json
+.tmp-cookies.json
+.tmp-*.js
+.tmp-*.json
+
+# Vvveb ecosystem reference clones (~110MB+). Re-fetch via:
+#   pwsh ./integrations/vvveb/clone-vvveb-ecosystem.ps1
+# Keep README + clone script tracked; do not commit full trees.
+/integrations/vvveb/vvvebjs/
+/integrations/vvveb/vvveb-admin/
+/integrations/vvveb/vvveb-cms/

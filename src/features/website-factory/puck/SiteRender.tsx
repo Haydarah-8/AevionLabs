@@ -2,8 +2,29 @@
 
 import { Render } from "@puckeditor/core";
 import { factoryConfig } from "./config";
-import type { PuckData } from "../types";
+import { withStudioConfig } from "@/features/website-factory/editor/withStudioConfig";
+import { CmsProvider } from "@/features/website-factory/cms/CmsContext";
+import { listCollections } from "@/features/website-factory/cms/collections";
+import type { PuckData, SiteConfig } from "../types";
+import type { BindContext } from "@/features/website-factory/cms/bindings";
 
-export function SiteRender({ data }: { data: PuckData }) {
-  return <Render config={factoryConfig} data={data} />;
+const studioConfig = withStudioConfig(factoryConfig);
+
+export function SiteRender({
+  data,
+  siteConfig,
+  business,
+}: {
+  data: PuckData;
+  siteConfig?: SiteConfig | null;
+  business?: BindContext["business"];
+}) {
+  return (
+    <CmsProvider
+      collections={listCollections(siteConfig)}
+      business={business}
+    >
+      <Render config={studioConfig} data={data} />
+    </CmsProvider>
+  );
 }

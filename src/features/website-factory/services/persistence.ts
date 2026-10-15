@@ -1,4 +1,5 @@
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { promises as fs } from "fs";
+import path from "path";
 
 export type Persistence = "supabase" | "files";
 
@@ -16,22 +17,48 @@ export function isMissingTable(err: unknown) {
   );
 }
 
+/** Clear cached backend choice (e.g. after migrations applied). */
+export function resetFactoryPersistenceCache() {
+  cached = null;
+}
+
 export function forceFilePersistence() {
   cached = "files";
+}
+
+export function forceSupabasePersistence() {
+  cached = "supabase";
 }
 
 export async function factoryPersistence(): Promise<Persistence> {
   if (cached) return cached;
   try {
+    const { getSupabaseAdmin } = await import("@/lib/supabase-admin");
     const { error } = await getSupabaseAdmin()
       .from("website_templates")
       .select("id")
       .limit(1);
-    cached = error && isMissingTable(error) ? "files" : "supabase";
+    if (error && isMissingTable(error)) {
+      cached = "files";
+    } else if (error) {
+      // Transient/auth errors: fall back to files but do not poison forever
+      console.warn("[factory] supabase probe failed, using files:", error.message);
+      return "files";
+    } else {
+      cached = "supabase";
+    }
   } catch (err) {
-    cached = isMissingTable(err) ? "files" : "files";
+    if (isMissingTable(err)) {
+      cached = "files";
+    } else {
+      console.warn(
+        "[factory] supabase probe threw, using files:",
+        err instanceof Error ? err.message : err,
+      );
+      return "files";
+    }
   }
-  return cached;
+  return cached ?? "files";
 }
 
 export async function withPersistence<T>(
@@ -47,5 +74,19 @@ export async function withPersistence<T>(
       return filesFn();
     }
     throw err;
+  }
+}
+
+/** Absolute path to the local JSON fallback store. */
+export function factoryJsonStorePath() {
+  return path.join(process.cwd(), "data", "website-factory.json");
+}
+
+export async function factoryJsonStoreExists() {
+  try {
+    await fs.access(factoryJsonStorePath());
+    return true;
+  } catch {
+    return false;
   }
 }

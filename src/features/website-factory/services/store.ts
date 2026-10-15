@@ -7,12 +7,16 @@ import { SEEDED_TEMPLATES } from "../templates/seeds";
 import {
   DEFAULT_THEME,
   emptyPuck,
+  isGrapesDocument,
+  isLegacyHtmlDocument,
   isPuckData,
   type Business,
   type BusinessMedia,
   type BusinessReview,
   type BusinessService,
   type BusinessTeam,
+  type EditorEngineKind,
+  type PageDocument,
   type PuckData,
   type ProjectBundle,
   type ProjectStatus,
@@ -99,20 +103,70 @@ export function asTheme(value: unknown): ThemeTokens {
     value && typeof value === "object"
       ? (value as Record<string, unknown>)
       : {};
+  const strings = Object.fromEntries(
+    Object.entries(rec).filter(
+      ([key, item]) => key !== "variables" && typeof item === "string",
+    ),
+  );
+  const rawVars = rec.variables;
+  const variables = Array.isArray(rawVars)
+    ? rawVars.filter(
+        (item): item is NonNullable<ThemeTokens["variables"]>[number] =>
+          Boolean(item) &&
+          typeof item === "object" &&
+          typeof (item as { id?: unknown }).id === "string" &&
+          typeof (item as { key?: unknown }).key === "string" &&
+          typeof (item as { value?: unknown }).value === "string",
+      )
+    : undefined;
   return {
     ...DEFAULT_THEME,
-    ...Object.fromEntries(
-      Object.entries(rec).filter(([, item]) => typeof item === "string"),
-    ),
+    ...strings,
+    ...(variables ? { variables } : {}),
   } as ThemeTokens;
 }
 
-function asPuck(value: unknown): PuckData {
+export function asSiteConfig(value: unknown): SiteConfig {
+  const site =
+    value && typeof value === "object"
+      ? (value as Record<string, unknown>)
+      : {};
+  const collections = Array.isArray(site.collections)
+    ? site.collections
+    : undefined;
+  const redirects = Array.isArray(site.redirects)
+    ? site.redirects
+    : undefined;
+  return {
+    stickyHeader: Boolean(site.stickyHeader ?? true),
+    announcement: typeof site.announcement === "string" ? site.announcement : "",
+    navCta: asCta(site.navCta),
+    footerNote: typeof site.footerNote === "string" ? site.footerNote : "",
+    ...(collections ? { collections: collections as SiteConfig["collections"] } : {}),
+    ...(redirects ? { redirects: redirects as SiteConfig["redirects"] } : {}),
+  };
+}
+
+function asPageDocument(value: unknown): PageDocument {
+  if (isGrapesDocument(value)) return value;
+  if (isLegacyHtmlDocument(value)) return value;
   return isPuckData(value) ? value : emptyPuck();
 }
 
 export function asPuckOrNull(value: unknown): PuckData | null {
   return isPuckData(value) ? value : null;
+}
+
+export function asPageDocumentOrNull(value: unknown): PageDocument | null {
+  if (value == null) return null;
+  if (
+    isGrapesDocument(value) ||
+    isLegacyHtmlDocument(value) ||
+    isPuckData(value)
+  ) {
+    return value;
+  }
+  return null;
 }
 
 export function slugify(input: string) {
@@ -197,7 +251,6 @@ function mapTemplate(row: Record<string, unknown>): WebsiteTemplate {
 
 function mapProject(row: Record<string, unknown>): WebsiteProject {
   const seo = (row.seo_config ?? {}) as Record<string, unknown>;
-  const site = (row.site_config ?? {}) as Record<string, unknown>;
   return {
     id: String(row.id),
     businessId: String(row.business_id),
@@ -205,14 +258,9 @@ function mapProject(row: Record<string, unknown>): WebsiteProject {
     name: String(row.name ?? ""),
     slug: String(row.slug ?? ""),
     status: String(row.status ?? "draft") as ProjectStatus,
+    editorEngine: "puck" as const,
     theme: asTheme(row.theme),
-    siteConfig: {
-      stickyHeader: Boolean(site.stickyHeader ?? true),
-      announcement:
-        typeof site.announcement === "string" ? site.announcement : "",
-      navCta: asCta(site.navCta),
-      footerNote: typeof site.footerNote === "string" ? site.footerNote : "",
-    } satisfies SiteConfig,
+    siteConfig: asSiteConfig(row.site_config),
     seoConfig: {
       title: typeof seo.title === "string" ? seo.title : "",
       description: typeof seo.description === "string" ? seo.description : "",
@@ -242,9 +290,9 @@ function mapPage(row: Record<string, unknown>): WebsitePage {
     navLabel: String(row.nav_label ?? ""),
     showInNav: Boolean(row.show_in_nav),
     navOrder: Number(row.nav_order ?? 0),
-    draftData: asPuck(row.draft_data),
-    previewData: asPuckOrNull(row.preview_data),
-    publishedData: asPuckOrNull(row.published_data),
+    draftData: asPageDocument(row.draft_data),
+    previewData: asPageDocumentOrNull(row.preview_data),
+    publishedData: asPageDocumentOrNull(row.published_data),
     updatedAt: String(row.updated_at ?? ""),
   };
 }
@@ -277,7 +325,9 @@ export async function listTemplates() {
       .eq("active", true)
       .order("name");
     if (error) throwDb(error);
-    const rows = (data ?? []).map((row) => mapTemplate(row as Record<string, unknown>));
+    const rows = (data ?? []).map((row) =>
+      mapTemplate(row as Record<string, unknown>),
+    );
     return rows.length ? rows : files.listTemplates();
   });
 }
@@ -336,33 +386,33 @@ export async function duplicateTemplate(id: string) {
   return withPersistence(
     () => files.duplicateTemplate(id),
     async () => {
-  const template = await getTemplate(id);
-  if (!template) throw new Error("Template not found");
-  const slug = await uniqueSlug(
-    "website_projects",
-    `${template.slug}-copy`,
-  ).catch(() => `${template.slug}-copy`);
-  const nextSlug = `${template.slug}-copy-${Date.now().toString(36).slice(-4)}`;
-  const { data, error } = await getSupabaseAdmin()
-    .from("website_templates")
-    .insert({
-      slug: nextSlug,
-      name: `${template.name} copy`,
-      industry: template.industry,
-      description: template.description,
-      thumbnail_url: template.thumbnailUrl,
-      version: 1,
-      definition_key: template.definitionKey,
-      pages_count: template.pagesCount,
-      configuration: template.configuration,
-      duplicated_from: template.id,
-      active: true,
-    })
-    .select("*")
-    .single();
-  if (error) throwDb(error);
-  void slug;
-  return mapTemplate(data as Record<string, unknown>);
+      const template = await getTemplate(id);
+      if (!template) throw new Error("Template not found");
+      const slug = await uniqueSlug(
+        "website_projects",
+        `${template.slug}-copy`,
+      ).catch(() => `${template.slug}-copy`);
+      const nextSlug = `${template.slug}-copy-${Date.now().toString(36).slice(-4)}`;
+      const { data, error } = await getSupabaseAdmin()
+        .from("website_templates")
+        .insert({
+          slug: nextSlug,
+          name: `${template.name} copy`,
+          industry: template.industry,
+          description: template.description,
+          thumbnail_url: template.thumbnailUrl,
+          version: 1,
+          definition_key: template.definitionKey,
+          pages_count: template.pagesCount,
+          configuration: template.configuration,
+          duplicated_from: template.id,
+          active: true,
+        })
+        .select("*")
+        .single();
+      if (error) throwDb(error);
+      void slug;
+      return mapTemplate(data as Record<string, unknown>);
     },
   );
 }
@@ -576,7 +626,12 @@ export async function upsertBusiness(input: BusinessInput, id?: string) {
         updated_at: new Date().toISOString(),
       };
       const query = id
-        ? db.from("businesses").update(payload).eq("id", id).select("*").single()
+        ? db
+            .from("businesses")
+            .update(payload)
+            .eq("id", id)
+            .select("*")
+            .single()
         : db.from("businesses").insert(payload).select("*").single();
       const { data, error } = await query;
       if (error) throwDb(error);
@@ -626,87 +681,87 @@ export async function getProjectBundle(
     async () => {
       const db = getSupabaseAdmin();
       const { data, error } = await db
-    .from("website_projects")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-  if (error) throwDb(error);
-  if (!data) return null;
-  const project = mapProject(data as Record<string, unknown>);
-  const [business, template, pages, versions, deployments, domains] =
-    await Promise.all([
-      getBusiness(project.businessId),
-      getTemplate(project.templateId),
-      db
-        .from("website_pages")
+        .from("website_projects")
         .select("*")
-        .eq("project_id", id)
-        .order("nav_order"),
-      db
-        .from("website_versions")
-        .select("*")
-        .eq("project_id", id)
-        .order("version_number", { ascending: false }),
-      db
-        .from("website_deployments")
-        .select("*")
-        .eq("project_id", id)
-        .order("created_at", { ascending: false })
-        .limit(20),
-      db.from("website_domains").select("*").eq("project_id", id),
-    ]);
-  if (!business || !template)
-    throw new Error("Project is missing business or template");
-  if (pages.error) throwDb(pages.error);
-  if (versions.error) throwDb(versions.error);
-  if (deployments.error) throwDb(deployments.error);
-  if (domains.error) throwDb(domains.error);
-  return {
-    project,
-    business,
-    template,
-    pages: (pages.data ?? []).map((row) =>
-      mapPage(row as Record<string, unknown>),
-    ),
-    versions: (versions.data ?? []).map(
-      (row): WebsiteVersion => ({
-        id: String(row.id),
-        projectId: String(row.project_id),
-        versionNumber: Number(row.version_number),
-        authorId: row.author_id ? String(row.author_id) : null,
-        snapshot: (row.snapshot ?? {}) as Record<string, unknown>,
-        note: String(row.note ?? ""),
-        createdAt: String(row.created_at ?? ""),
-      }),
-    ),
-    deployments: (deployments.data ?? []).map(
-      (row): WebsiteDeployment => ({
-        id: String(row.id),
-        projectId: String(row.project_id),
-        versionId: row.version_id ? String(row.version_id) : null,
-        provider: String(row.provider ?? ""),
-        status: String(row.status ?? ""),
-        url: String(row.url ?? ""),
-        error: String(row.error ?? ""),
-        createdAt: String(row.created_at ?? ""),
-      }),
-    ),
-    domains: (domains.data ?? []).map(
-      (row): WebsiteDomain => ({
-        id: String(row.id),
-        projectId: String(row.project_id),
-        hostname: String(row.hostname ?? ""),
-        kind: String(row.kind ?? "custom"),
-        dnsRecords: Array.isArray(row.dns_records)
-          ? (row.dns_records as WebsiteDomain["dnsRecords"])
-          : [],
-        status: String(row.status ?? "pending"),
-        sslStatus: String(row.ssl_status ?? "pending"),
-        verifiedAt: row.verified_at ? String(row.verified_at) : null,
-        createdAt: String(row.created_at ?? ""),
-      }),
-    ),
-  };
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throwDb(error);
+      if (!data) return null;
+      const project = mapProject(data as Record<string, unknown>);
+      const [business, template, pages, versions, deployments, domains] =
+        await Promise.all([
+          getBusiness(project.businessId),
+          getTemplate(project.templateId),
+          db
+            .from("website_pages")
+            .select("*")
+            .eq("project_id", id)
+            .order("nav_order"),
+          db
+            .from("website_versions")
+            .select("*")
+            .eq("project_id", id)
+            .order("version_number", { ascending: false }),
+          db
+            .from("website_deployments")
+            .select("*")
+            .eq("project_id", id)
+            .order("created_at", { ascending: false })
+            .limit(20),
+          db.from("website_domains").select("*").eq("project_id", id),
+        ]);
+      if (!business || !template)
+        throw new Error("Project is missing business or template");
+      if (pages.error) throwDb(pages.error);
+      if (versions.error) throwDb(versions.error);
+      if (deployments.error) throwDb(deployments.error);
+      if (domains.error) throwDb(domains.error);
+      return {
+        project,
+        business,
+        template,
+        pages: (pages.data ?? []).map((row) =>
+          mapPage(row as Record<string, unknown>),
+        ),
+        versions: (versions.data ?? []).map(
+          (row): WebsiteVersion => ({
+            id: String(row.id),
+            projectId: String(row.project_id),
+            versionNumber: Number(row.version_number),
+            authorId: row.author_id ? String(row.author_id) : null,
+            snapshot: (row.snapshot ?? {}) as Record<string, unknown>,
+            note: String(row.note ?? ""),
+            createdAt: String(row.created_at ?? ""),
+          }),
+        ),
+        deployments: (deployments.data ?? []).map(
+          (row): WebsiteDeployment => ({
+            id: String(row.id),
+            projectId: String(row.project_id),
+            versionId: row.version_id ? String(row.version_id) : null,
+            provider: String(row.provider ?? ""),
+            status: String(row.status ?? ""),
+            url: String(row.url ?? ""),
+            error: String(row.error ?? ""),
+            createdAt: String(row.created_at ?? ""),
+          }),
+        ),
+        domains: (domains.data ?? []).map(
+          (row): WebsiteDomain => ({
+            id: String(row.id),
+            projectId: String(row.project_id),
+            hostname: String(row.hostname ?? ""),
+            kind: String(row.kind ?? "custom"),
+            dnsRecords: Array.isArray(row.dns_records)
+              ? (row.dns_records as WebsiteDomain["dnsRecords"])
+              : [],
+            status: String(row.status ?? "pending"),
+            sslStatus: String(row.ssl_status ?? "pending"),
+            verifiedAt: row.verified_at ? String(row.verified_at) : null,
+            createdAt: String(row.created_at ?? ""),
+          }),
+        ),
+      };
     },
   );
 }
@@ -733,6 +788,7 @@ export async function createProject(input: {
   name?: string;
   slug?: string;
   theme?: ThemeTokens;
+  editorEngine?: EditorEngineKind;
 }) {
   return withPersistence(
     () => files.createProject(input),
@@ -746,6 +802,7 @@ export async function createProject(input: {
       const slug = input.slug
         ? await uniqueSlug("website_projects", input.slug)
         : await uniqueSlug("website_projects", business.slug);
+      const editorEngine = "puck";
       const { data, error } = await getSupabaseAdmin()
         .from("website_projects")
         .insert({
@@ -754,6 +811,7 @@ export async function createProject(input: {
           name: input.name?.trim() || business.name,
           slug,
           status: "draft",
+          editor_engine: editorEngine,
           theme: input.theme ?? DEFAULT_THEME,
           site_config: {
             stickyHeader: true,
@@ -770,7 +828,40 @@ export async function createProject(input: {
         })
         .select("*")
         .single();
-      if (error) throwDb(error);
+      if (error) {
+        // Column may be missing until migration is applied — retry without it.
+        if (String(error.message || "").includes("editor_engine")) {
+          const retry = await getSupabaseAdmin()
+            .from("website_projects")
+            .insert({
+              business_id: business.id,
+              template_id: template.id,
+              name: input.name?.trim() || business.name,
+              slug,
+              status: "draft",
+              theme: input.theme ?? DEFAULT_THEME,
+              site_config: {
+                stickyHeader: true,
+                announcement: "",
+                navCta: business.primaryCta,
+                footerNote: "",
+              },
+              seo_config: {
+                title: business.name,
+                description:
+                  business.tagline || business.description.slice(0, 160),
+                ogImage: business.heroUrl,
+                robots: "index,follow",
+              },
+            })
+            .select("*")
+            .single();
+          if (retry.error) throwDb(retry.error);
+          const mapped = mapProject(retry.data as Record<string, unknown>);
+          return { ...mapped, editorEngine };
+        }
+        throwDb(error);
+      }
       return mapProject(data as Record<string, unknown>);
     },
   );
@@ -812,7 +903,8 @@ export async function updateProject(
       if (patch.publishedVersionId !== undefined) {
         payload.published_version_id = patch.publishedVersionId;
       }
-      if (patch.publishedAt !== undefined) payload.published_at = patch.publishedAt;
+      if (patch.publishedAt !== undefined)
+        payload.published_at = patch.publishedAt;
       if (patch.customDomain !== undefined)
         payload.custom_domain = patch.customDomain;
       const { error } = await getSupabaseAdmin()
@@ -832,7 +924,7 @@ export async function replaceProjectPages(
     navLabel: string;
     showInNav: boolean;
     navOrder: number;
-    draftData: PuckData;
+    draftData: PageDocument;
   }>,
 ) {
   return withPersistence(
@@ -861,7 +953,7 @@ export async function replaceProjectPages(
   );
 }
 
-export async function savePageDraft(pageId: string, draftData: PuckData) {
+export async function savePageDraft(pageId: string, draftData: PageDocument) {
   return withPersistence(
     () => files.savePageDraft(pageId, draftData),
     async () => {
@@ -889,11 +981,17 @@ export async function addPage(
       if (taken.has(slug) || RESERVED_SLUGS.has(slug)) {
         slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
       }
-      const chromeTypes = new Set(["AnnouncementBar", "Navbar", "CTA", "Footer"]);
+      const chromeTypes = new Set([
+        "AnnouncementBar",
+        "Navbar",
+        "CTA",
+        "Footer",
+      ]);
+      const firstDraft = bundle.pages[0]?.draftData;
       const draftData = {
         root: { props: { title } },
-        content: (bundle.pages[0]?.draftData.content ?? []).filter((node) =>
-          chromeTypes.has(node.type),
+        content: (isPuckData(firstDraft) ? firstDraft.content : []).filter(
+          (node) => chromeTypes.has(node.type),
         ),
       };
       const { data, error } = await getSupabaseAdmin()
@@ -904,7 +1002,11 @@ export async function addPage(
           title,
           nav_label: title,
           show_in_nav: input.showInNav !== false,
-          nav_order: bundle.pages.reduce((max, item) => Math.max(max, item.navOrder), -1) + 1,
+          nav_order:
+            bundle.pages.reduce(
+              (max, item) => Math.max(max, item.navOrder),
+              -1,
+            ) + 1,
           draft_data: draftData,
         })
         .select("*")
@@ -929,18 +1031,29 @@ export async function addPage(
 
 export async function updatePage(
   pageId: string,
-  patch: Partial<{ title: string; slug: string; navLabel: string; showInNav: boolean; navOrder: number }>,
+  patch: Partial<{
+    title: string;
+    slug: string;
+    navLabel: string;
+    showInNav: boolean;
+    navOrder: number;
+  }>,
 ) {
   return withPersistence(
     () => files.updatePage(pageId, patch),
     async () => {
-      const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      const payload: Record<string, unknown> = {
+        updated_at: new Date().toISOString(),
+      };
       if (patch.title) payload.title = patch.title;
       if (patch.navLabel) payload.nav_label = patch.navLabel;
       if (patch.slug) payload.slug = patch.slug;
       if (patch.showInNav !== undefined) payload.show_in_nav = patch.showInNav;
       if (patch.navOrder !== undefined) payload.nav_order = patch.navOrder;
-      const { error } = await getSupabaseAdmin().from("website_pages").update(payload).eq("id", pageId);
+      const { error } = await getSupabaseAdmin()
+        .from("website_pages")
+        .update(payload)
+        .eq("id", pageId);
       if (error) throwDb(error);
       return { id: pageId, ...patch };
     },
@@ -951,7 +1064,10 @@ export async function deletePage(pageId: string) {
   return withPersistence(
     () => files.deletePage(pageId),
     async () => {
-      const { error } = await getSupabaseAdmin().from("website_pages").delete().eq("id", pageId);
+      const { error } = await getSupabaseAdmin()
+        .from("website_pages")
+        .delete()
+        .eq("id", pageId);
       if (error) throwDb(error);
       return { ok: true };
     },
@@ -971,7 +1087,10 @@ export async function reorderPages(projectId: string, pageIds: string[]) {
     async () => {
       const db = getSupabaseAdmin();
       for (const [index, id] of pageIds.entries()) {
-        const { error } = await db.from("website_pages").update({ nav_order: index }).eq("id", id);
+        const { error } = await db
+          .from("website_pages")
+          .update({ nav_order: index })
+          .eq("id", id);
         if (error) throwDb(error);
       }
     },
@@ -982,96 +1101,133 @@ export async function publishPreview(projectId: string) {
   return withPersistence(
     () => files.publishPreview(projectId),
     async () => {
-  const bundle = await getProjectBundle(projectId);
-  if (!bundle) throw new Error("Project not found");
-  const db = getSupabaseAdmin();
-  for (const page of bundle.pages) {
-    const { error } = await db
-      .from("website_pages")
-      .update({
-        preview_data: page.draftData,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", page.id);
-    if (error) throwDb(error);
-  }
-  await updateProject(projectId, { status: "preview" });
-  console.info("[website-factory] preview published", {
-    projectId,
-    slug: bundle.project.slug,
-  });
-  return publicPreviewUrl(bundle.project.slug);
+      const bundle = await getProjectBundle(projectId);
+      if (!bundle) throw new Error("Project not found");
+      const db = getSupabaseAdmin();
+      for (const page of bundle.pages) {
+        const { error } = await db
+          .from("website_pages")
+          .update({
+            preview_data: page.draftData,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", page.id);
+        if (error) throwDb(error);
+      }
+      await updateProject(projectId, { status: "preview" });
+      console.info("[website-factory] preview published", {
+        projectId,
+        slug: bundle.project.slug,
+      });
+      return publicPreviewUrl(bundle.project.slug);
     },
   );
 }
 
-export async function publishLive(projectId: string, authorId?: string | null) {
+export async function publishLive(
+  projectId: string,
+  authorId?: string | null,
+  note?: string | null,
+) {
   return withPersistence(
-    () => files.publishLive(projectId, authorId),
+    () => files.publishLive(projectId, authorId, note),
     async () => {
-  const bundle = await getProjectBundle(projectId);
-  if (!bundle) throw new Error("Project not found");
-  const db = getSupabaseAdmin();
-  const nextNumber = (bundle.versions[0]?.versionNumber ?? 0) + 1;
-  const snapshot = {
-    theme: bundle.project.theme,
-    siteConfig: bundle.project.siteConfig,
-    seoConfig: bundle.project.seoConfig,
-    pages: bundle.pages.map((page) => ({
-      slug: page.slug,
-      title: page.title,
-      navLabel: page.navLabel,
-      showInNav: page.showInNav,
-      navOrder: page.navOrder,
-      data: page.draftData,
-    })),
-  };
-  const { data: version, error: versionError } = await db
-    .from("website_versions")
-    .insert({
-      project_id: projectId,
-      version_number: nextNumber,
-      author_id: authorId ?? null,
-      snapshot,
-      note: `Version ${nextNumber}`,
-    })
-    .select("*")
-    .single();
-  if (versionError) throw new Error(versionError.message);
-  for (const page of bundle.pages) {
-    const { error } = await db
-      .from("website_pages")
-      .update({
-        published_data: page.draftData,
-        preview_data: page.previewData ?? page.draftData,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", page.id);
-    if (error) throwDb(error);
-  }
-  const liveUrl = publicLiveUrl(bundle.project.slug);
-  await updateProject(projectId, {
-    status: "published",
-    publishedVersionId: String(version.id),
-    publishedAt: new Date().toISOString(),
-    deploymentStatus: "live",
-    deploymentProvider: "aevion",
-    deploymentUrl: liveUrl,
-  });
-  const { error: depError } = await db.from("website_deployments").insert({
-    project_id: projectId,
-    version_id: version.id,
-    provider: "aevion",
-    status: "live",
-    url: liveUrl,
-  });
-  if (depError) throw new Error(depError.message);
-  console.info("[website-factory] published", {
-    projectId,
-    slug: bundle.project.slug,
-    version: nextNumber,
-  });
-  return { url: liveUrl, versionNumber: nextNumber };
+      const bundle = await getProjectBundle(projectId);
+      if (!bundle) throw new Error("Project not found");
+      const db = getSupabaseAdmin();
+      const nextNumber = (bundle.versions[0]?.versionNumber ?? 0) + 1;
+      const versionNote =
+        (note || "").trim().slice(0, 120) || `Version ${nextNumber}`;
+      const snapshot = {
+        theme: bundle.project.theme,
+        siteConfig: bundle.project.siteConfig,
+        seoConfig: bundle.project.seoConfig,
+        pages: bundle.pages.map((page) => ({
+          slug: page.slug,
+          title: page.title,
+          navLabel: page.navLabel,
+          showInNav: page.showInNav,
+          navOrder: page.navOrder,
+          data: page.draftData,
+        })),
+      };
+      const { data: version, error: versionError } = await db
+        .from("website_versions")
+        .insert({
+          project_id: projectId,
+          version_number: nextNumber,
+          author_id: authorId ?? null,
+          snapshot,
+          note: versionNote,
+        })
+        .select("*")
+        .single();
+      if (versionError) throw new Error(versionError.message);
+      for (const page of bundle.pages) {
+        const { error } = await db
+          .from("website_pages")
+          .update({
+            published_data: page.draftData,
+            preview_data: page.previewData ?? page.draftData,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", page.id);
+        if (error) throwDb(error);
+      }
+      const liveUrl = publicLiveUrl(bundle.project.slug);
+      await updateProject(projectId, {
+        status: "published",
+        publishedVersionId: String(version.id),
+        publishedAt: new Date().toISOString(),
+        deploymentStatus: "live",
+        deploymentProvider: "aevion",
+        deploymentUrl: liveUrl,
+      });
+      const { error: depError } = await db.from("website_deployments").insert({
+        project_id: projectId,
+        version_id: version.id,
+        provider: "aevion",
+        status: "live",
+        url: liveUrl,
+      });
+      if (depError) throw new Error(depError.message);
+      console.info("[website-factory] published", {
+        projectId,
+        slug: bundle.project.slug,
+        version: nextNumber,
+        note: versionNote,
+      });
+      return {
+        url: liveUrl,
+        versionNumber: nextNumber,
+        versionId: String(version.id),
+        note: versionNote,
+      };
+    },
+  );
+}
+
+export async function updateVersionNote(
+  projectId: string,
+  versionId: string,
+  note: string,
+) {
+  return withPersistence(
+    () => files.updateVersionNote(projectId, versionId, note),
+    async () => {
+      const bundle = await getProjectBundle(projectId);
+      if (!bundle) throw new Error("Project not found");
+      const version = bundle.versions.find((item) => item.id === versionId);
+      if (!version) throw new Error("Version not found");
+      const nextNote =
+        note.trim().slice(0, 120) || `Version ${version.versionNumber}`;
+      const { error } = await getSupabaseAdmin()
+        .from("website_versions")
+        .update({ note: nextNote })
+        .eq("id", versionId)
+        .eq("project_id", projectId);
+      if (error) throwDb(error);
+      return { id: versionId, note: nextNote };
     },
   );
 }
@@ -1080,49 +1236,50 @@ export async function restoreVersion(projectId: string, versionId: string) {
   return withPersistence(
     () => files.restoreVersion(projectId, versionId),
     async () => {
-  const bundle = await getProjectBundle(projectId);
-  if (!bundle) throw new Error("Project not found");
-  const version = bundle.versions.find((item) => item.id === versionId);
-  if (!version) throw new Error("Version not found");
-  const snapshot = version.snapshot as {
-    theme?: ThemeTokens;
-    siteConfig?: SiteConfig;
-    seoConfig?: SeoConfig;
-    pages?: Array<{
-      slug: string;
-      title: string;
-      navLabel: string;
-      showInNav: boolean;
-      navOrder: number;
-      data: PuckData;
-    }>;
-  };
-  if (snapshot.theme || snapshot.siteConfig || snapshot.seoConfig) {
-    await updateProject(projectId, {
-      theme: snapshot.theme,
-      siteConfig: snapshot.siteConfig,
-      seoConfig: snapshot.seoConfig,
-      status: bundle.project.status === "published" ? "published" : "ready",
-    });
-  }
-  if (snapshot.pages?.length) {
-    await replaceProjectPages(
-      projectId,
-      snapshot.pages.map((page) => ({
-        slug: page.slug,
-        title: page.title,
-        navLabel: page.navLabel,
-        showInNav: page.showInNav,
-        navOrder: page.navOrder,
-        draftData: page.data,
-      })),
-    );
-  }
-  console.info("[website-factory] restored version", {
-    projectId,
-    versionId,
-    version: version.versionNumber,
-  });
+      const bundle = await getProjectBundle(projectId);
+      if (!bundle) throw new Error("Project not found");
+      const version = bundle.versions.find((item) => item.id === versionId);
+      if (!version) throw new Error("Version not found");
+      const snapshot = version.snapshot as {
+        theme?: ThemeTokens;
+        siteConfig?: SiteConfig;
+        seoConfig?: SeoConfig;
+        pages?: Array<{
+          slug: string;
+          title: string;
+          navLabel: string;
+          showInNav: boolean;
+          navOrder: number;
+          data: PageDocument;
+        }>;
+      };
+      if (snapshot.theme || snapshot.siteConfig || snapshot.seoConfig) {
+        await updateProject(projectId, {
+          theme: snapshot.theme,
+          siteConfig: snapshot.siteConfig,
+          seoConfig: snapshot.seoConfig,
+          status: bundle.project.status === "published" ? "published" : "ready",
+        });
+      }
+      if (snapshot.pages?.length) {
+        await replaceProjectPages(
+          projectId,
+          snapshot.pages.map((page) => ({
+            slug: page.slug,
+            title: page.title,
+            navLabel: page.navLabel,
+            showInNav: page.showInNav,
+            navOrder: page.navOrder,
+            draftData: page.data,
+          })),
+        );
+      }
+      console.info("[website-factory] restored version", {
+        projectId,
+        versionId,
+        version: version.versionNumber,
+      });
+      return getProjectBundle(projectId);
     },
   );
 }
@@ -1160,42 +1317,42 @@ export async function addDomain(projectId: string, hostname: string) {
   return withPersistence(
     () => files.addDomain(projectId, hostname),
     async () => {
-  const host = hostname
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\//, "")
-    .replace(/\/.*$/, "");
-  if (!host || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(host)) {
-    throw new Error("Enter a valid domain");
-  }
-  const apex = getSiteUrl().replace(/^https?:\/\//, "");
-  const records = [
-    {
-      type: "CNAME",
-      name: host.startsWith("www.") ? host : `www.${host}`,
-      value: apex,
-    },
-    {
-      type: "A",
-      name: host.replace(/^www\./, ""),
-      value: "Point the apex to your Vercel A record once configured",
-    },
-  ];
-  const { data, error } = await getSupabaseAdmin()
-    .from("website_domains")
-    .insert({
-      project_id: projectId,
-      hostname: host,
-      kind: "custom",
-      dns_records: records,
-      status: "pending",
-      ssl_status: "pending",
-    })
-    .select("*")
-    .single();
-  if (error) throwDb(error);
-  await updateProject(projectId, { customDomain: host });
-  return data;
+      const host = hostname
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, "")
+        .replace(/\/.*$/, "");
+      if (!host || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(host)) {
+        throw new Error("Enter a valid domain");
+      }
+      const apex = getSiteUrl().replace(/^https?:\/\//, "");
+      const records = [
+        {
+          type: "CNAME",
+          name: host.startsWith("www.") ? host : `www.${host}`,
+          value: apex,
+        },
+        {
+          type: "A",
+          name: host.replace(/^www\./, ""),
+          value: "Point the apex to your Vercel A record once configured",
+        },
+      ];
+      const { data, error } = await getSupabaseAdmin()
+        .from("website_domains")
+        .insert({
+          project_id: projectId,
+          hostname: host,
+          kind: "custom",
+          dns_records: records,
+          status: "pending",
+          ssl_status: "pending",
+        })
+        .select("*")
+        .single();
+      if (error) throwDb(error);
+      await updateProject(projectId, { customDomain: host });
+      return data;
     },
   );
 }

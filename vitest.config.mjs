@@ -10,8 +10,9 @@ export default defineConfig({
     include: [
       "src/lib/news/**/*.test.ts",
       "src/lib/news/__tests__/**/*.ts",
-      "src/lib/news-intake/**/*.test.ts",
+      "src/lib/news-ingest/**/*.test.ts",
       "src/lib/visitors/**/*.test.ts",
+      "src/lib/editor/**/*.test.ts",
       "src/features/website-factory/**/*.test.ts",
     ],
   },

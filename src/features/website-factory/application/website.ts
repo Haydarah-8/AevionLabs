@@ -14,6 +14,7 @@ import {
   restoreVersion,
   updatePage,
   updateProject,
+  updateVersionNote,
   upsertBusiness,
 } from "../services/store";
 import { generateWebsite, generateWebsiteFromWizard } from "../services/generate";
@@ -66,7 +67,11 @@ export async function createWebsiteFromWizard(
 
 /** Create an untitled draft with one empty Home page and open Studio immediately. */
 export async function createBlankWebsite(
-  input: { name?: string; templateId?: string } = {},
+  input: {
+    name?: string;
+    templateId?: string;
+    editorEngine?: "puck";
+  } = {},
   actorId?: string | null,
 ) {
   const templates = await listTemplates();
@@ -82,6 +87,7 @@ export async function createBlankWebsite(
   }
 
   const name = input.name?.trim() || "Untitled site";
+  const editorEngine: "puck" = "puck";
   const business = await upsertBusiness({
     name,
     tagline: "",
@@ -116,6 +122,7 @@ export async function createBlankWebsite(
     businessId: business.id,
     templateId: preferred.id,
     name,
+    editorEngine,
   });
 
   await replaceProjectPages(project.id, [
@@ -142,7 +149,7 @@ export async function createBlankWebsite(
     resourceId: project.id,
     actorId,
     actorType: actorId ? "admin" : "system",
-    meta: { slug: project.slug, blank: true },
+    meta: { slug: project.slug, blank: true, editorEngine },
   });
 
   return bundle;
@@ -178,8 +185,12 @@ export async function publishWebsitePreview(id: string, actorId?: string | null)
   return { url };
 }
 
-export async function publishWebsiteLive(id: string, actorId?: string | null) {
-  const result = await publishLive(id);
+export async function publishWebsiteLive(
+  id: string,
+  actorId?: string | null,
+  note?: string | null,
+) {
+  const result = await publishLive(id, actorId, note);
   await emitFactoryEvent({
     name: "website.published",
     projectId: id,
@@ -187,6 +198,24 @@ export async function publishWebsiteLive(id: string, actorId?: string | null) {
     resourceId: id,
     actorId,
     meta: { mode: "live", ...result },
+  });
+  return result;
+}
+
+export async function renameWebsiteVersion(
+  id: string,
+  versionId: string,
+  note: string,
+  actorId?: string | null,
+) {
+  const result = await updateVersionNote(id, versionId, note);
+  await emitFactoryEvent({
+    name: "website.updated",
+    projectId: id,
+    resourceType: "version",
+    resourceId: versionId,
+    actorId,
+    meta: { renamed: true, note: result.note },
   });
   return result;
 }

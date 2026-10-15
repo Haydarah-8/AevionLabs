@@ -1,14 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 export default function NewWebsitePage() {
   const router = useRouter();
   const [error, setError] = useState("");
+  const started = useRef(false);
 
   useEffect(() => {
+    // React Strict Mode remounts effects in dev — guard against double create.
+    if (started.current) return;
+    started.current = true;
+
     let cancelled = false;
     async function create() {
       try {
@@ -51,7 +56,10 @@ export default function NewWebsitePage() {
             <button
               type="button"
               className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm text-[#0d1730]"
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                started.current = false;
+                window.location.reload();
+              }}
             >
               Try again
             </button>

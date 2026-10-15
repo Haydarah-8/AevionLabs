@@ -1,10 +1,20 @@
 import type { ReactNode } from "react";
 import type { Config } from "@puckeditor/core";
 import * as Blocks from "../components/blocks";
-import { defaultStyles, styleObjectField, text } from "./style-fields";
+import {
+  advancedCategoryComponents,
+  advancedComponents,
+} from "./advanced-components";
+import {
+  defaultStyles,
+  editableTextarea,
+  plainText,
+  styleObjectField,
+  text,
+} from "./style-fields";
 import { withBoxStyles, StyleShell } from "./wrap";
 
-const textarea = { type: "textarea" as const };
+const textarea = editableTextarea;
 const styles = styleObjectField;
 
 const Hero = withBoxStyles(Blocks.Hero as never);
@@ -75,6 +85,7 @@ export const factoryConfig = {
         "Columns3",
         "Spacer",
         "Divider",
+        "CollectionList",
       ],
     },
     basic: {
@@ -129,8 +140,13 @@ export const factoryConfig = {
         "BlogGrid",
       ],
     },
+    advanced: {
+      title: "Advanced",
+      components: advancedCategoryComponents,
+    },
   },
   components: {
+    ...advancedComponents,
     AnnouncementBar: {
       label: "Announcement",
       fields: { text },
@@ -139,7 +155,7 @@ export const factoryConfig = {
     Navbar: {
       fields: {
         name: text,
-        logoUrl: { type: "text", label: "Logo URL" },
+        logoUrl: { ...plainText, label: "Logo URL" },
         homeHref: text,
         sticky: {
           type: "radio",
@@ -179,7 +195,7 @@ export const factoryConfig = {
         primaryHref: text,
         secondaryLabel: text,
         secondaryHref: text,
-        imageUrl: { type: "text", label: "Image URL" },
+        imageUrl: { ...plainText, label: "Image URL" },
         imageAlt: text,
         styles,
       },
@@ -200,11 +216,13 @@ export const factoryConfig = {
       render: ({
         items,
         styles: box,
+        id,
       }: {
         items?: Array<{ label?: string }>;
         styles?: import("./styles").StyleBox;
+        id?: string;
       }) => (
-        <StyleShell styles={box}>
+        <StyleShell styles={box} scopeId={id}>
           <Blocks.TrustIndicators
             items={(items ?? []).map((item) => item.label || "")}
           />
@@ -277,12 +295,14 @@ export const factoryConfig = {
         heading,
         items,
         styles: box,
+        id,
       }: {
         heading?: string;
         items?: Array<{ label?: string }>;
         styles?: import("./styles").StyleBox;
+        id?: string;
       }) => (
-        <StyleShell styles={box}>
+        <StyleShell styles={box} scopeId={id}>
           <Blocks.AreasServed
             heading={heading}
             items={(items ?? []).map((item) => item.label || "")}
@@ -392,7 +412,11 @@ export const factoryConfig = {
     TextBlock: {
       label: "Text",
       fields: {
-        html: { type: "richtext", label: "Copy" },
+        html: {
+          type: "richtext",
+          label: "Copy",
+          contentEditable: true,
+        },
         align: {
           type: "radio",
           options: [
@@ -413,7 +437,7 @@ export const factoryConfig = {
     ImageBlock: {
       label: "Image",
       fields: {
-        url: { type: "text", label: "Image URL" },
+        url: { ...plainText, label: "Image URL" },
         alt: text,
         caption: text,
         width: { type: "text", label: "Width (e.g. 100% or 480px)" },
@@ -661,6 +685,31 @@ export const factoryConfig = {
       defaultProps: { styles: defaultStyles() },
       render: Blocks.Divider,
     },
+    CollectionList: {
+      label: "Collection list",
+      fields: {
+        collectionId: {
+          type: "text",
+          label: "Collection id or slug (services, reviews, team, …)",
+        },
+        limit: { type: "text", label: "Limit" },
+        titleField: { type: "text", label: "Title field key" },
+        bodyField: { type: "text", label: "Body field key" },
+        imageField: { type: "text", label: "Image field key" },
+        emptyText: { type: "text", label: "Empty message" },
+        styles,
+      },
+      defaultProps: {
+        collectionId: "services",
+        limit: "12",
+        titleField: "name",
+        bodyField: "description",
+        imageField: "imageUrl",
+        emptyText: "",
+        styles: defaultStyles(),
+      },
+      render: Blocks.CollectionListBlock,
+    },
     Stats: {
       fields: {
         heading: text,
@@ -821,10 +870,13 @@ export const factoryConfig = {
         body: textarea,
         imageUrl: text,
         imageAlt: text,
-        reverse: { type: "radio", options: [
-          { label: "Image right", value: false },
-          { label: "Image left", value: true },
-        ]},
+        reverse: {
+          type: "radio",
+          options: [
+            { label: "Image right", value: false },
+            { label: "Image left", value: true },
+          ],
+        },
         styles,
       },
       defaultProps: { reverse: false, styles: defaultStyles() },

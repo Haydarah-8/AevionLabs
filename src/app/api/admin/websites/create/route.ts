@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { getAdminUser, isAdminRequest } from "@/lib/admin-auth";
-import {
-  createBlankWebsite,
-  createWebsiteFromWizard,
-} from "@/features/website-factory/application/website";
+import { aevionCommands } from "@/lib/aevion/commands";
 import { createProject } from "@/features/website-factory/services/store";
-import { factoryErrorMessage, themeSchema } from "@/features/website-factory/services/schemas";
+import {
+  factoryErrorMessage,
+  themeSchema,
+} from "@/features/website-factory/services/schemas";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +18,7 @@ const createSchema = z.object({
   slug: z.string().trim().max(80).optional(),
   theme: themeSchema.optional(),
   wizard: z.record(z.string(), z.unknown()).optional(),
+  editorEngine: z.enum(["puck"]).optional(),
 });
 
 export async function POST(request: Request) {
@@ -28,11 +29,12 @@ export async function POST(request: Request) {
     const user = await getAdminUser();
     const raw = await request.json().catch(() => ({}));
     const input = createSchema.parse(raw ?? {});
+    const actorId = user?.id ?? null;
 
     if (input.wizard) {
-      const bundle = await createWebsiteFromWizard(
-        input.wizard as never,
-        user?.id ?? null,
+      const bundle = await aevionCommands.createWebsite(
+        { wizard: input.wizard },
+        { actorId },
       );
       return NextResponse.json(
         { project: bundle.project, bundle },
@@ -42,9 +44,13 @@ export async function POST(request: Request) {
 
     // Default: blank canvas (no form required)
     if (input.blank !== false && !input.businessId) {
-      const bundle = await createBlankWebsite(
-        { name: input.name, templateId: input.templateId },
-        user?.id ?? null,
+      const bundle = await aevionCommands.createWebsite(
+        {
+          name: input.name,
+          templateId: input.templateId,
+          editorEngine: input.editorEngine,
+        },
+        { actorId },
       );
       return NextResponse.json(
         { project: bundle.project, bundle },
@@ -64,6 +70,7 @@ export async function POST(request: Request) {
       name: input.name,
       slug: input.slug,
       theme: input.theme,
+      editorEngine: input.editorEngine,
     });
     return NextResponse.json({ project }, { status: 201 });
   } catch (err) {

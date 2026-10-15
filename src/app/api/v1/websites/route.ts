@@ -1,9 +1,6 @@
 import { authenticateApiRequest } from "@/features/website-factory/developer/auth";
 import { apiError, apiOk } from "@/features/website-factory/application/http";
-import {
-  createWebsiteFromWizard,
-  listWebsites,
-} from "@/features/website-factory/application/website";
+import { aevionCommands } from "@/lib/aevion/commands";
 import { createProject } from "@/features/website-factory/services/store";
 import { factoryErrorMessage } from "@/features/website-factory/services/schemas";
 import { z } from "zod";
@@ -15,7 +12,7 @@ export async function GET(request: Request) {
     requiredScope: "websites:read",
   });
   if (auth instanceof Response) return auth;
-  const projects = await listWebsites();
+  const projects = await aevionCommands.listWebsites();
   return apiOk(projects, { count: projects.length });
 }
 
@@ -35,9 +32,9 @@ export async function POST(request: Request) {
   try {
     const body = createSchema.parse(await request.json());
     if (body.wizard) {
-      const bundle = await createWebsiteFromWizard(
-        body.wizard as never,
-        auth.actorId,
+      const bundle = await aevionCommands.createWebsite(
+        { wizard: body.wizard },
+        { actorId: auth.actorId },
       );
       return apiOk(bundle, {}, { status: 201 });
     }

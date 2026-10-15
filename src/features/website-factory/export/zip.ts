@@ -2,7 +2,9 @@ import { readFile } from "fs/promises";
 import path from "path";
 import JSZip from "jszip";
 import type { ProjectBundle } from "../types";
+import { isPuckData } from "../types";
 import { prefixPuckData } from "../puck/paths";
+import { exportPageFiles } from "@/lib/editor/editor-exporter";
 
 async function src(rel: string) {
   return readFile(path.join(process.cwd(), rel), "utf8");
@@ -26,6 +28,28 @@ export default function Page() {
 }
 
 export async function buildExportZip(bundle: ProjectBundle) {
+  if (bundle.pages.some((p) => {
+    const data = p.publishedData ?? p.draftData;
+    return data && "engine" in data && (data.engine === "vvveb" || data.engine === "html");
+  })) {
+    const files = exportPageFiles(bundle.project, bundle.pages, "published");
+    const zip = new JSZip();
+    const root = bundle.project.slug;
+    for (const file of files) {
+      zip.file(`${root}/${file.path}`, file.contents);
+    }
+    zip.file(
+      `${root}/README.md`,
+      `# ${bundle.project.name}\n\nStatic HTML export from Aevion (legacy HTML pages).\nOpen index.html locally or host on any static provider.\n`,
+    );
+    const buffer = await zip.generateAsync({ type: "nodebuffer" });
+    return {
+      buffer,
+      filename: `${bundle.project.slug}-website.zip`,
+      files: Object.fromEntries(files.map((f) => [f.path, f.contents])),
+    };
+  }
+
   const files: Record<string, string> = {};
   const css = await src("src/app/factory-site.css");
   const blocks = await src("src/features/website-factory/components/blocks.tsx");
@@ -121,7 +145,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   if (!home) throw new Error("Website has no pages to export");
 
   for (const page of bundle.pages) {
-    const data = prefixPuckData(page.publishedData ?? page.draftData, "");
+    const raw = page.publishedData ?? page.draftData;
+    if (!isPuckData(raw)) {
+      throw new Error(
+        `Page ${page.slug} is not a Puck document; rebuild it in Aevion Studio or export as legacy HTML.`,
+      );
+    }
+    const data = prefixPuckData(raw, "");
     files[`content/${page.slug}.json`] = JSON.stringify(data, null, 2);
     if (page.slug === "home") {
       files["app/page.tsx"] = pageModule("home");

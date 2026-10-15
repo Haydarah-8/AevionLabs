@@ -574,3 +574,140 @@
   height: 100%;
   min-height: 0;
 }
+
+/* Phase 10 — interaction presets (data-driven via ae-block-shell classes) */
+.ae-block-shell[class*="ae-ix-"] {
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+  transform-origin: center center;
+}
+
+.ae-block-shell.ae-ix-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--wf-fg) 14%, transparent);
+}
+
+.ae-block-shell.ae-ix-hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.ae-block-shell.ae-ix-hover-fade:hover {
+  opacity: 0.82;
+}
+
+.ae-block-shell.ae-ix-hover-glow:hover {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--wf-primary) 45%, transparent);
+}
+
+.ae-block-shell.ae-ix-hover-underline {
+  position: relative;
+}
+.ae-block-shell.ae-ix-hover-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--wf-primary);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 180ms ease;
+}
+.ae-block-shell.ae-ix-hover-underline:hover::after {
+  transform: scaleX(1);
+}
+
+.ae-block-shell.ae-ix-click-press:active {
+  transform: scale(0.98);
+}
+
+.ae-block-shell.ae-ix-click-pulse:active {
+  animation: ae-ix-pulse 420ms ease;
+}
+
+.ae-block-shell.ae-ix-click-bounce:active {
+  animation: ae-ix-bounce 480ms ease;
+}
+
+.ae-block-shell.ae-ix-appear-fade-in {
+  animation: ae-ix-fade-in 520ms ease both;
+}
+
+.ae-block-shell.ae-ix-appear-fade-up {
+  animation: ae-ix-fade-up 560ms ease both;
+}
+
+.ae-block-shell.ae-ix-appear-fade-down {
+  animation: ae-ix-fade-down 560ms ease both;
+}
+
+@keyframes ae-ix-pulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ae-ix-bounce {
+  0% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes ae-ix-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ae-ix-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ae-ix-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ae-block-shell[class*="ae-ix-"] {
+    transition: none !important;
+    animation: none !important;
+  }
+  .ae-block-shell.ae-ix-hover-lift:hover,
+  .ae-block-shell.ae-ix-hover-scale:hover,
+  .ae-block-shell.ae-ix-click-press:active {
+    transform: none;
+  }
+}

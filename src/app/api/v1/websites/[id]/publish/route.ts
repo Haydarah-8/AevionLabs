@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 const bodySchema = z.object({
   mode: z.enum(["preview", "live"]).default("live"),
+  note: z.string().trim().max(120).optional(),
 });
 
 export async function POST(
@@ -27,7 +28,7 @@ export async function POST(
     if (body.mode === "preview") {
       return apiOk(await publishWebsitePreview(id, auth.actorId));
     }
-    return apiOk(await publishWebsiteLive(id, auth.actorId));
+    return apiOk(await publishWebsiteLive(id, auth.actorId, body.note));
   } catch (err) {
     return apiError(
       "INTERNAL_ERROR",

@@ -336,6 +336,12 @@ export const COMPONENT_META: Record<string, ComponentMeta> = {
     variants: ["line"],
     constraints: "Keep subtle.",
   },
+  CollectionList: {
+    purpose: "Repeat cards from a CMS collection",
+    placement: "Any page body",
+    variants: ["services", "reviews", "team", "custom"],
+    constraints: "Bind collectionId to a siteConfig collection slug.",
+  },
   TwoColumn: {
     purpose: "Two column layout",
     placement: "Content sections",

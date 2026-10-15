@@ -14,13 +14,53 @@ import "@puckeditor/core/puck.css";
 import "@/app/factory-site.css";
 import "./studio.css";
 import { factoryConfig } from "@/features/website-factory/puck/config";
+import { withStudioConfig } from "@/features/website-factory/editor/withStudioConfig";
+import { StudioLayersPanel } from "@/features/website-factory/editor/StudioLayersPanel";
+import {
+  clearStudioSelection,
+  getStudioSelection,
+} from "@/features/website-factory/editor/studio-selection";
+import {
+  isLayerLocked,
+  STUDIO_PROP,
+} from "@/features/website-factory/editor/studio-props";
+import type { StyleBox } from "@/features/website-factory/puck/styles";
+import {
+  breakpointFromWidth,
+  patchStylesAtBreakpoint,
+  resolveStyleBox,
+  type StudioBreakpoint,
+} from "@/features/website-factory/puck/responsive";
 import { themeStyle } from "@/features/website-factory/puck/theme";
+import { patchStyleWithThemeRefs } from "@/features/website-factory/puck/design-variables";
+import { DesignVariablesPanel } from "@/features/website-factory/editor/DesignVariablesPanel";
+import { CmsProvider } from "@/features/website-factory/cms/CmsContext";
+import { listCollections } from "@/features/website-factory/cms/collections";
+import { CollectionsPanel } from "@/features/website-factory/editor/CollectionsPanel";
+import { PageSettingsPanel } from "@/features/website-factory/editor/PageSettingsPanel";
+import { RedirectsPanel } from "@/features/website-factory/editor/RedirectsPanel";
+import { HistoryPanel } from "@/features/website-factory/editor/HistoryPanel";
+import { AiOpsPanel } from "@/features/website-factory/editor/AiOpsPanel";
+import { AuditsPanel } from "@/features/website-factory/editor/AuditsPanel";
+import type { AiPlan } from "@/features/website-factory/ai/tools";
+import { analyzeAiPlan } from "@/features/website-factory/ai/ops";
+import {
+  isNotFoundPageSlug,
+  NOT_FOUND_PAGE_SLUG,
+  patchPageSeo,
+} from "@/features/website-factory/pages/settings";
+import { displayVersionName } from "@/features/website-factory/history/versions";
+import type { HealthReport } from "@/features/website-factory/services/health";
 import type {
   PuckData,
   ProjectBundle,
   ThemeTokens,
   WebsitePage,
+  PageDocument,
+  SiteConfig,
+  WebsiteVersion,
 } from "@/features/website-factory/types";
+import { emptyPuck, isPuckData } from "@/features/website-factory/types";
 import {
   factoryDraftPath,
   factoryLivePath,
@@ -38,6 +78,15 @@ import {
 } from "@/features/website-factory/editor/StudioBottomBar";
 import { ContextualInspector } from "@/features/website-factory/editor/ContextualInspector";
 import type { InspectorTab } from "@/features/website-factory/editor/inspector-tabs";
+import { CanvasHeightSync } from "@/features/website-factory/editor/CanvasHeightSync";
+import {
+  StudioActionBar,
+  StudioComponentOverlay,
+  getStyleClipboard,
+  setStyleClipboard,
+} from "@/features/website-factory/editor/StudioActionBar";
+import { StudioToolsPanel } from "@/features/website-factory/editor/StudioToolsPanel";
+import type { StudioTool } from "@/features/website-factory/editor/studio-tools";
 import {
   Archive,
   Boxes,
@@ -63,10 +112,20 @@ import {
   Tablet,
   Undo2,
   Upload,
+  Wrench,
 } from "lucide-react";
 import { StudioBusinessPanel } from "@/features/website-factory/editor/StudioBusinessPanel";
 
+const studioConfig = withStudioConfig(factoryConfig);
+
+function studioPuck(doc: PageDocument | null | undefined): PuckData {
+  return doc && isPuckData(doc) ? doc : emptyPuck();
+}
+
 const useEditorPuck = createUsePuck();
+
+let blockClipboard: { type: string; props: Record<string, unknown> } | null =
+  null;
 
 function hexColor(value?: string) {
   return /^#[0-9a-fA-F]{6}$/.test(value || "") ? value! : "#111111";
@@ -77,6 +136,7 @@ type LeftTab =
   | "pages"
   | "site"
   | "add"
+  | "tools"
   | "layers"
   | "assets"
   | "import"
@@ -107,10 +167,22 @@ function CanvasFrame({
   children,
   document: frameDoc,
   theme,
+  siteConfig,
+  business,
 }: {
   children: ReactNode;
   document?: Document;
   theme: ThemeTokens;
+  siteConfig?: SiteConfig | null;
+  business?: {
+    name?: string;
+    tagline?: string;
+    description?: string;
+    phone?: string;
+    email?: string;
+    address?: string;
+    website?: string;
+  } | null;
 }) {
   useEffect(() => {
     if (!frameDoc) return;
@@ -123,8 +195,10 @@ function CanvasFrame({
     body.style.padding = "0";
     body.style.background = "#ffffff";
     body.style.color = "#111111";
-    body.style.minHeight = "100%";
+    body.style.minHeight = "0";
+    body.style.height = "auto";
     body.style.overflowX = "hidden";
+    body.style.overflowY = "visible";
 
     // Force light site chrome even if host admin CSS was mirrored in.
     let style = frameDoc.getElementById(
@@ -158,12 +232,28 @@ function CanvasFrame({
         background: var(--wf-fg, #111) !important;
         color: var(--wf-bg, #fff) !important;
       }
+      [data-puck-component] { cursor: grab !important; }
+      [data-puck-component][data-dnd-dragging] { cursor: grabbing !important; opacity: 0.92; }
+      .ae-overlay { position: relative; outline: 1px dashed transparent; outline-offset: -1px; }
+      .ae-overlay.is-hover { outline-color: rgba(37, 99, 235, 0.55); }
+      .ae-overlay.is-selected { outline: 2px solid #2563eb; outline-offset: -2px; }
+      .ae-overlay-tag {
+        position: absolute; top: 4px; left: 4px; z-index: 6; pointer-events: none;
+        padding: 1px 6px; border-radius: 4px; background: rgba(17,17,17,0.9);
+        color: #dbeafe; font-size: 9px; font-weight: 650; letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
     `;
   }, [frameDoc, theme]);
 
   return (
     <div className="factory-site" style={themeStyle(theme)}>
-      {children}
+      <CmsProvider
+        collections={listCollections(siteConfig)}
+        business={business}
+      >
+        {children}
+      </CmsProvider>
     </div>
   );
 }
@@ -258,8 +348,8 @@ export function AevionEditor({ id }: { id: string }) {
     <div className="ae-editor-root">
       <Puck
         key={page.id}
-        config={factoryConfig}
-        data={page.draftData ?? { root: { props: {} }, content: [] }}
+        config={studioConfig}
+        data={studioPuck(page.draftData)}
         height="100%"
         iframe={{ enabled: true, syncHostStyles: true }}
         ui={{
@@ -280,12 +370,26 @@ export function AevionEditor({ id }: { id: string }) {
         }))}
         onChange={(data) => queueSave(data as PuckData)}
         onPublish={(data) => void persist(page.id, data as PuckData)}
+        permissions={{
+          drag: true,
+          duplicate: true,
+          delete: true,
+          edit: true,
+          insert: true,
+        }}
         overrides={{
           iframe: ({ children, document: frameDoc }) => (
-            <CanvasFrame document={frameDoc} theme={bundle.project.theme}>
+            <CanvasFrame
+              document={frameDoc}
+              theme={bundle.project.theme}
+              siteConfig={bundle.project.siteConfig}
+              business={bundle.business}
+            >
               {children}
             </CanvasFrame>
           ),
+          actionBar: StudioActionBar,
+          componentOverlay: StudioComponentOverlay,
         }}
       >
         <StudioChrome
@@ -343,21 +447,22 @@ function StudioChrome({
   const viewports = useEditorPuck((s) => s.appState.ui?.viewports);
   const selectedItem = useEditorPuck((s) => s.selectedItem);
   const itemSelector = useEditorPuck((s) => s.appState.ui?.itemSelector);
+  const getSelectorForId = useEditorPuck((s) => s.getSelectorForId);
+  const getParentById = useEditorPuck((s) => s.getParentById);
   const [left, setLeft] = useState<LeftTab>(
     bundle.business.name === "Untitled site" ? "site" : "pages",
   );
-  const [leftOpen, setLeftOpen] = useState(true);
+  const [leftOpen, setLeftOpen] = useState(false);
   const [right, setRight] = useState<RightTab>("content");
   const [command, setCommand] = useState("");
   const [query, setQuery] = useState("");
   const [zoom, setZoom] = useState(100);
   const [focusMode, setFocusMode] = useState(false);
   const [blockQuery, setBlockQuery] = useState("");
-  const [plan, setPlan] = useState<{
-    explanation: string;
-    destructive: boolean;
-    calls: unknown[];
-  } | null>(null);
+  const [plan, setPlan] = useState<AiPlan | null>(null);
+  const [planConfirmMessage, setPlanConfirmMessage] = useState<string | null>(
+    null,
+  );
   const [health, setHealth] = useState<{
     issues: HealthIssue[];
     summary: string;
@@ -403,15 +508,14 @@ function StudioChrome({
   const [assetQuery, setAssetQuery] = useState("");
   const [assetKind, setAssetKind] = useState("all");
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [deviceWidth, setDeviceWidth] = useState(1280);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
   const [bottomUtility, setBottomUtility] = useState<BottomUtility | null>(
     null,
   );
   const commandRef = useRef<HTMLTextAreaElement>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
-  const width =
-    typeof viewports?.current?.width === "number"
-      ? viewports.current.width
-      : 1280;
+  const width = deviceWidth;
 
   useEffect(() => {
     if (!notice && !error) return;
@@ -454,7 +558,57 @@ function StudioChrome({
           setFocusMode(false);
           return;
         }
+        clearStudioSelection();
+        dispatch({ type: "setUi", ui: { itemSelector: null } });
         setLeftOpen(false);
+        return;
+      }
+      if ((event.key === "Delete" || event.key === "Backspace") && !meta) {
+        const data = latest.current || studioPuck(page.draftData);
+        const content = data.content || [];
+        const ids = getStudioSelection();
+        const targets =
+          ids.length > 0
+            ? content
+                .map((node, index) => ({
+                  index,
+                  id:
+                    typeof node.props?.id === "string" && node.props.id
+                      ? node.props.id
+                      : `idx-${index}`,
+                  locked: isLayerLocked(node.props as Record<string, unknown>),
+                }))
+                .filter((row) => ids.includes(row.id) && !row.locked)
+            : itemSelector && selectedItem
+              ? isLayerLocked(selectedItem.props as Record<string, unknown>)
+                ? []
+                : [
+                    {
+                      index: itemSelector.index,
+                      id: "",
+                      locked: false,
+                    },
+                  ]
+              : [];
+        if (!targets.length) {
+          if (ids.length || itemSelector) {
+            setNotice("Unlock layers before deleting");
+          }
+          return;
+        }
+        event.preventDefault();
+        for (const row of [...targets].sort((a, b) => b.index - a.index)) {
+          dispatch({
+            type: "remove",
+            index: row.index,
+            zone: itemSelector?.zone || "default-zone",
+          });
+        }
+        clearStudioSelection();
+        dispatch({ type: "setUi", ui: { itemSelector: null } });
+        setNotice(
+          `Deleted ${targets.length} layer${targets.length === 1 ? "" : "s"}`,
+        );
         return;
       }
       if (event.key.toLowerCase() === "f" && !meta) {
@@ -463,7 +617,7 @@ function StudioChrome({
       }
       if (meta && event.key.toLowerCase() === "s") {
         event.preventDefault();
-        void persist(page.id, latest.current || page.draftData)
+        void persist(page.id, latest.current || studioPuck(page.draftData))
           .then(() => setNotice("Saved"))
           .catch((err) => setError(err.message));
         return;
@@ -503,6 +657,13 @@ function StudioChrome({
     bundle.project.slug,
     focusMode,
     shortcutsOpen,
+    dispatch,
+    selectedItem,
+    itemSelector,
+    persist,
+    setNotice,
+    setError,
+    latest,
   ]);
 
   const studioCommands: StudioCommand[] = useMemo(
@@ -583,10 +744,12 @@ function StudioChrome({
         id: "publish",
         label: "Publish live",
         run: () => {
-          void persist(page.id, latest.current || page.draftData)
-            .then(() => post(`/api/admin/websites/${id}/publish`))
-            .then((json) => setNotice(String(json.url || "Published")))
-            .catch((err) => setError(err.message));
+          const note = window.prompt(
+            "Name this version (optional)",
+            `Version ${(bundle.versions[0]?.versionNumber ?? 0) + 1}`,
+          );
+          if (note === null) return;
+          void publishLiveNamed(note).catch((err) => setError(err.message));
         },
       },
       {
@@ -617,17 +780,53 @@ function StudioChrome({
   );
 
   function setViewport(nextWidth: number) {
+    setDeviceWidth(nextWidth);
+    setZoom(100);
     dispatch({
       type: "setUi",
       ui: {
         viewports: {
           current: { width: nextWidth, height: "auto" },
           controlsVisible: viewports?.controlsVisible ?? false,
-          options: viewports?.options ?? [],
+          options:
+            viewports?.options ??
+            VIEWPORTS.map((item) => ({
+              width: item.width,
+              height: "auto" as const,
+              label: item.label,
+            })),
         },
       },
     });
+    // Force the preview iframe to the device width so CSS media queries reflow.
+    requestAnimationFrame(() => {
+      const frame = document.querySelector<HTMLIFrameElement>(
+        ".ae-canvas-site #preview-frame, .ae-canvas-site iframe[data-rfd-iframe], .ae-canvas-site iframe",
+      );
+      if (frame) {
+        frame.style.width = `${nextWidth}px`;
+        frame.setAttribute("width", String(nextWidth));
+        window.dispatchEvent(new Event("resize"));
+      }
+    });
   }
+
+  useEffect(() => {
+    function onFocusField(event: Event) {
+      const field = (event as CustomEvent<{ field?: string }>).detail?.field;
+      if (!field) return;
+      setRight("content");
+      dispatch({
+        type: "setUi",
+        ui: {
+          field: { focus: field },
+          rightSideBarVisible: true,
+        },
+      });
+    }
+    window.addEventListener("ae-focus-field", onFocusField);
+    return () => window.removeEventListener("ae-focus-field", onFocusField);
+  }, [dispatch]);
 
   function applyStylePreset(patch: Record<string, string>) {
     if (!selectedItem || !itemSelector) {
@@ -635,7 +834,13 @@ function StudioChrome({
       return;
     }
     const currentStyles =
-      (selectedItem.props as { styles?: Record<string, string> })?.styles || {};
+      ((selectedItem.props as { styles?: StyleBox })?.styles as StyleBox) || {};
+    const bp = breakpointFromWidth(deviceWidth);
+    const nextStyles = patchStylesAtBreakpoint(
+      currentStyles,
+      bp,
+      patchStyleWithThemeRefs(patch),
+    );
     dispatch({
       type: "replace",
       destinationIndex: itemSelector.index,
@@ -644,14 +849,324 @@ function StudioChrome({
         ...selectedItem,
         props: {
           ...selectedItem.props,
-          styles: {
-            ...currentStyles,
-            ...patch,
-          },
+          styles: nextStyles,
         },
       },
     });
-    setNotice("Layout preset applied");
+    setNotice(
+      bp === "desktop"
+        ? "Style updated"
+        : `${bp[0]!.toUpperCase()}${bp.slice(1)} override saved`,
+    );
+  }
+
+  function replaceStyles(nextStyles: StyleBox) {
+    if (!selectedItem || !itemSelector) {
+      setNotice("Select a block first");
+      return;
+    }
+    dispatch({
+      type: "replace",
+      destinationIndex: itemSelector.index,
+      destinationZone: itemSelector.zone || "default-zone",
+      data: {
+        ...selectedItem,
+        props: {
+          ...selectedItem.props,
+          styles: nextStyles,
+        },
+      },
+    });
+  }
+
+  function replaceSelectedProps(nextProps: Record<string, unknown>) {
+    if (!selectedItem || !itemSelector) {
+      setNotice("Select a block first");
+      return;
+    }
+    dispatch({
+      type: "replace",
+      destinationIndex: itemSelector.index,
+      destinationZone: itemSelector.zone || "default-zone",
+      data: {
+        ...selectedItem,
+        props: nextProps,
+      },
+    });
+    setNotice("Instance updated");
+  }
+
+  function setStyleBreakpoint(bp: StudioBreakpoint) {
+    const width = bp === "mobile" ? 390 : bp === "tablet" ? 768 : 1280;
+    setViewport(width);
+  }
+
+  function persistTheme(theme: ThemeTokens) {
+    setBundle({
+      ...bundle,
+      project: { ...bundle.project, theme },
+    });
+    void fetch(`/api/admin/websites/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ theme }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "Theme save failed");
+        }
+        setNotice("Theme saved");
+      })
+      .catch((err) => setError(err.message));
+  }
+
+  function persistSiteConfig(siteConfig: SiteConfig) {
+    setBundle({
+      ...bundle,
+      project: { ...bundle.project, siteConfig },
+    });
+    void fetch(`/api/admin/websites/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ siteConfig }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "Collections save failed");
+        }
+        setNotice("Collections saved");
+      })
+      .catch((err) => setError(err.message));
+  }
+
+  function runStudioTool(tool: StudioTool) {
+    const zone = itemSelector?.zone || "default-zone";
+    const index = itemSelector?.index ?? 0;
+    const data = latest.current || studioPuck(page.draftData);
+
+    switch (tool.action) {
+      case "undo":
+        history.back();
+        break;
+      case "redo":
+        history.forward();
+        break;
+      case "duplicate":
+        if (!itemSelector) return setNotice("Select a block first");
+        dispatch({
+          type: "duplicate",
+          sourceIndex: index,
+          sourceZone: zone,
+        });
+        setNotice("Duplicated");
+        break;
+      case "delete":
+        if (!itemSelector) return setNotice("Select a block first");
+        dispatch({ type: "remove", index, zone });
+        setNotice("Deleted");
+        break;
+      case "cut":
+        if (!selectedItem || !itemSelector) return setNotice("Select a block");
+        blockClipboard = {
+          type: selectedItem.type as string,
+          props: { ...(selectedItem.props as Record<string, unknown>) },
+        };
+        dispatch({ type: "remove", index, zone });
+        setNotice("Cut");
+        break;
+      case "copy":
+        if (!selectedItem) return setNotice("Select a block");
+        blockClipboard = {
+          type: selectedItem.type as string,
+          props: { ...(selectedItem.props as Record<string, unknown>) },
+        };
+        setNotice("Copied");
+        break;
+      case "paste": {
+        if (!blockClipboard) return setNotice("Clipboard empty");
+        const dest = data.content?.length || 0;
+        dispatch({
+          type: "insert",
+          componentType: blockClipboard.type,
+          destinationIndex: itemSelector ? index + 1 : dest,
+          destinationZone: zone,
+        });
+        setNotice(`Pasted ${blockClipboard.type}`);
+        break;
+      }
+      case "select-parent": {
+        const id =
+          selectedItem && typeof selectedItem.props?.id === "string"
+            ? (selectedItem.props.id as string)
+            : null;
+        if (!id) return setNotice("Select a block");
+        const parent = getParentById(id);
+        const parentId =
+          parent && typeof parent.props?.id === "string"
+            ? (parent.props.id as string)
+            : null;
+        if (!parentId) return setNotice("No parent");
+        const selector = getSelectorForId(parentId);
+        if (selector)
+          dispatch({ type: "setUi", ui: { itemSelector: selector } });
+        break;
+      }
+      case "select-none":
+        dispatch({ type: "setUi", ui: { itemSelector: null } });
+        clearStudioSelection();
+        break;
+      case "toggle-lock":
+        if (!selectedItem || !itemSelector) return setNotice("Select a block");
+        dispatch({
+          type: "replace",
+          destinationIndex: index,
+          destinationZone: zone,
+          data: {
+            ...selectedItem,
+            props: {
+              ...selectedItem.props,
+              [STUDIO_PROP.locked]: !isLayerLocked(
+                selectedItem.props as Record<string, unknown>,
+              ),
+            },
+          },
+        });
+        setNotice("Lock toggled");
+        break;
+      case "toggle-hide":
+        if (!selectedItem || !itemSelector) return setNotice("Select a block");
+        {
+          const hidden = !Boolean(
+            (selectedItem.props as { _hidden?: boolean })._hidden,
+          );
+          dispatch({
+            type: "replace",
+            destinationIndex: index,
+            destinationZone: zone,
+            data: {
+              ...selectedItem,
+              props: {
+                ...selectedItem.props,
+                [STUDIO_PROP.hidden]: hidden,
+              },
+            },
+          });
+          setNotice(hidden ? "Hidden" : "Shown");
+        }
+        break;
+      case "focus-content":
+        setRight("content");
+        break;
+      case "insert": {
+        const type = tool.payload?.type;
+        if (!type) return;
+        dispatch({
+          type: "insert",
+          componentType: type,
+          destinationIndex: data.content?.length || 0,
+          destinationZone: "default-zone",
+        });
+        setNotice(`Inserted ${type}`);
+        setLeft("add");
+        break;
+      }
+      case "style":
+        if (tool.payload) applyStylePreset({ ...tool.payload });
+        break;
+      case "copy-styles":
+        setStyleClipboard({
+          ...(resolveStyleBox(
+            (selectedItem?.props as { styles?: StyleBox })?.styles,
+            breakpointFromWidth(deviceWidth),
+          ) as Record<string, string>),
+        });
+        setNotice("Styles copied");
+        break;
+      case "paste-styles": {
+        const clip = getStyleClipboard();
+        if (!clip) return setNotice("No styles on clipboard");
+        applyStylePreset(clip);
+        break;
+      }
+      case "viewport":
+        if (tool.payload?.width) setViewport(Number(tool.payload.width));
+        break;
+      case "zoom":
+        if (tool.payload?.value) setZoom(Number(tool.payload.value));
+        else if (tool.payload?.delta)
+          setZoom((z) =>
+            Math.max(40, Math.min(150, z + Number(tool.payload!.delta))),
+          );
+        break;
+      case "open-tab":
+        if (tool.payload?.tab) toggleLeft(tool.payload.tab as LeftTab);
+        break;
+      case "right-tab":
+        if (tool.payload?.tab) setRight(tool.payload.tab as RightTab);
+        break;
+      case "export-html": {
+        const html = [
+          "<!doctype html><html><head><meta charset='utf-8'><title>",
+          page.title,
+          "</title></head><body data-aevion-export='1'>",
+          `<!-- ${page.slug} · ${data.content?.length || 0} blocks -->`,
+          "</body></html>",
+        ].join("");
+        void navigator.clipboard.writeText(html);
+        setNotice("HTML stub copied");
+        break;
+      }
+      case "export-json":
+        void navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+        setNotice("Page JSON copied");
+        break;
+      case "export-css": {
+        const theme = bundle.project.theme || {};
+        const css = Object.entries(theme)
+          .map(([k, v]) => `  --wf-${k}: ${v};`)
+          .join("\n");
+        void navigator.clipboard.writeText(`:root {\n${css}\n}`);
+        setNotice("Theme CSS copied");
+        break;
+      }
+      case "ai-prompt":
+        setCommand(tool.payload?.prompt || "");
+        toggleLeft("ai");
+        setNotice("AI prompt ready");
+        break;
+      case "toggle-focus":
+        setFocusMode((v) => !v);
+        break;
+      case "preview":
+        window.open(factoryPreviewPath(bundle.project.slug), "_blank");
+        break;
+      case "draft":
+        window.open(factoryDraftPath(bundle.project.slug, page.slug), "_blank");
+        break;
+      case "refresh-frame": {
+        const frame = document.querySelector<HTMLIFrameElement>(
+          ".ae-canvas-site iframe",
+        );
+        if (frame) {
+          frame.style.height = "";
+          window.dispatchEvent(new Event("resize"));
+        }
+        setNotice("Frame refreshed");
+        break;
+      }
+      case "save":
+        void persist(page.id, data)
+          .then(() => setNotice("Saved"))
+          .catch((err) => setError(err.message));
+        break;
+      case "notice":
+        setNotice(tool.payload?.message || tool.label);
+        break;
+      default:
+        setNotice(tool.label);
+    }
   }
 
   function toggleLeft(tab: LeftTab) {
@@ -727,25 +1242,138 @@ function StudioChrome({
   async function renameCurrent() {
     const title = window.prompt("Rename page", page.title);
     if (!title?.trim()) return;
+    await patchPageMeta({ title: title.trim(), navLabel: title.trim() });
+  }
+
+  async function patchPageMeta(patch: {
+    title?: string;
+    slug?: string;
+    navLabel?: string;
+    showInNav?: boolean;
+  }) {
     const res = await fetch(`/api/admin/websites/${id}/pages/${page.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: title.trim() }),
+      body: JSON.stringify(patch),
     });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Update failed");
+    setBundle((current) =>
+      current
+        ? {
+            ...current,
+            pages: current.pages.map((item) =>
+              item.id === page.id ? { ...item, ...patch } : item,
+            ),
+          }
+        : current,
+    );
+    if (patch.slug === NOT_FOUND_PAGE_SLUG) {
+      const current = latest.current || studioPuck(page.draftData);
+      const next = patchPageSeo(current, { noIndex: true });
+      latest.current = next;
+      void persist(page.id, next).catch((err) => setError(err.message));
+    }
+  }
+
+  async function ensureNotFoundPage() {
+    const existing = bundle.pages.find((item) => isNotFoundPageSlug(item.slug));
+    if (existing) {
+      setPageId(existing.id);
+      setNotice("404 page already exists");
+      return;
+    }
+    const json = await post(`/api/admin/websites/${id}/pages`, {
+      title: "Page not found",
+      slug: NOT_FOUND_PAGE_SLUG,
+      showInNav: false,
+    });
+    const created = json.page as WebsitePage;
+    const seeded = patchPageSeo(studioPuck(created.draftData), {
+      title: `Page not found · ${bundle.project.name}`,
+      description: "That URL is not on this site.",
+      noIndex: true,
+    });
+    await persist(created.id, seeded);
+    setBundle((current) =>
+      current
+        ? {
+            ...current,
+            pages: [
+              ...current.pages,
+              { ...created, draftData: seeded, showInNav: false },
+            ],
+          }
+        : current,
+    );
+    setPageId(created.id);
+    setNotice("404 page created");
+  }
+
+  async function reloadBundle() {
+    const res = await fetch(`/api/admin/websites/${id}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Reload failed");
+    setBundle(data);
+    return data as ProjectBundle;
+  }
+
+  async function publishLiveNamed(note?: string) {
+    await persist(page.id, latest.current || studioPuck(page.draftData));
+    const json = await post(`/api/admin/websites/${id}/publish`, {
+      ...(note?.trim() ? { note: note.trim() } : {}),
+    });
+    await reloadBundle();
+    setNotice(
+      json.note
+        ? `Published “${json.note}” · ${json.url || ""}`
+        : String(json.url || "Published"),
+    );
+    setRight("history");
+  }
+
+  async function restoreVersionFromHistory(version: WebsiteVersion) {
+    setBusy("restore");
+    try {
+      await post(`/api/admin/websites/${id}/restore`, {
+        versionId: version.id,
+      });
+      await reloadBundle();
+      setNotice(
+        `Restored “${displayVersionName(version)}” into draft. Live unchanged.`,
+      );
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function renameVersionFromHistory(
+    version: WebsiteVersion,
+    note: string,
+  ) {
+    const res = await fetch(
+      `/api/admin/websites/${id}/versions/${version.id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note }),
+      },
+    );
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || "Rename failed");
     setBundle((current) =>
       current
         ? {
             ...current,
-            pages: current.pages.map((item) =>
-              item.id === page.id
-                ? { ...item, title: title.trim(), navLabel: title.trim() }
+            versions: current.versions.map((item) =>
+              item.id === version.id
+                ? { ...item, note: json.note || note }
                 : item,
             ),
           }
         : current,
     );
+    setNotice(`Renamed to “${json.note || note}”`);
   }
 
   async function deleteCurrent() {
@@ -771,8 +1399,11 @@ function StudioChrome({
         pageId: page.id,
         apply: false,
       });
-      setPlan(json.plan);
-      setNotice(json.plan?.explanation || "");
+      const nextPlan = (json.plan || null) as AiPlan | null;
+      const analysis = nextPlan ? analyzeAiPlan(nextPlan) : null;
+      setPlan(analysis?.plan || nextPlan);
+      setPlanConfirmMessage(analysis?.confirmMessage || null);
+      setNotice(analysis?.plan.explanation || nextPlan?.explanation || "");
       setLeft("ai");
       setLeftOpen(true);
     } catch (err) {
@@ -784,16 +1415,26 @@ function StudioChrome({
 
   async function applyAi() {
     if (!plan) return;
+    const analysis = analyzeAiPlan(plan);
+    if (analysis.destructive) {
+      const message =
+        analysis.confirmMessage ||
+        planConfirmMessage ||
+        "This plan is destructive. Apply anyway?";
+      if (!window.confirm(message)) return;
+    }
     setBusy("ai");
     try {
       const json = await post(`/api/admin/websites/${id}/ai`, {
         prompt: command,
         pageId: page.id,
         apply: true,
-        plan,
+        confirmDestructive: analysis.destructive,
+        plan: analysis.plan,
       });
       if (json.bundle) setBundle(json.bundle);
       setPlan(null);
+      setPlanConfirmMessage(null);
       setNotice("Applied. Undo with ⌘Z if needed.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Apply failed");
@@ -1215,8 +1856,18 @@ function StudioChrome({
           <button
             type="button"
             className="ae-icon-btn"
-            title="Fit / reset zoom"
-            onClick={() => setZoom(100)}
+            title="Fit width to canvas"
+            onClick={() => {
+              const available = Math.max(
+                (canvasRef.current?.clientWidth || 800) - 48,
+                280,
+              );
+              const next = Math.max(
+                40,
+                Math.min(150, Math.floor((available / width) * 100)),
+              );
+              setZoom(next);
+            }}
           >
             <Maximize2 size={14} />
           </button>
@@ -1300,12 +1951,14 @@ function StudioChrome({
           <button
             type="button"
             className="ae-btn primary"
-            onClick={() =>
-              void persist(page.id, latest.current || page.draftData)
-                .then(() => post(`/api/admin/websites/${id}/publish`))
-                .then((json) => setNotice(String(json.url || "Published")))
-                .catch((err) => setError(err.message))
-            }
+            onClick={() => {
+              const note = window.prompt(
+                "Name this version (optional)",
+                `Version ${(bundle.versions[0]?.versionNumber ?? 0) + 1}`,
+              );
+              if (note === null) return;
+              void publishLiveNamed(note).catch((err) => setError(err.message));
+            }}
           >
             <Upload size={14} />
             Publish
@@ -1338,6 +1991,14 @@ function StudioChrome({
             onClick={() => toggleLeft("add")}
           >
             <Boxes />
+          </button>
+          <button
+            type="button"
+            className={`ae-rail-btn${leftOpen && left === "tools" ? " is-on" : ""}`}
+            title="Builder tools (100)"
+            onClick={() => toggleLeft("tools")}
+          >
+            <Wrench />
           </button>
           <button
             type="button"
@@ -1424,20 +2085,27 @@ function StudioChrome({
                   ? "Site"
                   : left === "add"
                     ? "Add"
-                    : left === "layers"
-                      ? "Navigator"
-                      : left === "assets"
-                        ? "Assets"
-                        : left === "import"
-                          ? "Import"
-                          : left === "cms"
-                            ? "CMS"
-                            : left === "api"
-                              ? "API & MCP"
-                              : left === "deploy"
-                                ? "Deploy"
-                                : "AI"}
+                    : left === "tools"
+                      ? "Tools"
+                      : left === "layers"
+                        ? "Navigator"
+                        : left === "assets"
+                          ? "Assets"
+                          : left === "import"
+                            ? "Import"
+                            : left === "cms"
+                              ? "CMS"
+                              : left === "api"
+                                ? "API & MCP"
+                                : left === "deploy"
+                                  ? "Deploy"
+                                  : "AI"}
             </div>
+            {left === "tools" ? (
+              <div className="ae-panel-scroll ae-pane">
+                <StudioToolsPanel onRun={runStudioTool} />
+              </div>
+            ) : null}
             {left === "site" ? (
               <StudioBusinessPanel
                 bundle={bundle}
@@ -1467,6 +2135,7 @@ function StudioChrome({
                           <span>{item.navLabel || item.title}</span>
                           <small>
                             {index === 0 ? "Home · " : ""}
+                            {isNotFoundPageSlug(item.slug) ? "404 · " : ""}
                             {item.showInNav ? "" : "Hidden · "}/{item.slug}
                           </small>
                         </span>
@@ -1574,25 +2243,11 @@ function StudioChrome({
                   <button
                     type="button"
                     className="ae-btn ghost"
+                    disabled={isNotFoundPageSlug(page.slug)}
                     onClick={() =>
-                      void (async () => {
-                        const res = await fetch(
-                          `/api/admin/websites/${id}/pages/${page.id}`,
-                          {
-                            method: "PATCH",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              showInNav: !page.showInNav,
-                            }),
-                          },
-                        );
-                        const json = await res.json();
-                        if (!res.ok)
-                          throw new Error(json.error || "Update failed");
-                        const full = await fetch(`/api/admin/websites/${id}`);
-                        const data = await full.json();
-                        if (full.ok) setBundle(data);
-                      })().catch((err) => setError(err.message))
+                      void patchPageMeta({
+                        showInNav: !page.showInNav,
+                      }).catch((err) => setError(err.message))
                     }
                   >
                     {page.showInNav ? "Hide from nav" : "Show in nav"}
@@ -1600,7 +2255,10 @@ function StudioChrome({
                   <button
                     type="button"
                     className="ae-btn ghost"
-                    disabled={bundle.pages[0]?.id === page.id}
+                    disabled={
+                      bundle.pages[0]?.id === page.id ||
+                      isNotFoundPageSlug(page.slug)
+                    }
                     onClick={() =>
                       void (async () => {
                         const ids = [
@@ -1621,34 +2279,39 @@ function StudioChrome({
                   >
                     Set homepage
                   </button>
-                </div>
-                <p className="ae-section-label">Page SEO</p>
-                <label className="ae-custom-field">
-                  <span>Title override</span>
-                  <input
-                    value={String(
-                      (page.draftData.root?.props as { title?: string })
-                        ?.title || page.title,
-                    )}
-                    onChange={(event) => {
-                      const title = event.target.value;
-                      const next = {
-                        ...page.draftData,
-                        root: {
-                          ...page.draftData.root,
-                          props: {
-                            ...(page.draftData.root?.props || {}),
-                            title,
-                          },
-                        },
-                      };
-                      latest.current = next;
-                      void persist(page.id, next).catch((err) =>
+                  <button
+                    type="button"
+                    className="ae-btn ghost"
+                    onClick={() =>
+                      void ensureNotFoundPage().catch((err) =>
                         setError(err.message),
-                      );
-                    }}
-                  />
-                </label>
+                      )
+                    }
+                  >
+                    {bundle.pages.some((item) => isNotFoundPageSlug(item.slug))
+                      ? "Open 404"
+                      : "Add 404"}
+                  </button>
+                </div>
+                <PageSettingsPanel
+                  page={page}
+                  draftData={latest.current || studioPuck(page.draftData)}
+                  onMetaChange={(patch) =>
+                    void patchPageMeta(patch).catch((err) =>
+                      setError(err.message),
+                    )
+                  }
+                  onDraftChange={(next) => {
+                    latest.current = next;
+                    void persist(page.id, next).catch((err) =>
+                      setError(err.message),
+                    );
+                  }}
+                />
+                <RedirectsPanel
+                  siteConfig={bundle.project.siteConfig}
+                  onSiteConfigChange={persistSiteConfig}
+                />
               </div>
             ) : null}
             {left === "add" ? (
@@ -1678,8 +2341,8 @@ function StudioChrome({
                             type="button"
                             onClick={() => {
                               const index =
-                                (latest.current || page.draftData).content
-                                  ?.length || 0;
+                                (latest.current || studioPuck(page.draftData))
+                                  .content?.length || 0;
                               dispatch({
                                 type: "insert",
                                 componentType: name,
@@ -1712,12 +2375,7 @@ function StudioChrome({
             ) : null}
             {left === "layers" ? (
               <div className="ae-panel-scroll ae-pane">
-                <p className="ae-note">
-                  Select a layer to edit. Duplicate via Components add or page
-                  duplicate. Hide a block with display:none under Advanced.
-                  Lock: leave selection on another layer while editing copy.
-                </p>
-                <Puck.Outline />
+                <StudioLayersPanel onNotice={setNotice} />
               </div>
             ) : null}
             {left === "assets" ? (
@@ -2094,6 +2752,12 @@ function StudioChrome({
             ) : null}
             {left === "cms" ? (
               <div className="ae-panel-scroll ae-pane ae-side-tools">
+                <CollectionsPanel
+                  siteConfig={bundle.project.siteConfig}
+                  business={bundle.business}
+                  onSiteConfigChange={persistSiteConfig}
+                />
+                <hr className="ae-hr" />
                 <p className="ae-section-label">Scraped content CMS</p>
                 <p className="ae-note">
                   Every successful scrape is stored here with pages, media,
@@ -2186,101 +2850,25 @@ function StudioChrome({
             ) : null}
             {left === "ai" ? (
               <div className="ae-panel-scroll ae-pane ae-side-tools">
-                <p className="ae-section-label">Command</p>
-                <form
-                  className="ae-side-form"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    void runAi();
+                <AiOpsPanel
+                  command={command}
+                  onCommandChange={setCommand}
+                  commandRef={commandRef}
+                  plan={plan}
+                  confirmMessage={planConfirmMessage}
+                  busy={busy === "ai"}
+                  projectSlug={bundle.project.slug}
+                  projectId={id}
+                  versionCount={bundle.versions.length}
+                  pageCount={bundle.pages.length}
+                  mcpTools={mcpTools}
+                  onPlan={() => void runAi()}
+                  onApply={() => void applyAi()}
+                  onReject={() => {
+                    setPlan(null);
+                    setPlanConfirmMessage(null);
                   }}
-                >
-                  <textarea
-                    ref={commandRef}
-                    value={command}
-                    onChange={(event) => setCommand(event.target.value)}
-                    placeholder="Describe what to change… ⌘K"
-                    rows={4}
-                  />
-                  <div className="ae-actions-row" style={{ padding: 0 }}>
-                    <button
-                      type="submit"
-                      className="ae-btn primary"
-                      disabled={Boolean(busy)}
-                    >
-                      {busy === "ai" ? "Planning…" : "Plan"}
-                    </button>
-                    {plan ? (
-                      <button
-                        type="button"
-                        className="ae-btn"
-                        onClick={() => void applyAi()}
-                      >
-                        Apply
-                      </button>
-                    ) : null}
-                    {plan ? (
-                      <button
-                        type="button"
-                        className="ae-btn ghost"
-                        onClick={() => setPlan(null)}
-                      >
-                        Reject
-                      </button>
-                    ) : null}
-                  </div>
-                </form>
-                {plan?.explanation ? (
-                  <p className="ae-issue">
-                    <strong>Plan</strong>
-                    {plan.explanation}
-                    {plan.destructive ? " · Review before applying." : ""}
-                  </p>
-                ) : null}
-                {plan?.calls?.length ? (
-                  <>
-                    <p className="ae-section-label">Planned tools</p>
-                    <ul className="ae-review-list">
-                      {plan.calls.map((call, index) => {
-                        const item = call as {
-                          tool?: string;
-                          name?: string;
-                          args?: Record<string, unknown>;
-                        };
-                        return (
-                          <li key={`${item.tool || item.name}-${index}`}>
-                            <strong>{item.tool || item.name || "tool"}</strong>
-                            <span className="ae-note">
-                              {" "}
-                              {JSON.stringify(item.args || {}).slice(0, 120)}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </>
-                ) : null}
-
-                <p className="ae-section-label">Site</p>
-                <div className="ae-actions-row" style={{ padding: "0 0 8px" }}>
-                  <a
-                    className="ae-btn ghost"
-                    href={factoryPreviewPath(bundle.project.slug)}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Preview
-                  </a>
-                  <a
-                    className="ae-btn ghost"
-                    href={`/admin/websites/${id}/deploy`}
-                  >
-                    Deploy
-                  </a>
-                </div>
-                <p className="ae-note">
-                  {bundle.versions.length} published versions ·{" "}
-                  {bundle.pages.length} pages
-                </p>
+                />
                 {notice ? <p className="ae-note">{notice}</p> : null}
                 {error ? (
                   <p className="ae-note" style={{ color: "#f0a8a8" }}>
@@ -2517,16 +3105,27 @@ function StudioChrome({
           </aside>
         ) : null}
 
-        <div className="ae-canvas">
-          <div
-            className="ae-canvas-site"
-            style={{
-              width: width >= 1280 ? "100%" : width,
-              maxWidth: "100%",
-              zoom: zoom / 100,
-            }}
-          >
-            <Puck.Preview />
+        <div className="ae-canvas" ref={canvasRef}>
+          <div className="ae-canvas-stage">
+            <div className="ae-device-chip" aria-hidden>
+              {VIEWPORTS.find((v) => v.width === width)?.label || "Custom"} ·{" "}
+              {width}px
+            </div>
+            <div
+              className="ae-canvas-site"
+              data-ae-device-width={width}
+              style={{
+                width: `${width}px`,
+                maxWidth: "none",
+                flex: "0 0 auto",
+                alignSelf: "center",
+                minHeight: "100%",
+                zoom: zoom / 100,
+              }}
+            >
+              <CanvasHeightSync width={width} />
+              <Puck.Preview />
+            </div>
           </div>
         </div>
 
@@ -2576,83 +3175,29 @@ function StudioChrome({
               tab={right}
               selectedLabel={selectedLabel}
               selectedStyles={
-                ((selectedItem?.props as { styles?: Record<string, string> })
-                  ?.styles || {}) as Record<string, string>
+                resolveStyleBox(
+                  (selectedItem?.props as { styles?: StyleBox })?.styles,
+                  breakpointFromWidth(width),
+                ) as Record<string, string>
               }
+              rawStyles={(selectedItem?.props as { styles?: StyleBox })?.styles}
+              componentType={
+                selectedItem ? (selectedItem.type as string) : null
+              }
+              selectedProps={
+                selectedItem
+                  ? (selectedItem.props as Record<string, unknown>)
+                  : null
+              }
+              onPropsReplace={replaceSelectedProps}
+              siteConfig={bundle.project.siteConfig}
+              breakpoint={breakpointFromWidth(width)}
+              onBreakpointChange={setStyleBreakpoint}
               onStylePatch={(patch) => applyStylePreset(patch)}
+              onStylesReplace={replaceStyles}
               zoom={zoom}
-              viewportButtons={
-                <div className="ae-actions-row" style={{ padding: "0 0 10px" }}>
-                  {VIEWPORTS.map((vp) => (
-                    <button
-                      key={vp.id}
-                      type="button"
-                      className="ae-btn ghost"
-                      onClick={() => setViewport(vp.width)}
-                    >
-                      {vp.label}
-                    </button>
-                  ))}
-                </div>
-              }
               fieldsSlot={
                 <>
-                  {right === "layout" ? (
-                    <div className="ae-style-presets">
-                      {(
-                        [
-                          {
-                            label: "Full width",
-                            patch: { width: "100%", maxWidth: "" },
-                          },
-                          {
-                            label: "Centered",
-                            patch: {
-                              width: "100%",
-                              maxWidth: "72.5rem",
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                            },
-                          },
-                          {
-                            label: "Pad L",
-                            patch: {
-                              paddingTop: "64",
-                              paddingBottom: "64",
-                              paddingLeft: "24",
-                              paddingRight: "24",
-                            },
-                          },
-                          {
-                            label: "Flex row",
-                            patch: {
-                              display: "flex",
-                              direction: "row",
-                              gap: "16",
-                              align: "center",
-                            },
-                          },
-                          {
-                            label: "3-col grid",
-                            patch: {
-                              display: "grid",
-                              gridCols: "3",
-                              gap: "20",
-                            },
-                          },
-                        ] as const
-                      ).map((item) => (
-                        <button
-                          key={item.label}
-                          type="button"
-                          className="ae-preset-chip"
-                          onClick={() => applyStylePreset({ ...item.patch })}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  ) : null}
                   {(right === "content" ||
                     right === "layout" ||
                     right === "advanced") && <Puck.Fields />}
@@ -2679,18 +3224,9 @@ function StudioChrome({
                       type="color"
                       value={hexColor(bundle.project.theme[key])}
                       onChange={(event) => {
-                        const theme = {
+                        persistTheme({
                           ...bundle.project.theme,
                           [key]: event.target.value,
-                        };
-                        setBundle({
-                          ...bundle,
-                          project: { ...bundle.project, theme },
-                        });
-                        void fetch(`/api/admin/websites/${id}`, {
-                          method: "PATCH",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ theme }),
                         });
                       }}
                     />
@@ -2703,18 +3239,9 @@ function StudioChrome({
                 <input
                   value={bundle.project.theme.headingFont || ""}
                   onChange={(event) => {
-                    const theme = {
+                    persistTheme({
                       ...bundle.project.theme,
                       headingFont: event.target.value,
-                    };
-                    setBundle({
-                      ...bundle,
-                      project: { ...bundle.project, theme },
-                    });
-                    void fetch(`/api/admin/websites/${id}`, {
-                      method: "PATCH",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ theme }),
                     });
                   }}
                   placeholder="Georgia, serif"
@@ -2725,18 +3252,9 @@ function StudioChrome({
                 <input
                   value={bundle.project.theme.bodyFont || ""}
                   onChange={(event) => {
-                    const theme = {
+                    persistTheme({
                       ...bundle.project.theme,
                       bodyFont: event.target.value,
-                    };
-                    setBundle({
-                      ...bundle,
-                      project: { ...bundle.project, theme },
-                    });
-                    void fetch(`/api/admin/websites/${id}`, {
-                      method: "PATCH",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ theme }),
                     });
                   }}
                   placeholder="system-ui, sans-serif"
@@ -2748,26 +3266,31 @@ function StudioChrome({
                 <input
                   value={bundle.project.theme.radius || ""}
                   onChange={(event) => {
-                    const theme = {
+                    persistTheme({
                       ...bundle.project.theme,
                       radius: event.target.value,
-                    };
-                    setBundle({
-                      ...bundle,
-                      project: { ...bundle.project, theme },
-                    });
-                    void fetch(`/api/admin/websites/${id}`, {
-                      method: "PATCH",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ theme }),
                     });
                   }}
                   placeholder="0.5rem"
                 />
               </label>
+              <DesignVariablesPanel
+                theme={bundle.project.theme}
+                onThemeChange={persistTheme}
+                hasSelection={Boolean(selectedItem)}
+                onApplyReference={(reference, target) => {
+                  applyStylePreset({ [target]: reference });
+                  setNotice(
+                    target === "color"
+                      ? "Text colour bound to variable"
+                      : "Background bound to variable",
+                  );
+                }}
+              />
               <p className="ae-note">
                 Buttons and cards inherit primary/foreground tokens and radius
-                via factory-site CSS variables.
+                via factory-site CSS variables. Custom variables use{" "}
+                <code>--wf-var-*</code>.
               </p>
             </div>
           ) : null}
@@ -2800,46 +3323,28 @@ function StudioChrome({
           ) : null}
           {right === "history" ? (
             <div className="ae-panel-scroll ae-pane">
-              <p className="ae-section-label">Draft vs published</p>
-              <p className="ae-note">
-                Current status: {bundle.project.status}. Restore a published
-                snapshot into the editor draft.
-              </p>
-              <ul className="ae-review-list">
-                {bundle.versions.slice(0, 12).map((version) => (
-                  <li key={version.id}>
-                    <div className="ae-actions-row" style={{ padding: 0 }}>
-                      <span className="ae-note">
-                        v{version.versionNumber}
-                        {version.note ? ` · ${version.note}` : ""} ·{" "}
-                        {new Date(version.createdAt).toLocaleString()}
-                      </span>
-                      <button
-                        type="button"
-                        className="ae-btn ghost"
-                        onClick={() =>
-                          void post(`/api/admin/websites/${id}/restore`, {
-                            versionId: version.id,
-                          })
-                            .then(async () => {
-                              const res = await fetch(
-                                `/api/admin/websites/${id}`,
-                              );
-                              const data = await res.json();
-                              if (!res.ok)
-                                throw new Error(data.error || "Reload failed");
-                              setBundle(data);
-                              setNotice(`Restored v${version.versionNumber}`);
-                            })
-                            .catch((err) => setError(err.message))
-                        }
-                      >
-                        Restore
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <HistoryPanel
+                bundle={bundle}
+                busy={Boolean(busy)}
+                onPublish={(note) =>
+                  publishLiveNamed(note).catch((err) => {
+                    setError(err.message);
+                    throw err;
+                  })
+                }
+                onRestore={(version) =>
+                  restoreVersionFromHistory(version).catch((err) => {
+                    setError(err.message);
+                    throw err;
+                  })
+                }
+                onRename={(version, note) =>
+                  renameVersionFromHistory(version, note).catch((err) => {
+                    setError(err.message);
+                    throw err;
+                  })
+                }
+              />
             </div>
           ) : null}
         </aside>
@@ -2911,7 +3416,10 @@ function StudioChrome({
                 <kbd>F</kbd> Focus mode
               </li>
               <li>
-                <kbd>Esc</kbd> Close panel / exit focus
+                <kbd>Delete</kbd> Remove selected layer(s)
+              </li>
+              <li>
+                <kbd>Esc</kbd> Clear selection / close panel
               </li>
               <li>
                 <kbd>?</kbd> This help

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { deletePage, savePageDraft, updatePage } from "@/features/website-factory/services/store";
-import { isPuckData } from "@/features/website-factory/types";
+import { isPageDocument } from "@/features/website-factory/types";
 import { factoryErrorMessage } from "@/features/website-factory/services/schemas";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ export async function PUT(
   const { pageId } = await params;
   try {
     const body = await request.json();
-    if (!isPuckData(body.data)) {
+    if (!isPageDocument(body.data)) {
       return NextResponse.json({ error: "Invalid editor data" }, { status: 400 });
     }
     await savePageDraft(pageId, body.data);

@@ -8,12 +8,17 @@ import {
   factoryLivePath,
   factoryPreviewPath,
 } from "@/features/website-factory/urls";
+import {
+  displayVersionName,
+  formatVersionTime,
+  isLiveVersion,
+} from "@/features/website-factory/history/versions";
 import { ProjectNav } from "./ProjectNav";
 import { useBundle } from "./fields";
 
 export function ProjectHub({ id }: { id: string }) {
   const router = useRouter();
-  const { bundle, error, loading, setError } = useBundle(id);
+  const { bundle, error, loading, setError, setBundle } = useBundle(id);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState("");
 
@@ -34,6 +39,7 @@ export function ProjectHub({ id }: { id: string }) {
       return json as Record<string, never> & {
         url?: string;
         versionNumber?: number;
+        note?: string;
         project?: { id: string };
       };
     } catch (err) {
@@ -69,7 +75,8 @@ export function ProjectHub({ id }: { id: string }) {
   }
 
   if (loading) return <p className="text-sm text-white/45">Loading…</p>;
-  if (!data) return <p className="text-sm text-red-400">{error || "Not found"}</p>;
+  if (!data)
+    return <p className="text-sm text-red-400">{error || "Not found"}</p>;
 
   return (
     <div className="text-zinc-200">
@@ -127,10 +134,17 @@ export function ProjectHub({ id }: { id: string }) {
           type="button"
           disabled={Boolean(busy)}
           onClick={async () => {
-            const json = await post(`/api/admin/websites/${id}/publish`);
+            const note = window.prompt(
+              "Name this version (optional)",
+              `Version ${(data.versions[0]?.versionNumber ?? 0) + 1}`,
+            );
+            if (note === null) return;
+            const json = await post(`/api/admin/websites/${id}/publish`, {
+              note: note.trim() || undefined,
+            });
             if (json?.url)
               setMessage(
-                `Published v${json.versionNumber}: ${json.url}`,
+                `Published ${json.note || `v${json.versionNumber}`}: ${json.url}`,
               );
           }}
           className="rounded-full border border-white/15 px-4 py-2 text-sm text-white/75"
@@ -160,7 +174,9 @@ export function ProjectHub({ id }: { id: string }) {
       </div>
 
       {error ? <p className="mt-4 text-sm text-red-400">{error}</p> : null}
-      {message ? <p className="mt-4 text-sm text-emerald-400/90">{message}</p> : null}
+      {message ? (
+        <p className="mt-4 text-sm text-emerald-400/90">{message}</p>
+      ) : null}
 
       <h3 className="mt-12 text-lg tracking-[-0.02em] text-white">Versions</h3>
       <div className="mt-4 divide-y divide-white/10 border-t border-white/10">
@@ -170,30 +186,93 @@ export function ProjectHub({ id }: { id: string }) {
             className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm"
           >
             <p className="text-white/70">
-              v{version.versionNumber} ·{" "}
-              {new Date(version.createdAt).toLocaleString()} · {version.note}
+              <span className="text-white">{displayVersionName(version)}</span>
+              {" · "}v{version.versionNumber}
+              {isLiveVersion(version, data.project) ? " · Live" : ""}
+              {" · "}
+              {formatVersionTime(version.createdAt)}
             </p>
-            <button
-              type="button"
-              disabled={Boolean(busy)}
-              onClick={async () => {
-                const json = await post(`/api/admin/websites/${id}/restore`, {
-                  versionId: version.id,
-                });
-                if (json) {
-                  setMessage(
-                    `Restored v${version.versionNumber} into draft. Live snapshot unchanged.`,
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                disabled={Boolean(busy)}
+                onClick={async () => {
+                  const next = window.prompt(
+                    "Rename version",
+                    displayVersionName(version),
                   );
-                }
-              }}
-              className="text-white/50 underline hover:text-white"
-            >
-              Restore to draft
-            </button>
+                  if (next === null) return;
+                  setBusy("rename");
+                  setError("");
+                  try {
+                    const res = await fetch(
+                      `/api/admin/websites/${id}/versions/${version.id}`,
+                      {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ note: next.trim() }),
+                      },
+                    );
+                    const json = await res.json();
+                    if (!res.ok) throw new Error(json.error || "Rename failed");
+                    setBundle((current) => {
+                      if (!current || typeof current !== "object")
+                        return current;
+                      const versions = Array.isArray(
+                        (current as ProjectBundle).versions,
+                      )
+                        ? (current as ProjectBundle).versions.map((item) =>
+                            item.id === version.id
+                              ? { ...item, note: json.note || next.trim() }
+                              : item,
+                          )
+                        : (current as ProjectBundle).versions;
+                      return { ...current, versions };
+                    });
+                    setMessage(`Renamed to “${json.note || next}”`);
+                  } catch (err) {
+                    setError(
+                      err instanceof Error ? err.message : "Rename failed",
+                    );
+                  } finally {
+                    setBusy("");
+                  }
+                }}
+                className="text-white/50 underline hover:text-white"
+              >
+                Rename
+              </button>
+              <button
+                type="button"
+                disabled={Boolean(busy)}
+                onClick={async () => {
+                  if (
+                    !window.confirm(
+                      `Restore “${displayVersionName(version)}” into draft? Live site is unchanged until you publish.`,
+                    )
+                  ) {
+                    return;
+                  }
+                  const json = await post(`/api/admin/websites/${id}/restore`, {
+                    versionId: version.id,
+                  });
+                  if (json) {
+                    setMessage(
+                      `Restored “${displayVersionName(version)}” into draft. Live snapshot unchanged.`,
+                    );
+                  }
+                }}
+                className="text-white/50 underline hover:text-white"
+              >
+                Restore to draft
+              </button>
+            </div>
           </div>
         ))}
         {!data.versions.length ? (
-          <p className="py-4 text-sm text-white/45">No published versions yet.</p>
+          <p className="py-4 text-sm text-white/45">
+            No published versions yet.
+          </p>
         ) : null}
       </div>
     </div>

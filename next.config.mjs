@@ -19,6 +19,7 @@ const nextConfig = {
   experimental: {
     proxyClientMaxBodySize: "100mb",
   },
+  // /cms and Vvveb lab routes removed — redirect bookmarks to Studio
   async redirects() {
     return [
       { source: "/work", destination: "/news", permanent: true },
@@ -27,6 +28,12 @@ const nextConfig = {
       { source: "/insights/:path*", destination: "/news/:path*", permanent: false },
       { source: "/blogs", destination: "/news", permanent: false },
       { source: "/blogs/:path*", destination: "/news/:path*", permanent: false },
+      { source: "/vvveb-lab", destination: "/admin/websites", permanent: false },
+      { source: "/lab/vvveb", destination: "/admin/websites", permanent: false },
+      { source: "/admin/vvveb-lab", destination: "/admin/websites", permanent: false },
+      { source: "/admin/cms", destination: "/admin/settings", permanent: false },
+      { source: "/cms", destination: "/admin/websites", permanent: false },
+      { source: "/cms/:path*", destination: "/admin/websites", permanent: false },
     ];
   },
   images: {

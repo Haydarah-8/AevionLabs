@@ -53,7 +53,13 @@ describe("generateFromBusiness", () => {
       "services",
       "projects",
       "contact",
+      "404",
     ]);
+    const notFound = pages.find((page) => page.slug === "404");
+    expect(notFound?.showInNav).toBe(false);
+    expect(
+      (notFound?.draftData.root.props as { noIndex?: boolean })?.noIndex,
+    ).toBe(true);
     const home = pages[0].draftData.content;
     expect(home.some((node) => node.type === "Hero")).toBe(true);
     expect(home.some((node) => node.type === "Navbar")).toBe(true);

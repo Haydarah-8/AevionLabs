@@ -1,3 +1,5 @@
+import type { CmsCollection } from "./cms/types";
+
 export type ProjectStatus =
   | "draft"
   | "generating"
@@ -6,6 +8,9 @@ export type ProjectStatus =
   | "published"
   | "archived"
   | "deployment_error";
+
+/** Active editors. Legacy `"vvveb"` / `"grapesjs"` HTML docs may still exist in stored pages. */
+export type EditorEngineKind = "puck";
 
 export type Cta = {
   label: string;
@@ -21,6 +26,19 @@ export type ThemeTokens = {
   headingFont: string;
   bodyFont: string;
   radius: string;
+  /** Custom project design variables (Phase 7). */
+  variables?: DesignVariable[];
+};
+
+/** User-defined design token stored on the project theme. */
+export type DesignVariable = {
+  id: string;
+  /** Human label */
+  name: string;
+  /** CSS key fragment → --wf-var-{key} */
+  key: string;
+  value: string;
+  type: "color" | "size" | "font" | "string";
 };
 
 export type PuckNode = {
@@ -34,6 +52,46 @@ export type PuckData = {
   zones?: Record<string, PuckNode[]>;
 };
 
+/**
+ * Legacy HTML page envelope (formerly Vvveb). Kept for read/render of old rows.
+ * New pages must not be created in this shape.
+ */
+export type LegacyHtmlPageDocument = {
+  version: 1;
+  engine: "vvveb" | "html";
+  native: string;
+  tree?: Array<{
+    id: string;
+    type: string;
+    props: Record<string, unknown>;
+  }>;
+  title?: string;
+  updatedAt?: string;
+};
+
+/** @deprecated Use LegacyHtmlPageDocument */
+export type VvvebPageDocument = LegacyHtmlPageDocument;
+
+/** @deprecated GrapesJS was never production — kept only for reading accidental rows. */
+export type GrapesPageDocument = {
+  version: 1;
+  engine: "grapesjs";
+  native: {
+    project: Record<string, unknown>;
+    html: string;
+    css: string;
+  };
+  tree?: Array<{
+    id: string;
+    type: string;
+    props: Record<string, unknown>;
+  }>;
+  title?: string;
+  updatedAt?: string;
+};
+
+export type PageDocument = PuckData | LegacyHtmlPageDocument | GrapesPageDocument;
+
 export type SeoConfig = {
   title: string;
   description: string;
@@ -41,11 +99,23 @@ export type SeoConfig = {
   robots: string;
 };
 
+/** Site-level path redirect (Phase 11). Stored on siteConfig.redirects. */
+export type SiteRedirect = {
+  id: string;
+  from: string;
+  to: string;
+  permanent?: boolean;
+};
+
 export type SiteConfig = {
   stickyHeader: boolean;
   announcement: string;
   navCta: Cta;
   footerNote: string;
+  /** Factory CMS collections (Phase 9). */
+  collections?: CmsCollection[];
+  /** Path redirects checked before page lookup (Phase 11). */
+  redirects?: SiteRedirect[];
 };
 
 export type BusinessService = {
@@ -142,9 +212,9 @@ export type WebsitePage = {
   navLabel: string;
   showInNav: boolean;
   navOrder: number;
-  draftData: PuckData;
-  previewData: PuckData | null;
-  publishedData: PuckData | null;
+  draftData: PageDocument;
+  previewData: PageDocument | null;
+  publishedData: PageDocument | null;
   updatedAt: string;
 };
 
@@ -155,6 +225,7 @@ export type WebsiteProject = {
   name: string;
   slug: string;
   status: ProjectStatus;
+  editorEngine: EditorEngineKind;
   theme: ThemeTokens;
   siteConfig: SiteConfig;
   seoConfig: SeoConfig;
@@ -236,4 +307,67 @@ export function isPuckData(value: unknown): value is PuckData {
   if (!value || typeof value !== "object") return false;
   const data = value as PuckData;
   return Array.isArray(data.content);
+}
+
+export function isLegacyHtmlDocument(
+  value: unknown,
+): value is LegacyHtmlPageDocument {
+  if (!value || typeof value !== "object") return false;
+  const data = value as LegacyHtmlPageDocument;
+  return (
+    (data.engine === "vvveb" || data.engine === "html") &&
+    typeof data.native === "string"
+  );
+}
+
+export function isGrapesDocument(value: unknown): value is GrapesPageDocument {
+  if (!value || typeof value !== "object") return false;
+  const data = value as GrapesPageDocument;
+  return (
+    data.engine === "grapesjs" &&
+    !!data.native &&
+    typeof data.native === "object" &&
+    typeof data.native.html === "string"
+  );
+}
+
+/** @deprecated Use isLegacyHtmlDocument */
+export function isVvvebDocument(
+  value: unknown,
+): value is LegacyHtmlPageDocument {
+  return isLegacyHtmlDocument(value);
+}
+
+export function isPageDocument(value: unknown): value is PageDocument {
+  return isPuckData(value) || isLegacyHtmlDocument(value) || isGrapesDocument(value);
+}
+
+/** @deprecated Do not create Grapes documents — returns a legacy-shaped stub for tests only. */
+export function emptyGrapesDocument(title = "Home"): GrapesPageDocument {
+  return {
+    version: 1,
+    engine: "grapesjs",
+    title,
+    updatedAt: new Date().toISOString(),
+    native: {
+      project: {},
+      html: `<section style="padding:48px 24px;font-family:system-ui,sans-serif"><h1>${title.replace(/</g, "")}</h1><p>Edit this page in Aevion Studio.</p></section>`,
+      css: "",
+    },
+  };
+}
+
+export function asPuckData(value: PageDocument | null | undefined): PuckData | null {
+  return value && isPuckData(value) ? value : null;
+}
+
+export function asLegacyHtml(
+  value: PageDocument | null | undefined,
+): string | null {
+  return value && isLegacyHtmlDocument(value) ? value.native : null;
+}
+
+/** @deprecated Use asLegacyHtml */
+export function asVvvebHtml(value: PageDocument | null | undefined): string | null {
+  return asLegacyHtml(value);
 }
