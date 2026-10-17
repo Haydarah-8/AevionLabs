@@ -12,7 +12,7 @@ import {
   resolveRedirectTarget,
   upsertRedirect,
 } from "./settings";
-import type { SiteConfig } from "../types";
+import type { PuckData, SiteConfig } from "../types";
 
 const baseConfig: SiteConfig = {
   stickyHeader: true,
@@ -56,7 +56,7 @@ describe("page settings / redirects", () => {
   });
 
   it("reads and patches page SEO on root props", () => {
-    let data = { root: { props: {} }, content: [] };
+    let data: PuckData = { root: { props: {} }, content: [] };
     data = patchPageSeo(data, {
       title: "Hello",
       description: "Desc",

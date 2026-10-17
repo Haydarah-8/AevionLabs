@@ -50,6 +50,7 @@ import {
   patchPageSeo,
 } from "@/features/website-factory/pages/settings";
 import { displayVersionName } from "@/features/website-factory/history/versions";
+import type { BindContext } from "@/features/website-factory/cms/bindings";
 import type { HealthReport } from "@/features/website-factory/services/health";
 import type {
   PuckData,
@@ -174,15 +175,7 @@ function CanvasFrame({
   document?: Document;
   theme: ThemeTokens;
   siteConfig?: SiteConfig | null;
-  business?: {
-    name?: string;
-    tagline?: string;
-    description?: string;
-    phone?: string;
-    email?: string;
-    address?: string;
-    website?: string;
-  } | null;
+  business?: BindContext["business"];
 }) {
   useEffect(() => {
     if (!frameDoc) return;
@@ -890,7 +883,11 @@ function StudioChrome({
       destinationZone: itemSelector.zone || "default-zone",
       data: {
         ...selectedItem,
-        props: nextProps,
+        props: {
+          ...selectedItem.props,
+          ...nextProps,
+          id: String(nextProps.id ?? selectedItem.props.id ?? ""),
+        },
       },
     });
     setNotice("Instance updated");
